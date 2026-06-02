@@ -10,12 +10,16 @@ import 'routes/app_pages.dart';
 
 Future<void> mainCommon() async {
   WidgetsFlutterBinding.ensureInitialized();
+  print("Main: WidgetsFlutterBinding initialized");
+  
   await GetStorage.init();
+  print("Main: GetStorage initialized");
   
   final storage = GetStorage();
   
   // Inject global dependencies
   Get.put(ApiClient(), permanent: true);
+  print("Main: ApiClient injected");
 
   // Determine initial settings
   ThemeMode themeMode = storage.read('isDarkMode') == true ? ThemeMode.dark : ThemeMode.light;
@@ -26,8 +30,7 @@ Future<void> mainCommon() async {
       title: AppConfig.instance.appTitle,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
-      debugShowCheckedModeBanner: AppConfig.instance.environment != AppEnvironment.prod,
-      
+      debugShowCheckedModeBanner: false,
       // Theme
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
