@@ -23,4 +23,10 @@ class TranslationKeys {
   static const String splash = 'splash';
   static const String skip = 'skip';
   static const String getStarted = 'get_started';
+  static const String logout = 'logout';
+  static const String settings = 'settings';
+  static const String language = 'language';
+  static const String profileInfo = 'profile_info';
+  static const String name = 'name';
+  static const String phone = 'phone';
 }

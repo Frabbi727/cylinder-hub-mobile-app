@@ -24,4 +24,10 @@ const Map<String, String> bnBd = {
   TranslationKeys.splash: 'স্প্ল্যাশ',
   TranslationKeys.skip: 'এড়িয়ে যান',
   TranslationKeys.getStarted: 'শুরু করুন',
+  TranslationKeys.logout: 'লগ আউট',
+  TranslationKeys.settings: 'সেটিংস',
+  TranslationKeys.language: 'ভাষা',
+  TranslationKeys.profileInfo: 'প্রোফাইল তথ্য',
+  TranslationKeys.name: 'নাম',
+  TranslationKeys.phone: 'ফোন',
 };

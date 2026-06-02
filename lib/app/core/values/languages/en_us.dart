@@ -24,4 +24,10 @@ const Map<String, String> enUs = {
   TranslationKeys.splash: 'Splash',
   TranslationKeys.skip: 'Skip',
   TranslationKeys.getStarted: 'Get Started',
+  TranslationKeys.logout: 'Log out',
+  TranslationKeys.settings: 'Settings',
+  TranslationKeys.language: 'LANGUAGE',
+  TranslationKeys.profileInfo: 'Profile Information',
+  TranslationKeys.name: 'Name',
+  TranslationKeys.phone: 'Phone',
 };
