@@ -21,22 +21,37 @@ class LoginView extends GetView<LoginController> {
             child: Column(
               children: [
                 const SizedBox(height: 60),
-                // Language Switcher
+                // Language & Theme Switcher
                 Align(
                   alignment: Alignment.topRight,
-                  child: Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildLangBtn('EN', 'en'),
-                        _buildLangBtn('বাং', 'bn'),
-                      ],
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Theme Toggle
+                      IconButton(
+                        onPressed: controller.toggleTheme,
+                        icon: Icon(
+                          Get.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Language Switcher
+                      Container(
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildLangBtn('EN', 'en'),
+                            _buildLangBtn('বাং', 'bn'),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 40),

@@ -29,4 +29,7 @@ class TranslationKeys {
   static const String profileInfo = 'profile_info';
   static const String name = 'name';
   static const String phone = 'phone';
+  static const String theme = 'theme';
+  static const String lightMode = 'light_mode';
+  static const String darkMode = 'dark_mode';
 }

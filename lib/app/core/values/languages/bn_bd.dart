@@ -30,4 +30,7 @@ const Map<String, String> bnBd = {
   TranslationKeys.profileInfo: 'প্রোফাইল তথ্য',
   TranslationKeys.name: 'নাম',
   TranslationKeys.phone: 'ফোন',
+  TranslationKeys.theme: 'থিম',
+  TranslationKeys.lightMode: 'লাইট মোড',
+  TranslationKeys.darkMode: 'ডার্ক মোড',
 };

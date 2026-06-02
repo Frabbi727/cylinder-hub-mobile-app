@@ -30,4 +30,7 @@ const Map<String, String> enUs = {
   TranslationKeys.profileInfo: 'Profile Information',
   TranslationKeys.name: 'Name',
   TranslationKeys.phone: 'Phone',
+  TranslationKeys.theme: 'THEME',
+  TranslationKeys.lightMode: 'Light Mode',
+  TranslationKeys.darkMode: 'Dark Mode',
 };

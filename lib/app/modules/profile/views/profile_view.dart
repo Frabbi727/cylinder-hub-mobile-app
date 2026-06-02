@@ -73,6 +73,43 @@ class ProfileView extends GetView<ProfileController> {
             
             const SizedBox(height: 24),
             
+            // Theme Section
+            Text(
+              TranslationKeys.theme.tr.toUpperCase(),
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(AppSizes.p8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: ListTile(
+                leading: Icon(
+                  Get.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                  color: AppColors.primary,
+                ),
+                title: Text(
+                  Get.isDarkMode ? TranslationKeys.darkMode.tr : TranslationKeys.lightMode.tr,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                trailing: Switch(
+                  value: Get.isDarkMode,
+                  onChanged: (value) => controller.toggleTheme(),
+                  activeColor: AppColors.primary,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+            
             // Logout Button
             InkWell(
               onTap: controller.logout,
