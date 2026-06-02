@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../controllers/main_navigation_controller.dart';
@@ -39,29 +40,30 @@ class MainNavigationView extends GetView<MainNavigationController> {
           index: controller.currentIndex,
           children: pages,
         )),
-      bottomNavigationBar: Obx(() => Container(
-        height: 80,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(0, Icons.home_outlined, TranslationKeys.myDay.tr),
-            _buildNavItem(1, Icons.receipt_long_outlined, TranslationKeys.sales.tr),
-            _buildSellItem(2),
-            _buildNavItem(3, Icons.account_balance_wallet_outlined, TranslationKeys.dues.tr),
-            _buildNavItem(4, Icons.person_outline, TranslationKeys.profile.tr),
-          ],
-        ),
-      )),
+        bottomNavigationBar: Obx(() => Container(
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(0, Icons.home_outlined, TranslationKeys.myDay.tr),
+              _buildNavItem(1, Icons.receipt_long_outlined, TranslationKeys.sales.tr),
+              _buildSellItem(2),
+              _buildNavItem(3, Icons.account_balance_wallet_outlined, TranslationKeys.dues.tr),
+              _buildNavItem(4, Icons.person_outline, TranslationKeys.profile.tr),
+            ],
+          ),
+        )),
+      ),
     );
   }
 
