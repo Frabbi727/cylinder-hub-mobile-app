@@ -1,11 +1,13 @@
+import 'translation_keys.dart';
+
 const Map<String, String> bnBd = {
-  'home': 'হোম',
-  'loading': 'লোড হচ্ছে...',
-  'no_data': 'কোন তথ্য পাওয়া যায়নি',
-  'refresh': 'রিফ্রেশ',
-  'error': 'ত্রুটি',
-  'change_theme': 'থিম পরিবর্তন করুন',
-  'change_language': 'ভাষা পরিবর্তন করুন',
-  'language_bn': 'বাংলা',
-  'language_en': 'ইংরেজি',
+  TranslationKeys.home: 'হোম',
+  TranslationKeys.loading: 'লোড হচ্ছে...',
+  TranslationKeys.noData: 'কোন তথ্য পাওয়া যায়নি',
+  TranslationKeys.refresh: 'রিফ্রেশ',
+  TranslationKeys.error: 'ত্রুটি',
+  TranslationKeys.changeTheme: 'থিম পরিবর্তন করুন',
+  TranslationKeys.changeLanguage: 'ভাষা পরিবর্তন করুন',
+  TranslationKeys.languageBn: 'বাংলা',
+  TranslationKeys.languageEn: 'ইংরেজি',
 };

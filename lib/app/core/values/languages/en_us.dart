@@ -1,11 +1,13 @@
+import 'translation_keys.dart';
+
 const Map<String, String> enUs = {
-  'home': 'Home',
-  'loading': 'Loading...',
-  'no_data': 'No Data Found',
-  'refresh': 'Refresh',
-  'error': 'Error',
-  'change_theme': 'Change Theme',
-  'change_language': 'Change Language',
-  'language_bn': 'Bangla',
-  'language_en': 'English',
+  TranslationKeys.home: 'Home',
+  TranslationKeys.loading: 'Loading...',
+  TranslationKeys.noData: 'No Data Found',
+  TranslationKeys.refresh: 'Refresh',
+  TranslationKeys.error: 'Error',
+  TranslationKeys.changeTheme: 'Change Theme',
+  TranslationKeys.changeLanguage: 'Change Language',
+  TranslationKeys.languageBn: 'Bangla',
+  TranslationKeys.languageEn: 'English',
 };

@@ -18,10 +18,17 @@ abstract class BaseController extends GetxController {
   void showLoading() => isLoading = true;
   void hideLoading() => isLoading = false;
 
+import '../values/languages/translation_keys.dart';
+// ... other imports
+
+abstract class BaseController extends GetxController {
+  // ...
   void handleError(String message) {
     errorMessage = message;
-    Get.snackbar('error'.tr, message, snackPosition: SnackPosition.BOTTOM);
+    Get.snackbar(TranslationKeys.error.tr, message, snackPosition: SnackPosition.BOTTOM);
   }
+  // ...
+}
 
   // Theme Management
   void toggleTheme() {

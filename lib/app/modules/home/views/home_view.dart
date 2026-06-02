@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import '../../../core/values/app_sizes.dart';
 import '../controllers/home_controller.dart';
 
+import '../../../core/values/languages/translation_keys.dart';
+// ... other imports
+
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
@@ -10,7 +13,7 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('home'.tr),
+        title: Text(TranslationKeys.home.tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.language),
@@ -30,11 +33,12 @@ class HomeView extends GetView<HomeController> {
         if (controller.data.isEmpty) {
           return Center(
             child: Text(
-              'no_data'.tr,
+              TranslationKeys.noData.tr,
               style: const TextStyle(fontSize: AppSizes.f18),
             ),
           );
         }
+// ...
 
         return ListView.builder(
           padding: const EdgeInsets.all(AppSizes.p16),
