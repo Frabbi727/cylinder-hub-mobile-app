@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'app/core/theme/app_theme.dart';
@@ -35,6 +36,13 @@ void main() async {
       translations: AppTranslations(),
       locale: locale,
       fallbackLocale: const Locale('en', 'US'),
+
+      builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+        ),
+        child: SafeArea(top: false, bottom: true, child: child!),
+      ),
     ),
   );
 }
