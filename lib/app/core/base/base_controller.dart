@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
+import '../values/languages/translation_keys.dart';
 
 abstract class BaseController extends GetxController {
   final logger = Logger();
@@ -18,17 +19,10 @@ abstract class BaseController extends GetxController {
   void showLoading() => isLoading = true;
   void hideLoading() => isLoading = false;
 
-import '../values/languages/translation_keys.dart';
-// ... other imports
-
-abstract class BaseController extends GetxController {
-  // ...
   void handleError(String message) {
     errorMessage = message;
     Get.snackbar(TranslationKeys.error.tr, message, snackPosition: SnackPosition.BOTTOM);
   }
-  // ...
-}
 
   // Theme Management
   void toggleTheme() {

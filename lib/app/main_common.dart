@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'app/core/theme/app_theme.dart';
-import 'app/core/values/languages/translations.dart';
-import 'app/data/api/api_client.dart';
-import 'app/routes/app_pages.dart';
+import 'core/theme/app_theme.dart';
+import 'core/values/app_env.dart';
+import 'core/values/languages/translations.dart';
+import 'data/api/api_client.dart';
+import 'routes/app_pages.dart';
 
-void main() async {
+Future<void> mainCommon() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   
@@ -22,10 +23,10 @@ void main() async {
 
   runApp(
     GetMaterialApp(
-      title: "Cylinder Hub",
+      title: AppConfig.instance.appTitle,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: AppConfig.instance.environment != AppEnvironment.prod,
       
       // Theme
       theme: AppTheme.light,

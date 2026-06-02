@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
+import '../../core/values/app_env.dart';
 import '../../core/values/constants.dart';
 import '../local/token_manager.dart';
 import 'network_exception.dart';
@@ -11,7 +12,7 @@ class ApiClient {
 
   ApiClient() {
     _dio = Dio(BaseOptions(
-      baseUrl: Constants.BASE_URL,
+      baseUrl: AppConfig.instance.baseUrl,
       connectTimeout: const Duration(milliseconds: Constants.CONNECT_TIMEOUT),
       receiveTimeout: const Duration(milliseconds: Constants.RECEIVE_TIMEOUT),
     ));
