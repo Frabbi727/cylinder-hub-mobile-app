@@ -32,4 +32,5 @@ class TranslationKeys {
   static const String theme = 'theme';
   static const String lightMode = 'light_mode';
   static const String darkMode = 'dark_mode';
+  static const String noInternet = 'no_internet';
 }

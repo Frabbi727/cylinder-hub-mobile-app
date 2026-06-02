@@ -44,7 +44,6 @@ class MainNavigationView extends GetView<MainNavigationController> {
           final theme = Theme.of(context).bottomNavigationBarTheme;
           
           return Container(
-            height: 85,
             decoration: BoxDecoration(
               color: theme.backgroundColor,
               boxShadow: [
@@ -55,15 +54,20 @@ class MainNavigationView extends GetView<MainNavigationController> {
                 ),
               ],
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(context, 0, Icons.home_outlined, TranslationKeys.myDay.tr),
-                _buildNavItem(context, 1, Icons.receipt_long_outlined, TranslationKeys.sales.tr),
-                _buildSellItem(2),
-                _buildNavItem(context, 3, Icons.account_balance_wallet_outlined, TranslationKeys.dues.tr),
-                _buildNavItem(context, 4, Icons.person_outline, TranslationKeys.profile.tr),
-              ],
+            child: SafeArea(
+              child: SizedBox(
+                height: 85,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildNavItem(context, 0, Icons.home_outlined, TranslationKeys.myDay.tr),
+                    _buildNavItem(context, 1, Icons.receipt_long_outlined, TranslationKeys.sales.tr),
+                    _buildSellItem(2),
+                    _buildNavItem(context, 3, Icons.account_balance_wallet_outlined, TranslationKeys.dues.tr),
+                    _buildNavItem(context, 4, Icons.person_outline, TranslationKeys.profile.tr),
+                  ],
+                ),
+              ),
             ),
           );
         }),

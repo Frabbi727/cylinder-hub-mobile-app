@@ -33,4 +33,5 @@ const Map<String, String> bnBd = {
   TranslationKeys.theme: 'থিম',
   TranslationKeys.lightMode: 'লাইট মোড',
   TranslationKeys.darkMode: 'ডার্ক মোড',
+  TranslationKeys.noInternet: 'কোন ইন্টারনেট সংযোগ নেই',
 };

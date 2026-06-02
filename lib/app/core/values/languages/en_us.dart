@@ -33,4 +33,5 @@ const Map<String, String> enUs = {
   TranslationKeys.theme: 'THEME',
   TranslationKeys.lightMode: 'Light Mode',
   TranslationKeys.darkMode: 'Dark Mode',
+  TranslationKeys.noInternet: 'No Internet Connection',
 };

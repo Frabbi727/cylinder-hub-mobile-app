@@ -36,6 +36,7 @@ dependencies:
   logger: ^2.0.2+1
   get_storage: ^2.1.1
   package_info_plus: ^8.2.0
+  connectivity_plus: ^6.1.0
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
