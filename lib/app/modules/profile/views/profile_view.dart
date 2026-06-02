@@ -10,12 +10,12 @@ class ProfileView extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Get.isDarkMode;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         title: Text(TranslationKeys.profile.tr),
-        centerTitle: true,
-        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSizes.p20),
@@ -29,39 +29,38 @@ class ProfileView extends GetView<ProfileController> {
                   const CircleAvatar(
                     radius: 50,
                     backgroundColor: AppColors.primary,
-                    child: Icon(Icons.person, size: 60, color: Colors.white),
+                    child: Icon(Icons.person, size: 60, color: AppColors.textWhite),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  const SizedBox(height: AppSizes.p16),
+                  Text(
                     'Karim Uddin',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    style: textTheme.titleLarge,
                   ),
                   Text(
                     'karim@cylinderhub.com',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                    style: textTheme.bodyMedium,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSizes.p32),
             
             // Language Section
             Text(
               TranslationKeys.language.tr.toUpperCase(),
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
+                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSizes.p12),
             Container(
               padding: const EdgeInsets.all(AppSizes.p8),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
+                color: isDark ? AppColors.darkCardBg : AppColors.lightCardBg,
+                borderRadius: BorderRadius.circular(AppSizes.p16),
+                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
               ),
               child: Row(
                 children: [
@@ -71,66 +70,64 @@ class ProfileView extends GetView<ProfileController> {
               ),
             ),
             
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSizes.p24),
             
             // Theme Section
             Text(
               TranslationKeys.theme.tr.toUpperCase(),
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
+                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSizes.p12),
             Container(
-              padding: const EdgeInsets.all(AppSizes.p8),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
+                color: isDark ? AppColors.darkCardBg : AppColors.lightCardBg,
+                borderRadius: BorderRadius.circular(AppSizes.p16),
+                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
               ),
               child: ListTile(
                 leading: Icon(
-                  Get.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                  isDark ? Icons.dark_mode : Icons.light_mode,
                   color: AppColors.primary,
                 ),
                 title: Text(
-                  Get.isDarkMode ? TranslationKeys.darkMode.tr : TranslationKeys.lightMode.tr,
-                  style: const TextStyle(fontWeight: FontWeight.w500),
+                  isDark ? TranslationKeys.darkMode.tr : TranslationKeys.lightMode.tr,
+                  style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
                 ),
                 trailing: Switch(
-                  value: Get.isDarkMode,
+                  value: isDark,
                   onChanged: (value) => controller.toggleTheme(),
                   activeColor: AppColors.primary,
                 ),
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSizes.p24),
             
             // Logout Button
             InkWell(
               onTap: controller.logout,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppSizes.p16),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: AppSizes.p16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFEBEE), // Light red background
-                  borderRadius: BorderRadius.circular(16),
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSizes.p16),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.logout, color: Color(0xFFD32F2F), size: 20),
-                    const SizedBox(width: 8),
+                    const Icon(Icons.logout, color: AppColors.error, size: AppSizes.i20),
+                    const SizedBox(width: AppSizes.p8),
                     Text(
                       TranslationKeys.logout.tr,
                       style: const TextStyle(
-                        color: Color(0xFFD32F2F),
+                        color: AppColors.error,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: AppSizes.f16,
                       ),
                     ),
                   ],
@@ -138,23 +135,19 @@ class ProfileView extends GetView<ProfileController> {
               ),
             ),
             
-            const SizedBox(height: 40),
+            const SizedBox(height: AppSizes.p40),
             
             // Version Info
             Center(
               child: Obx(() => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.p16, vertical: AppSizes.p8),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(20),
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                  borderRadius: BorderRadius.circular(AppSizes.p20),
                 ),
                 child: Text(
                   'CylinderHub Salesman · v${controller.version.value} (${controller.buildNumber.value})',
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
                 ),
               )),
             ),
@@ -167,27 +160,31 @@ class ProfileView extends GetView<ProfileController> {
   Widget _buildLangToggleBtn(String label, String langCode) {
     return Obx(() {
       final isSelected = controller.currentLanguage.value == langCode;
+      final isDark = Get.isDarkMode;
+
       return GestureDetector(
         onTap: () {
           if (!isSelected) controller.toggleLanguage();
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: AppSizes.p12),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: isSelected 
-                ? [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))]
+            color: isSelected 
+                ? (isDark ? AppColors.darkBorder : Colors.white) 
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(AppSizes.p12),
+            boxShadow: isSelected && !isDark
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))]
                 : null,
-            border: isSelected ? Border.all(color: Colors.grey.shade200) : null,
+            border: isSelected ? Border.all(color: isDark ? AppColors.primary : AppColors.lightBorder) : null,
           ),
           child: Center(
             child: Text(
               label,
               style: TextStyle(
-                color: isSelected ? AppColors.primary : Colors.grey.shade600,
+                color: isSelected ? AppColors.primary : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                fontSize: 15,
+                fontSize: AppSizes.f14,
               ),
             ),
           ),

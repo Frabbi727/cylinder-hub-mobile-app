@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../core/values/app_colors.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../controllers/main_navigation_controller.dart';
 import '../../my_day/views/my_day_view.dart';
@@ -28,10 +29,8 @@ class MainNavigationView extends GetView<MainNavigationController> {
         if (didPop) return;
         
         if (controller.currentIndex != 0) {
-          // If not on 'My Day' tab, go to it
           controller.changeIndex(0);
         } else {
-          // If already on 'My Day', exit the app
           SystemNavigator.pop();
         }
       },
@@ -40,36 +39,42 @@ class MainNavigationView extends GetView<MainNavigationController> {
           index: controller.currentIndex,
           children: pages,
         )),
-        bottomNavigationBar: Obx(() => Container(
-          height: 80,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, -5),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(0, Icons.home_outlined, TranslationKeys.myDay.tr),
-              _buildNavItem(1, Icons.receipt_long_outlined, TranslationKeys.sales.tr),
-              _buildSellItem(2),
-              _buildNavItem(3, Icons.account_balance_wallet_outlined, TranslationKeys.dues.tr),
-              _buildNavItem(4, Icons.person_outline, TranslationKeys.profile.tr),
-            ],
-          ),
-        )),
+        bottomNavigationBar: Obx(() {
+          final isDark = Get.isDarkMode;
+          final theme = Theme.of(context).bottomNavigationBarTheme;
+          
+          return Container(
+            height: 85,
+            decoration: BoxDecoration(
+              color: theme.backgroundColor,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(context, 0, Icons.home_outlined, TranslationKeys.myDay.tr),
+                _buildNavItem(context, 1, Icons.receipt_long_outlined, TranslationKeys.sales.tr),
+                _buildSellItem(2),
+                _buildNavItem(context, 3, Icons.account_balance_wallet_outlined, TranslationKeys.dues.tr),
+                _buildNavItem(context, 4, Icons.person_outline, TranslationKeys.profile.tr),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label) {
+  Widget _buildNavItem(BuildContext context, int index, IconData icon, String label) {
+    final theme = Theme.of(context).bottomNavigationBarTheme;
     final isSelected = controller.currentIndex == index;
-    final color = isSelected ? const Color(0xFF137D7D) : Colors.grey;
+    final color = isSelected ? theme.selectedItemColor : theme.unselectedItemColor;
 
     return InkWell(
       onTap: () => controller.changeIndex(index),
@@ -102,8 +107,15 @@ class MainNavigationView extends GetView<MainNavigationController> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF137D7D),
+              color: AppColors.primary,
               borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: const Icon(Icons.add, color: Colors.white, size: 30),
           ),
@@ -111,7 +123,7 @@ class MainNavigationView extends GetView<MainNavigationController> {
           Text(
             TranslationKeys.sell.tr,
             style: TextStyle(
-              color: isSelected ? const Color(0xFF137D7D) : Colors.grey,
+              color: isSelected ? AppColors.primary : Colors.grey,
               fontSize: 12,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),

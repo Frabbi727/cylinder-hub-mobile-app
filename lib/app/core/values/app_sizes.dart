@@ -6,6 +6,8 @@ class AppSizes {
   static const double p16 = 16.0;
   static const double p20 = 20.0;
   static const double p24 = 24.0;
+  static const double p32 = 32.0;
+  static const double p40 = 40.0;
 
   // Font Sizes
   static const double f12 = 12.0;
@@ -17,6 +19,7 @@ class AppSizes {
 
   // Icon Sizes
   static const double i16 = 16.0;
+  static const double i20 = 20.0;
   static const double i24 = 24.0;
   static const double i32 = 32.0;
 }
