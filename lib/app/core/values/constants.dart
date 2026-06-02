@@ -1,5 +1,10 @@
 class Constants {
-  static const String BASE_URL = 'https://api.example.com';
+  // Base URLs
+  static const String devBaseUrl = 'https://dev-api.cylinderhub.com/api/v1';
+  static const String stagingBaseUrl = 'https://staging-api.cylinderhub.com/api/v1';
+  static const String prodBaseUrl = 'https://api.cylinderhub.com/api/v1';
+
+  // API Timeouts
   static const int CONNECT_TIMEOUT = 30000;
   static const int RECEIVE_TIMEOUT = 30000;
 }
