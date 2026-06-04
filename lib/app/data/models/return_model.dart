@@ -6,7 +6,7 @@ import 'user_model.dart';
 
 part 'return_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class CylinderReturn extends Equatable {
   final int id;
   @JsonKey(name: 'return_date')

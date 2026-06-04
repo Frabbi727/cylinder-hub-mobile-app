@@ -5,7 +5,7 @@ import 'cylinder_model.dart';
 
 part 'sale_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Sale extends Equatable {
   final int id;
   @JsonKey(name: 'sale_date')
@@ -55,7 +55,7 @@ class Sale extends Equatable {
       ];
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class SaleItem extends Equatable {
   final int id;
   final Cylinder? cylinder;
@@ -82,7 +82,7 @@ class SaleItem extends Equatable {
   List<Object?> get props => [id, cylinder, qty, unitPrice, unitCost, profit];
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class DueCollection extends Equatable {
   final int id;
   final double amount;

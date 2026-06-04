@@ -4,7 +4,7 @@ import 'allocation_model.dart';
 
 part 'user_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class User extends Equatable {
   final int id;
   final String name;
@@ -14,7 +14,7 @@ class User extends Equatable {
   @JsonKey(name: 'avatar_initials')
   final String? avatarInitials;
   @JsonKey(name: 'is_active')
-  final bool isActive;
+  final bool? isActive;
   @JsonKey(name: 'unread_notifications')
   final int? unreadNotifications;
   final List<Allocation>? allocations;
@@ -26,7 +26,7 @@ class User extends Equatable {
     this.phone,
     required this.role,
     this.avatarInitials,
-    required this.isActive,
+     this.isActive,
     this.unreadNotifications,
     this.allocations,
   });
@@ -38,7 +38,7 @@ class User extends Equatable {
   List<Object?> get props => [id, name, email, phone, role, avatarInitials, isActive, unreadNotifications, allocations];
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class AuthResponse extends Equatable {
   final User user;
   @JsonKey(name: 'access_token')

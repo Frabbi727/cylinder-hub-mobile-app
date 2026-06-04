@@ -15,8 +15,8 @@ dependencies:
   dio: ^5.4.1
   logger: ^2.0.2+1
   get_storage: ^2.1.1
-  package_info_plus: ^8.2.0
-  connectivity_plus: ^6.1.0
+  package_info_plus: ^10.1.0
+  connectivity_plus: ^7.1.1
   cupertino_icons: ^1.0.8
   equatable: ^2.0.5
   json_annotation: ^4.9.0

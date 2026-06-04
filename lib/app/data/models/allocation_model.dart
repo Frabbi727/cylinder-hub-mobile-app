@@ -4,7 +4,7 @@ import 'cylinder_model.dart';
 
 part 'allocation_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Allocation extends Equatable {
   final int id;
   @JsonKey(name: 'cylinder_id')
@@ -75,7 +75,7 @@ class Allocation extends Equatable {
       ];
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class CustomerDue extends Equatable {
   final String customer;
   @JsonKey(name: 'due_amount')

@@ -123,3 +123,8 @@ Every feature module follows a strict inheritance:
 2. **Global Navigation**: Use `Get.offAllNamed(Routes.NAME)` for auth-related transitions.
 3. **Reactive UI**: Use `Obx(() => ...)` only for the smallest widget that needs to update.
 4. **Smart Back Button**: The `MainNavigationView` uses `PopScope` to ensure the back button returns to the "My Day" tab before exiting the app.
+
+
+
+
+### dart run build_runner build --force-jit --delete-conflicting-outputs

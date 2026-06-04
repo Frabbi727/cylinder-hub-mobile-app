@@ -5,7 +5,7 @@ import 'sale_model.dart';
 
 part 'dashboard_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class DashboardData extends Equatable {
   final User? salesman;
   @JsonKey(name: 'today_sales')
@@ -28,7 +28,7 @@ class DashboardData extends Equatable {
   List<Object?> get props => [salesman, todaySales, stats, pendingCollections];
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class DashboardStats extends Equatable {
   @JsonKey(name: 'total_allocated')
   final int totalAllocated;

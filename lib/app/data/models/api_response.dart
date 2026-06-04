@@ -29,7 +29,7 @@ class ApiResponse<T> extends Equatable {
   List<Object?> get props => [success, message, data, meta, links];
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Meta extends Equatable {
   @JsonKey(name: 'current_page')
   final int currentPage;
@@ -57,7 +57,7 @@ class Meta extends Equatable {
   List<Object?> get props => [currentPage, perPage, total, lastPage, from, to];
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Links extends Equatable {
   final String? first;
   final String? last;

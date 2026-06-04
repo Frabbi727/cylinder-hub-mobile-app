@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'cylinder_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Cylinder extends Equatable {
   final int id;
   final String name;
@@ -38,7 +38,7 @@ class Cylinder extends Equatable {
   List<Object?> get props => [id, name, size, shortCode, color1, color2, reorderLevel, capacity, status, stock];
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class CylinderStock extends Equatable {
   @JsonKey(name: 'filled_qty')
   final int filledQty;

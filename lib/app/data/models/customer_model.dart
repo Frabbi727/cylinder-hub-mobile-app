@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'customer_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Customer extends Equatable {
   final int id;
   final String name;
@@ -53,7 +53,7 @@ class Customer extends Equatable {
       ];
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class OverdueCustomer extends Equatable {
   @JsonKey(name: 'customer_id')
   final int customerId;

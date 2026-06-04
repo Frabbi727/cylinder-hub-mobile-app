@@ -6,7 +6,7 @@ import 'allocation_model.dart';
 
 part 'report_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class SalesmanReport extends Equatable {
   final User? salesman;
   final ReportPeriod? period;
@@ -84,7 +84,7 @@ class SalesmanReport extends Equatable {
       ];
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class ReportPeriod extends Equatable {
   final String from;
   final String to;
