@@ -1,0 +1,764 @@
+CylinderHub
+Salesman Web App
+Full Feature & UI Specification  —  For Developer / Claude UI Builder
+Version 1.0  |  June 2026
+Platform
+Responsive Web App (React / Vue / Next.js)
+[ROW]
+Users
+Salesmen only (role = salesman)
+[ROW]
+Stack
+React + Tailwind CSS / any modern framework
+[ROW]
+API
+Laravel REST API — Bearer token (Sanctum)
+[ROW]
+Total Pages
+11 Pages + Shared Sidebar Navigation
+[ROW]
+Web App vs Mobile App — Key Differences
+The web app serves the same salesman role but provides a larger screen experience for when the salesman is at a desk, counter, or depot — not in the field. Both apps share the same API but the web app has more space for data, tables, and detailed reporting.
+Feature
+Mobile App
+Web App
+[ROW]
+Screen size
+360px — field use
+1280px+ — desk use
+[ROW]
+Navigation
+Bottom tab bar
+Left sidebar
+[ROW]
+Sale recording
+Stepper, touch-friendly
+Full form with table rows
+[ROW]
+Sales history
+Card list, swipe
+Sortable data table
+[ROW]
+Empty collection
+Simple qty buttons
+Full form with customer list
+[ROW]
+Reports
+Basic stats only
+Full charts + export
+[ROW]
+Customer management
+View only
+View + add + edit
+[ROW]
+Print / Export
+Not available
+Print receipts + export CSV
+[ROW]
+Offline support
+Yes — queue and sync
+No — requires connection
+[ROW]
+Best used for
+Field sales, outdoor
+Depot, counter, office
+[ROW]
+All Pages — Overview
+#
+Page Name
+Route
+Purpose
+[ROW]
+1
+Login
+/login
+Authentication
+[ROW]
+2
+Dashboard (My Day)
+/dashboard
+Daily overview — stats, allocations, recent sales
+[ROW]
+3
+New Sale
+/sales/new
+Record a new sale with full form
+[ROW]
+4
+Sales History
+/sales
+All sales — filterable, searchable data table
+[ROW]
+5
+Sale Detail
+/sales/{id}
+Full details of one sale + payment history
+[ROW]
+6
+Outstanding Dues
+/dues
+All unpaid and partial sales — collection list
+[ROW]
+7
+Customers
+/customers
+Customer list with dues and cylinder balances
+[ROW]
+8
+Customer Detail
+/customers/{id}
+One customer full history, dues, empty balances
+[ROW]
+9
+Empty Cylinders
+/empties
+Log empty collections — normal and extra
+[ROW]
+10
+End of Day
+/eod
+Daily reconciliation wizard
+[ROW]
+11
+My Reports
+/reports
+Personal performance — sales, collections, empties
+[ROW]
+Design System — Web
+Design Direction
+Theme: Clean professional — sidebar layout, data-forward, works at 1280px minimum width.
+Feel: A business tool not a consumer app — reliable, clear, information-dense but not cluttered.
+Sidebar: 240px fixed left sidebar with logo, nav links, and user info at bottom.
+Content area: fluid width, max-content 1200px, padding 24px.
+Typography: Readable at all zoom levels — important for salesmen who may use large text.
+[ROW]
+Color Palette
+Name
+Swatch
+Hex
+Usage
+[ROW]
+Primary Teal
+#0B6E75
+Sidebar active, primary buttons, links, icons
+[ROW]
+Teal Light
+#DFF3F5
+Sidebar hover bg, info cards, table row highlight
+[ROW]
+Dark Navy
+#0F1E35
+Sidebar bg, page headings, strong text
+[ROW]
+Success Green
+#176B3A
+Cash badges, paid indicators, success states
+[ROW]
+Warning Orange
+#A85200
+Partial badges, due-soon alerts, pending
+[ROW]
+Danger Red
+#B83030
+Due badges, overdue rows, error states
+[ROW]
+Purple
+#5B2D8E
+Extra empty badges, special states
+[ROW]
+Surface White
+#FFFFFF
+Page bg, card bg, input fields
+[ROW]
+Table Alt Row
+#F4F6F8
+Alternating table rows, panel backgrounds
+[ROW]
+Border Grey
+#D0D5DD
+Table borders, input borders, dividers
+[ROW]
+Text Secondary
+#667085
+Labels, helper text, table sub-info
+[ROW]
+Layout Structure
+Sidebar (240px fixed left)
+Logo and app name at top — CylinderHub in teal
+Navigation links with icons — highlight active page in teal left border + teal bg
+User info at bottom — avatar initials, name, role badge
+Logout button at very bottom
+Collapses to 64px icon-only sidebar on screens below 1024px
+Top Header Bar (full width, 64px height)
+Page title — matches current page
+Breadcrumb on inner pages e.g. Sales > Sale #42
+Notifications bell with unread count badge
+Language toggle: EN / BN
+Today&apos;s date displayed
+Content Area
+White background, 24px padding on all sides
+Section cards: white bg, border-radius 12px, 1px border #D0D5DD, padding 20px
+Page header inside content: page title left, action button(s) right
+Component Library — Web
+Data Tables
+Header row: Navy bg, white text, 14px semibold
+Alternating rows: white / #F4F6F8
+Hover row: light teal highlight #DFF3F5
+Sortable columns: arrow icon on hover, filled arrow when sorted
+Row actions: Edit / View / Collect buttons appear on hover (right side of row)
+Pagination: previous / next + page numbers at bottom
+Row click: navigates to detail page
+Sticky header: table header stays visible on scroll
+Status Badges (pill shaped)
+Badge
+Colors
+When Used
+[ROW]
+CASH
+Green bg / white text
+Sale fully paid at time of recording
+[ROW]
+PARTIAL
+Orange bg / white text
+Partial payment — some due remaining
+[ROW]
+DUE
+Red bg / white text
+Full amount outstanding — nothing paid
+[ROW]
+RECONCILED
+Teal bg / white text
+End-of-day submitted and locked
+[ROW]
+EXTRA
+Purple bg / white text
+Extra empty cylinder return — needs verification
+[ROW]
+OVERDUE
+Dark red bg / white text
+Due payment older than 7 days
+[ROW]
+Buttons
+Primary: Teal bg #0B6E75, white text, height 40px, border-radius 8px, hover darken 10%
+Secondary: White bg, 1px teal border, teal text — same sizing
+Danger: Red bg #B83030, white text — only for destructive actions
+Ghost: Transparent bg, teal text, no border — for inline table actions
+Icon button: 36x36px, circular, teal icon on hover
+Forms
+Label above field, 13px grey text
+Input height 42px, border 1px #D0D5DD, border-radius 8px, font 14px
+Focus: border-color teal, box-shadow 0 0 0 3px rgba(11,110,117,0.15)
+Select dropdown: custom styled, chevron icon on right
+Required fields marked with red asterisk after label
+Error state: red border + red helper text below field
+Inline validation on blur — do not wait until submit
+Modals / Dialogs
+Backdrop: rgba(0,0,0,0.5) overlay
+Dialog: white bg, border-radius 16px, max-width 560px, centered
+Header: title left, X close button right
+Footer: action buttons right-aligned — Cancel (secondary) + Confirm (primary)
+Pressing Escape closes the modal
+Page-by-Page Specifications
+Page 1 — Login
+Page 1: Login  ·  Route: /login
+Full-screen login. No sidebar. Clean centered card.
+[ROW]
+Centered card: 480px wide, white bg, shadow, rounded corners
+CylinderHub logo + name at top of card
+Subtitle: Salesman Portal in grey
+Email input field
+Password input with show/hide eye icon toggle
+Remember me checkbox
+Login button — full width, primary teal
+Language toggle in top-right corner of page
+Error state: red alert box above form with message
+Loading: button shows spinner and is disabled
+On success: redirect to /dashboard
+API: POST /auth/login — saves token to localStorage
+Page 2 — Dashboard (My Day)
+Page 2: Dashboard  ·  Route: /dashboard
+The main home page. Full overview of today at a glance.
+[ROW]
+Page header: Good morning [name] — [today&apos;s date]
+Stats row: 4 metric cards — Total Allocated / Total Sold / Cash Collected / Outstanding Dues
+Each metric card: icon, label, large number, small % change vs yesterday
+Section: Today&apos;s Allocations — one card per cylinder type
+Each allocation card: cylinder name + size, sale price, progress bar (sold/total), 4 numbers (Allocated/Sold/Returned/With You), End of Day button
+If reconciled: green Reconciled banner replaces End of Day button
+Section: Today&apos;s Sales — last 5 sales in a mini-table with See All link
+Mini-table columns: Time, Customer, Items, Amount, Payment Badge, Collect button (if due)
+Section: Outstanding Dues Summary — total count and total amount, link to /dues
+Section: Empty Cylinders Today — total empties collected today per size
+Alert banner at top if any allocation is overdue for reconciliation (past 7 PM)
+API: GET /salesmen/{id}
+Page 3 — New Sale
+Page 3: New Sale  ·  Route: /sales/new
+Full-page sale recording form. Two-column layout on desktop.
+[ROW]
+Left column (60%): Sale form inputs
+Right column (40%): Live order summary — sticky, updates in real time
+Customer field: searchable dropdown with autocomplete, Walk-in as default option
+Add New Customer inline button — opens a small inline panel with name + phone fields
+Items section: table with columns — Cylinder Type, Qty, Unit Price (read-only), Line Total, Remove row
+Cylinder type dropdown: only shows types allocated to this salesman today with remaining qty shown
+Qty: number input with +/- buttons, max = remaining allocation for that type
+Add Item row button below the items table
+Payment section: 3 large radio-style toggle cards — CASH / PARTIAL / DUE LATER
+If PARTIAL: Amount Paid input appears below, due calculates automatically
+Sale date: defaults to today, editable date picker
+Notes field: optional free text
+Right panel: Customer name, item breakdown, subtotal, paid (green), due (red), big Record Sale button
+Keyboard shortcut: Ctrl+Enter submits the form
+Success: green toast notification + redirect to /sales/{id}
+API: GET /customers (autocomplete), POST /customers (new), POST /sales
+Page 4 — Sales History
+Page 4: Sales History  ·  Route: /sales
+Full paginated data table of all this salesman&apos;s sales.
+[ROW]
+Page header: Sales History title, New Sale button top right
+Filter bar: Date range picker, Payment type filter (All/Cash/Partial/Due), Search by customer name
+Quick filter tabs: Today / This Week / This Month / All
+Export button: download filtered results as CSV
+Data table columns: Date+Time, Customer, Cylinder(s), Qty, Total Amount, Paid, Due, Status Badge, Actions
+Actions column: View icon (navigates to /sales/{id}), Collect icon (opens collect modal if due>0)
+Overdue rows: entire row highlighted in light red #FCEAEA
+Sort by any column — click header
+Pagination: 20 rows per page
+Total row at bottom: SUM of Amount, Paid, Due for current filtered view
+Empty state: illustration + No sales found for this period
+API: GET /sales?page=&from=&to=&payment_type=&search=
+Page 5 — Sale Detail
+Page 5: Sale Detail  ·  Route: /sales/{id}
+Full detail view of a single sale with complete payment history.
+[ROW]
+Back button: back to Sales History
+Sale header card: Sale #ID, date, customer name, status badge
+Items table: Cylinder type, Qty, Unit price, FIFO cost (hidden from salesman), Line total
+Payment summary card: Total amount, Total paid (green), Remaining due (red if >0)
+Payment history table: Date, Amount collected, Collected by, Notes — all payments ever made
+If due > 0: prominent Collect Payment button — opens collect modal
+Collect modal: remaining due shown large in red, amount input, Pay in Full shortcut, date, notes, Confirm
+Empty cylinder status card: How many empties have been returned for this sale
+Print Receipt button: opens browser print dialog with formatted receipt
+API: GET /sales/{id}, POST /sales/{id}/pay
+Page 6 — Outstanding Dues
+Page 6: Outstanding Dues  ·  Route: /dues
+All sales with unpaid amounts — the collection to-do list.
+[ROW]
+Page header: Outstanding Dues + total outstanding amount in red (large)
+Summary cards row: Total Due Amount / Number of Customers / Oldest Due (days) / Average Due Age
+Filter: Sort by Amount / Days Overdue / Customer name — dropdown
+Filter: Show only overdue >7 days checkbox
+Data table columns: Customer, Phone, Sale Date, Days Overdue, Total Sale, Paid, Remaining Due, Collect button
+Days Overdue cell: green if <3 days, orange if 3-7 days, red if >7 days
+Remaining Due cell: bold red
+Collect button: opens inline collect modal for that row
+Collect modal: same as Sale Detail collect modal
+After collection: row updates in place (due reduces) or disappears if fully paid
+Empty state: large green checkmark + All dues collected! Great work.
+Export CSV button
+API: GET /sales?has_due=1, POST /sales/{id}/pay
+Page 7 — Customers
+Page 7: Customers  ·  Route: /customers
+Full customer list with money due and empty cylinder balances.
+[ROW]
+Page header: Customers title, Add New Customer button top right
+Search bar: search by name or phone number
+Filter: Show only customers with outstanding dues checkbox
+Data table columns: Customer Name, Phone, Total Sales (count), Total Due (red if >0), Empties Owed (count), Last Sale Date, View button
+Empties Owed column: shows how many empty cylinders this customer still has at home
+Rows with dues > 0: light red background
+Rows with empties owed > 0: cylinder icon in orange
+Row click: navigate to /customers/{id}
+Add New Customer modal: Name (required), Phone (required), Address (optional), Notes
+API: GET /customers, POST /customers
+Page 8 — Customer Detail
+Page 8: Customer Detail  ·  Route: /customers/{id}
+Complete history for one customer — sales, payments, empties.
+[ROW]
+Customer header card: name, phone, address, total due in red, empties owed in orange, Edit button
+Tab navigation: Sales History / Payment History / Empty Cylinders / Notes
+Tab 1 Sales History: full table of all sales to this customer — same as /sales but filtered
+Tab 2 Payment History: all due_collections records for this customer with dates and amounts
+Tab 3 Empty Cylinders: table showing per cylinder type — Sold to customer / Returned / Pending empties
+Pending empties table row: cylinder type, qty sold total, qty returned total, qty still with customer
+Mark empty returned button: quick-log that customer returned an empty for a specific cylinder type
+Tab 4 Notes: free text notes history for this customer — add note button
+Customer balance summary sidebar card: Total purchased ever, Total paid, Total due
+API: GET /customers/{id}, GET /sales?customer_id=, GET /customers/{id}/empties
+Page 9 — Empty Cylinders
+Page 9: Empty Cylinders  ·  Route: /empties
+Log all empty cylinder collections — normal and extra.
+[ROW]
+Page header: Empty Cylinders title, Log Empty Return button top right
+Summary cards: Total Empties Collected Today / Total Empties This Week / Pending Verification (extras)
+Stock snapshot table: each cylinder type with filled qty / empty in warehouse / with customers
+Log Empty Return button: opens modal with two tabs — Normal Return and Extra Return
+Normal Return modal: Cylinder type (dropdown), Customer (searchable), Qty, Date, Notes — Submit
+Extra Return modal: same fields + Reason dropdown (Old stock / Neighbour collection / Competitor cylinder / Salesman handover / Other) + extended Notes
+Extra return warning text: Admin will be notified for verification
+Today&apos;s Collections table: Time, Customer, Cylinder type, Qty, Type (Normal/Extra), Status (Verified/Pending)
+Extra returns show EXTRA badge in purple — Pending verification in orange
+Full history tab: all empty returns ever with filters
+Per-customer pending empties table: which customers still have empty shells
+API: GET /stock, POST /returns, POST /returns/extra
+Page 10 — End of Day
+Page 10: End of Day  ·  Route: /eod
+Daily reconciliation. One wizard per allocation. Submit before midnight.
+[ROW]
+Page header: End of Day — [today&apos;s date]
+Allocation cards: one card per allocation today — each shows current status
+Card states: Pending (orange) / In Progress / Reconciled (green tick)
+Click on any pending card: opens the reconciliation form for that allocation
+Reconciliation form (in-page panel, not modal — big enough for desktop):
+  Allocation summary row at top: Cylinder type, Allocated qty, Current sold_qty from sales
+  Step 1 — Confirm Sold Qty: pre-filled from actual sales, editable with warning if mismatch
+  Step 2 — Empty Cylinders: split into Regular (from today sales) and Extra (others collected)
+  Step 3 — Cash Submitted: amount input, pre-filled from paid sales total, editable
+  Preview table: Allocated / Sold / Regular Empties / Extra Empties / Unsold (auto-calc) / Cash
+  Unsold cylinders auto-calculated and shown: these will return to warehouse stock
+  Warning if cash submitted is significantly less than expected (>10% gap)
+  Submit Reconciliation button — teal, disabled until all fields filled
+After submission: card turns green with Reconciled badge — cannot re-open
+If all allocations reconciled: full-page success state with summary of the day
+API: POST /allocations/{id}/reconcile
+Page 11 — My Reports
+Page 11: My Reports  ·  Route: /reports
+Personal performance report for the salesman.
+[ROW]
+Page header: My Reports title + Date range picker (default: this month)
+Quick period tabs: Today / This Week / This Month / Custom
+Performance metrics row: 4 cards — Revenue / Units Sold / Cash Collected / Outstanding Dues
+Chart 1: Daily Sales Bar Chart — bars show revenue per day in selected period
+Chart 2: Payment Type Pie Chart — Cash vs Partial vs Due breakdown
+Chart 3: Empty Cylinders Line Chart — empties collected per day
+Sales breakdown table: per cylinder type — allocated total, sold total, sell-through %, revenue
+Due collection table: total dues created vs total collected vs still outstanding
+Empty cylinder summary table: Normal collected / Extra collected / Total
+End of Day record table: each day — reconciled time, sold qty, cash submitted, status
+Export all data as CSV button
+API: GET /salesmen/{id}/report?from=&to=
+Empty Cylinder Web Feature — Complete Flow
+Why This Needs Special Attention
+Empty cylinder collection is a critical asset tracking feature.
+The web app gives salesmen the most complete tool to log, track, and verify empties.
+Two types: Normal returns (expected) and Extra returns (unexpected — needs admin approval).
+Every empty cylinder is worth TK 300-500 as a physical asset.
+[ROW]
+Normal Empty Return Flow
+Step
+Action
+[ROW]
+1
+Salesman goes to /empties page
+[ROW]
+2
+Clicks Log Empty Return button
+[ROW]
+3
+Selects Normal Return tab in modal
+[ROW]
+4
+Selects cylinder type and customer, enters qty, confirms date
+[ROW]
+5
+Clicks Submit — POST /returns called
+[ROW]
+6
+cylinder_stocks.empty_qty increases immediately
+[ROW]
+7
+customer_cylinder_balances.returned_qty increases
+[ROW]
+8
+Today&apos;s Collections table updates in real time
+[ROW]
+9
+Customer pending empties count decreases on /customers page
+[ROW]
+Extra Empty Return Flow
+Step
+Action
+[ROW]
+1
+Salesman selects Extra Return tab in Log Empty modal
+[ROW]
+2
+Fills in cylinder type, customer, qty, reason from dropdown, notes
+[ROW]
+3
+Warning shown: Admin will be notified for verification
+[ROW]
+4
+Submits — POST /returns/extra called
+[ROW]
+5
+cylinder_stocks.empty_qty increases (provisionally)
+[ROW]
+6
+Return appears with EXTRA badge + Pending Verification status
+[ROW]
+7
+Admin receives notification: Jamal collected 3 EXTRA empties
+[ROW]
+8a
+Admin APPROVES: is_verified = true, stock confirmed
+[ROW]
+8b
+Admin REJECTS: is_verified = false, empty_qty reversed, salesman notified
+[ROW]
+Stock Tracking per Size — What Salesman Can See
+On the /empties page, the salesman sees a live stock snapshot table:
+Cylinder Type
+Filled
+Empty
+With You
+With Customers
+Total
+[ROW]
+Basundhara 35kg
+45
+12
+8
+15
+80
+[ROW]
+Omera 12kg
+6
+3
+5
+10
+24
+[ROW]
+Padma 45kg
+10
+5
+0
+8
+23
+[ROW]
+Filled in red = below reorder level — admin alert triggered
+With Customers in orange = empties sitting at customer locations
+Total must always match the number admin purchased originally
+Sidebar Navigation Structure
+#
+Label
+Icon
+Route / Notes
+[ROW]
+1
+Dashboard
+ti-home
+/dashboard — My Day overview
+[ROW]
+2
+New Sale
+ti-plus-circle
+/sales/new — teal highlight, always visible
+[ROW]
+3
+Sales History
+ti-receipt
+/sales
+[ROW]
+4
+Outstanding Dues
+ti-alert-circle
+/dues — red badge with count if dues > 0
+[ROW]
+5
+Customers
+ti-users
+/customers
+[ROW]
+6
+Empty Cylinders
+ti-package
+/empties — orange badge if extras pending
+[ROW]
+7
+End of Day
+ti-moon
+/eod — orange badge if not yet reconciled
+[ROW]
+8
+My Reports
+ti-chart-bar
+/reports
+[ROW]
+—
+Divider
+Visual separator line
+[ROW]
+9
+Profile / Settings
+ti-settings
+Language toggle, account info, logout
+[ROW]
+Error & Empty States — Web
+State
+Where It Shows
+Message / Behaviour
+[ROW]
+API error (500)
+Red toast top-right
+Something went wrong. Please try again.
+[ROW]
+Validation error (422)
+Under each field
+Field-specific message from API
+[ROW]
+Session expired (401)
+Full-page redirect
+Redirect to /login with message
+[ROW]
+Oversell attempt
+Qty field error
+Only X units available
+[ROW]
+No sales today
+Dashboard sales section
+No sales recorded yet today
+[ROW]
+No dues
+/dues page
+Green checkmark + All dues collected.
+[ROW]
+No allocations
+Dashboard allocations
+No cylinders allocated yet today
+[ROW]
+Already reconciled
+/eod allocation card
+Grey locked card — cannot re-open
+[ROW]
+Extra return rejected
+In-app notification
+Admin rejected your extra empty return for [type]
+[ROW]
+Network offline
+Top banner (persistent)
+Orange banner: No internet connection
+[ROW]
+Complete API Reference — Web App
+All requests require: Authorization: Bearer {token}. Salesman role enforced server-side.
+Method
+Endpoint
+Purpose
+[ROW]
+POST
+/auth/login
+Authenticate — get Bearer token
+[ROW]
+GET
+/auth/me
+Load salesman profile
+[ROW]
+POST
+/auth/logout
+Clear token and logout
+[ROW]
+GET
+/salesmen/{id}
+Dashboard data — allocations + today sales
+[ROW]
+GET
+/salesmen/{id}/report?from=&to=
+My Reports page data
+[ROW]
+GET
+/sales?page=&from=&to=&payment_type=&search=
+Sales history with filters
+[ROW]
+POST
+/sales
+Record a new sale
+[ROW]
+GET
+/sales/{id}
+Sale detail + payment history
+[ROW]
+POST
+/sales/{id}/pay
+Collect payment on a sale
+[ROW]
+GET
+/customers?search=
+Customer list with autocomplete
+[ROW]
+POST
+/customers
+Create new customer
+[ROW]
+GET
+/customers/{id}
+Customer full detail
+[ROW]
+GET
+/customers/{id}/empties
+Cylinder balance per type for customer
+[ROW]
+GET
+/stock
+Live stock snapshot per cylinder type
+[ROW]
+POST
+/returns
+Log normal empty cylinder return
+[ROW]
+POST
+/returns/extra
+Log extra empty cylinder return (needs admin verify)
+[ROW]
+POST
+/allocations/{id}/reconcile
+Submit end of day reconciliation
+[ROW]
+GET
+/notifications
+Unread notifications for this salesman
+[ROW]
+POST
+/notifications/{id}/read
+Mark notification as read
+[ROW]
+Recommended Build Order
+Build in this order to get a working app as fast as possible — core flows first, enrichment later.
+Phase
+Pages
+What to Build
+[ROW]
+1
+Login + Dashboard
+Auth flow, sidebar layout, daily stats, allocation cards
+[ROW]
+2
+New Sale
+Full sale form, live summary panel, success flow
+[ROW]
+3
+Sales History + Detail
+Data table, filters, sale detail, collect payment modal
+[ROW]
+4
+Outstanding Dues
+Dues table, collect modal, aging colors
+[ROW]
+5
+Customers + Detail
+Customer list, detail tabs, add customer modal
+[ROW]
+6
+Empty Cylinders
+Normal + extra log modal, stock snapshot table
+[ROW]
+7
+End of Day
+Reconciliation form, allocation card states
+[ROW]
+8
+My Reports
+Charts, performance metrics, CSV export
+[ROW]
+CylinderHub Salesman Web App — Full Feature Specification v1.0
+Laravel REST API  |  React / Vue Frontend  |  June 2026

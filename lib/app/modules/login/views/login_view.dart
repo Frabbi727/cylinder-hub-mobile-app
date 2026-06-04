@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
-import '../../../core/values/app_sizes.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../controllers/login_controller.dart';
 
@@ -11,167 +10,181 @@ class LoginView extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.loginBg,
-      body: SingleChildScrollView(
-        child: SizedBox(
-          height: Get.height,
-          width: Get.width,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSizes.p24),
-            child: Column(
-              children: [
-                const SizedBox(height: 60),
-                // Language & Theme Switcher
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Theme Toggle
-                      IconButton(
-                        onPressed: controller.toggleTheme,
-                        icon: Icon(
-                          Get.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                          color: Colors.white,
-                        ),
+      body: Container(
+        height: Get.height,
+        width: Get.width,
+        decoration: const BoxDecoration(
+          gradient: AppColors.homeGradient,
+        ),
+        child: Stack(
+          children: [
+            // Language Toggle
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 20,
+              right: 16,
+              child: Container(
+                padding: const EdgeInsets.all(3),
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(99),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildLangBtn('EN', 'en'),
+                    _buildLangBtn('বাং', 'bn'),
+                  ],
+                ),
+              ),
+            ),
+            
+            // Login Form
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 26),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Logo
+                    Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(22),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.18),
+                            blurRadius: 24,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      // Language Switcher
-                      Container(
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(30),
+                      child: const Icon(Icons.local_fire_department, size: 38, color: Colors.white),
+                    ),
+                    const SizedBox(height: 16),
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 27,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.02,
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const TextSpan(text: 'Cylinder'),
+                          TextSpan(
+                            text: 'Hub',
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      TranslationKeys.appSubtitle.tr,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.82),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    
+                    // Card
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildLangBtn('EN', 'en'),
-                            _buildLangBtn('বাং', 'bn'),
+                            Text(
+                              TranslationKeys.login.tr,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            
+                            // Email Field
+                            Text(
+                              TranslationKeys.email.tr,
+                              style: Theme.of(context).inputDecorationTheme.labelStyle,
+                            ),
+                            const SizedBox(height: 7),
+                            TextFormField(
+                              controller: controller.emailController,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.person, size: 18),
+                                hintText: TranslationKeys.email.tr,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            
+                            // Password Field
+                            Text(
+                              TranslationKeys.password.tr,
+                              style: Theme.of(context).inputDecorationTheme.labelStyle,
+                            ),
+                            const SizedBox(height: 7),
+                            Obx(() => TextFormField(
+                              controller: controller.passwordController,
+                              obscureText: !controller.isPasswordVisible.value,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.lock, size: 18),
+                                hintText: TranslationKeys.password.tr,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    controller.isPasswordVisible.value 
+                                      ? Icons.visibility_off 
+                                      : Icons.visibility,
+                                    size: 18,
+                                  ),
+                                  onPressed: controller.togglePasswordVisibility,
+                                ),
+                              ),
+                            )),
+                            const SizedBox(height: 22),
+                            
+                            // Login Button
+                            ElevatedButton(
+                              onPressed: controller.login,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(TranslationKeys.signIn.tr),
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.arrow_forward, size: 18),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 40),
-                // Logo
-                Container(
-                  padding: const EdgeInsets.all(AppSizes.p16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Icon(Icons.local_fire_department, color: Colors.white, size: 50),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'CylinderHub',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  TranslationKeys.appSubtitle.tr,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 40),
-                // Login Card
-                Container(
-                  padding: const EdgeInsets.all(AppSizes.p24),
-                  decoration: BoxDecoration(
-                    color: AppColors.loginCardBg,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        TranslationKeys.login.tr,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        TranslationKeys.email.tr,
-                        style: const TextStyle(color: Colors.grey, fontSize: 14),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildTextField(
-                        controller: controller.emailController,
-                        hint: 'karim@cylinderhub.com',
-                        icon: Icons.person_outline,
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        TranslationKeys.password.tr,
-                        style: const TextStyle(color: Colors.grey, fontSize: 14),
-                      ),
-                      const SizedBox(height: 8),
-                      Obx(() => _buildTextField(
-                        controller: controller.passwordController,
-                        hint: '••••••••',
-                        icon: Icons.lock_outline,
-                        isPassword: true,
-                        obscureText: !controller.isPasswordVisible.value,
-                        onToggleVisibility: controller.togglePasswordVisibility,
-                      )),
-                      const SizedBox(height: 32),
-                      // Login Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: controller.login,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                TranslationKeys.login.tr,
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(Icons.arrow_forward, size: 20),
-                            ],
+                    ),
+                    
+                    const SizedBox(height: 22),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.shield, size: 14, color: Colors.white.withValues(alpha: 0.72)),
+                        const SizedBox(width: 6),
+                        Text(
+                          TranslationKeys.roleRestriction.tr,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.72),
+                            fontSize: 12.5,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 40),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.shield_outlined, color: Colors.white.withOpacity(0.5), size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        TranslationKeys.roleRestriction.tr,
-                        style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -188,57 +201,23 @@ class LoginView extends GetView<LoginController> {
           }
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 13),
+          height: 34,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: isSelected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(99),
           ),
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? AppColors.primary : Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+              color: isSelected ? const Color(0xFF2546E0) : Colors.white.withValues(alpha: 0.78),
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
             ),
           ),
         ),
       );
     });
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    bool isPassword = false,
-    bool obscureText = false,
-    VoidCallback? onToggleVisibility,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.inputBorder),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          hintText: hint,
-          prefixIcon: Icon(icon, color: Colors.grey, size: 20),
-          suffixIcon: isPassword
-              ? IconButton(
-                  icon: Icon(
-                    obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                    color: Colors.grey,
-                    size: 20,
-                  ),
-                  onPressed: onToggleVisibility,
-                )
-              : null,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 16),
-        ),
-      ),
-    );
   }
 }

@@ -47,19 +47,16 @@ abstract class BaseController extends GetxController {
 
   // Language Management
   void toggleLanguage() {
-    print("BaseController: Current locale before toggle: ${Get.locale?.languageCode}");
     if (Get.locale?.languageCode == 'en') {
       var locale = const Locale('bn', 'BD');
       Get.updateLocale(locale);
       currentLanguage.value = 'bn';
       _storage.write('isBangla', true);
-      print("BaseController: Switched to BN");
     } else {
       var locale = const Locale('en', 'US');
       Get.updateLocale(locale);
       currentLanguage.value = 'en';
       _storage.write('isBangla', false);
-      print("BaseController: Switched to EN");
     }
   }
 }

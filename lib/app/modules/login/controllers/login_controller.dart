@@ -1,29 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import '../../../core/base/base_controller.dart';
+import '../../../core/services/auth_service.dart';
+import '../repository/login_repository.dart';
 import '../../../routes/app_pages.dart';
 
 class LoginController extends BaseController {
-  final _storage = GetStorage();
-  
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final LoginRepository repository;
+  final _authService = Get.find<AuthService>();
+
+  final emailController = TextEditingController(text: 'karim@cylinderhub.com');
+  final passwordController = TextEditingController(text: '12345678');
   
   final isPasswordVisible = false.obs;
 
-  void togglePasswordVisibility() {
-    isPasswordVisible.value = !isPasswordVisible.value;
-  }
+  LoginController({required this.repository});
 
-  void login() {
-    // Simulate login
+  void togglePasswordVisibility() => isPasswordVisible.toggle();
+
+  Future<void> login() async {
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      handleError('Please enter email and password');
+      return;
+    }
+
     showLoading();
-    Future.delayed(const Duration(seconds: 1), () {
+    try {
+      final response = await repository.login(
+        emailController.text.trim(),
+        passwordController.text.trim(),
+      );
+
+      if (response.success && response.data != null) {
+        // Use AuthService to save session and cache user info
+        await _authService.saveSession(response.data!);
+        
+        Get.offAllNamed(Routes.MAIN_NAVIGATION);
+      } else {
+        handleError(response.message ?? 'Login failed');
+      }
+    } catch (e) {
+      handleError(e.toString());
+    } finally {
       hideLoading();
-      _storage.write('isLoggedIn', true);
-      Get.offAllNamed(Routes.MAIN_NAVIGATION);
-    });
+    }
   }
 
   @override

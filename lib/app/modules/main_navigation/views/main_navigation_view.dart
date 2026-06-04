@@ -20,7 +20,7 @@ class MainNavigationView extends GetView<MainNavigationController> {
       const SalesView(),
       const SellView(),
       const DuesView(),
-      const ProfileView(),
+      const ProfileView(), // Using profile as the "More" tab for now or create a dedicated More view
     ];
 
     return PopScope(
@@ -41,32 +41,34 @@ class MainNavigationView extends GetView<MainNavigationController> {
         )),
         bottomNavigationBar: Obx(() {
           final isDark = Get.isDarkMode;
-          final theme = Theme.of(context).bottomNavigationBarTheme;
           
           return Container(
+            height: 88, // nav-h: 66px + padding
             decoration: BoxDecoration(
-              color: theme.backgroundColor,
+              color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+              border: Border(
+                top: BorderSide(
+                  color: isDark ? AppColors.lineDark : AppColors.lineLight,
+                  width: 1,
+                ),
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
+                  color: AppColors.shadowColor.withValues(alpha: isDark ? 0.3 : 0.06),
+                  blurRadius: 24,
+                  offset: const Offset(0, -4),
                 ),
               ],
             ),
             child: SafeArea(
-              child: SizedBox(
-                height: 85,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildNavItem(context, 0, Icons.home_outlined, TranslationKeys.myDay.tr),
-                    _buildNavItem(context, 1, Icons.receipt_long_outlined, TranslationKeys.sales.tr),
-                    _buildSellItem(2),
-                    _buildNavItem(context, 3, Icons.account_balance_wallet_outlined, TranslationKeys.dues.tr),
-                    _buildNavItem(context, 4, Icons.person_outline, TranslationKeys.profile.tr),
-                  ],
-                ),
+              child: Row(
+                children: [
+                  _buildNavItem(context, 0, Icons.home_filled, TranslationKeys.dashboard.tr),
+                  _buildNavItem(context, 1, Icons.shopping_cart, TranslationKeys.history.tr),
+                  _buildSellItem(2),
+                  _buildNavItem(context, 3, Icons.account_balance_wallet, TranslationKeys.dues.tr),
+                  _buildNavItem(context, 4, Icons.grid_view_rounded, TranslationKeys.more.tr),
+                ],
               ),
             ),
           );
@@ -78,24 +80,30 @@ class MainNavigationView extends GetView<MainNavigationController> {
   Widget _buildNavItem(BuildContext context, int index, IconData icon, String label) {
     final theme = Theme.of(context).bottomNavigationBarTheme;
     final isSelected = controller.currentIndex == index;
-    final color = isSelected ? theme.selectedItemColor : theme.unselectedItemColor;
+    final color = isSelected ? AppColors.blue : theme.unselectedItemColor;
 
-    return InkWell(
-      onTap: () => controller.changeIndex(index),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 12,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+    return Expanded(
+      child: InkWell(
+        onTap: () => controller.changeIndex(index),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon, 
+              color: color, 
+              size: 22,
             ),
-          ),
-        ],
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 10.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -103,36 +111,48 @@ class MainNavigationView extends GetView<MainNavigationController> {
   Widget _buildSellItem(int index) {
     final isSelected = controller.currentIndex == index;
     
-    return InkWell(
-      onTap: () => controller.changeIndex(index),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
+    return Expanded(
+      child: InkWell(
+        onTap: () => controller.changeIndex(index),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Transform.translate(
+              offset: const Offset(0, -22),
+              child: Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [AppColors.blue, AppColors.purple],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.blue.withValues(alpha: 0.45),
+                      blurRadius: 22,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
-              ],
+                child: const Icon(Icons.add, color: Colors.white, size: 26),
+              ),
             ),
-            child: const Icon(Icons.add, color: Colors.white, size: 30),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            TranslationKeys.sell.tr,
-            style: TextStyle(
-              color: isSelected ? AppColors.primary : Colors.grey,
-              fontSize: 12,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            Transform.translate(
+              offset: const Offset(0, -14),
+              child: Text(
+                TranslationKeys.sell.tr,
+                style: TextStyle(
+                  color: isSelected ? AppColors.blue : AppColors.text3Light,
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

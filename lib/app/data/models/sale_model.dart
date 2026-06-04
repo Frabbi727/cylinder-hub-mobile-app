@@ -1,0 +1,112 @@
+import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'customer_model.dart';
+import 'cylinder_model.dart';
+
+part 'sale_model.g.dart';
+
+@JsonSerializable()
+class Sale extends Equatable {
+  final int id;
+  @JsonKey(name: 'sale_date')
+  final String saleDate;
+  @JsonKey(name: 'total_amount')
+  final String totalAmount;
+  @JsonKey(name: 'paid_amount')
+  final String paidAmount;
+  @JsonKey(name: 'due_amount')
+  final double dueAmount;
+  @JsonKey(name: 'payment_type')
+  final String paymentType;
+  final String? notes;
+  final Customer? customer;
+  final List<SaleItem>? items;
+  @JsonKey(name: 'created_at')
+  final String? createdAt;
+
+  const Sale({
+    required this.id,
+    required this.saleDate,
+    required this.totalAmount,
+    required this.paidAmount,
+    required this.dueAmount,
+    required this.paymentType,
+    this.notes,
+    this.customer,
+    this.items,
+    this.createdAt,
+  });
+
+  factory Sale.fromJson(Map<String, dynamic> json) => _$SaleFromJson(json);
+  Map<String, dynamic> toJson() => _$SaleToJson(this);
+
+  @override
+  List<Object?> get props => [
+        id,
+        saleDate,
+        totalAmount,
+        paidAmount,
+        dueAmount,
+        paymentType,
+        notes,
+        customer,
+        items,
+        createdAt,
+      ];
+}
+
+@JsonSerializable()
+class SaleItem extends Equatable {
+  final int id;
+  final Cylinder? cylinder;
+  final int qty;
+  @JsonKey(name: 'unit_price')
+  final double unitPrice;
+  @JsonKey(name: 'unit_cost')
+  final double? unitCost;
+  final double? profit;
+
+  const SaleItem({
+    required this.id,
+    this.cylinder,
+    required this.qty,
+    required this.unitPrice,
+    this.unitCost,
+    this.profit,
+  });
+
+  factory SaleItem.fromJson(Map<String, dynamic> json) => _$SaleItemFromJson(json);
+  Map<String, dynamic> toJson() => _$SaleItemToJson(this);
+
+  @override
+  List<Object?> get props => [id, cylinder, qty, unitPrice, unitCost, profit];
+}
+
+@JsonSerializable()
+class DueCollection extends Equatable {
+  final int id;
+  final double amount;
+  @JsonKey(name: 'collection_date')
+  final String collectionDate;
+  @JsonKey(name: 'collected_by')
+  final String? collectedBy;
+  final String? notes;
+  final Customer? customer;
+  final Sale? sale;
+
+  const DueCollection({
+    required this.id,
+    required this.amount,
+    required this.collectionDate,
+    this.collectedBy,
+    this.notes,
+    this.customer,
+    this.sale,
+  });
+
+  factory DueCollection.fromJson(Map<String, dynamic> json) => _$DueCollectionFromJson(json);
+  Map<String, dynamic> toJson() => _$DueCollectionToJson(this);
+
+  @override
+  List<Object?> get props => [id, amount, collectionDate, collectedBy, notes, customer, sale];
+}
