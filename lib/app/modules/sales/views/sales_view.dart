@@ -23,11 +23,14 @@ class SalesView extends GetView<SalesController> {
             accent: AppColors.historyGradient,
             curve: true,
             onBack: () => Get.find<MainNavigationController>().changeIndex(0),
+            onFilter: () => _showFilterBottomSheet(context),
           ),
-          _buildPeriodTabs(context),
+          _buildSearchBar(context),
+          _buildStatusTabs(context),
+          _buildFilterLabel(context),
           Expanded(
             child: Obx(() {
-              if (controller.isLoading) {
+              if (controller.isLoading && controller.sales.isEmpty) {
                 return const Center(child: CircularProgressIndicator());
               }
 
@@ -36,11 +39,18 @@ class SalesView extends GetView<SalesController> {
               }
 
               return RefreshIndicator(
-                onRefresh: controller.fetchSales,
+                onRefresh: () => controller.fetchSales(reset: true),
                 child: ListView.builder(
+                  controller: controller.scrollController,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  itemCount: controller.sales.length,
+                  itemCount: controller.sales.length + (controller.hasMore.value ? 1 : 0),
                   itemBuilder: (_, index) {
+                    if (index == controller.sales.length) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
                     final sale = controller.sales[index];
                     return _buildSaleCard(context, sale);
                   },
@@ -53,9 +63,41 @@ class SalesView extends GetView<SalesController> {
     );
   }
 
-  Widget _buildPeriodTabs(BuildContext context) {
+  Widget _buildSearchBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 15, 20, 0),
+      child: Obx(() {
+        return TextField(
+          controller: controller.searchController,
+          onChanged: controller.onSearchChanged,
+          decoration: InputDecoration(
+            hintText: TranslationKeys.search.tr,
+            prefixIcon: const Icon(Icons.search, size: 20),
+            suffixIcon: controller.searchText.value.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear, size: 18),
+                    onPressed: () {
+                      controller.searchController.clear();
+                      controller.onSearchChanged('');
+                    },
+                  )
+                : null,
+            filled: true,
+            fillColor: context.line2Color,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(13),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildStatusTabs(BuildContext context) {
     return Container(
-      height: 50,
+      height: 48,
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
@@ -64,9 +106,9 @@ class SalesView extends GetView<SalesController> {
       ),
       child: Row(
         children: [
-          _buildTabOption(context, 'Today', TranslationKeys.today.tr),
-          _buildTabOption(context, 'Week', TranslationKeys.thisWeek.tr),
-          _buildTabOption(context, 'Month', TranslationKeys.thisMonth.tr),
+          _buildTabOption(context, 'all', 'All'),
+          _buildTabOption(context, 'paid', 'Paid'),
+          _buildTabOption(context, 'due', 'Due'),
         ],
       ),
     );
@@ -75,9 +117,9 @@ class SalesView extends GetView<SalesController> {
   Widget _buildTabOption(BuildContext context, String value, String label) {
     return Expanded(
       child: Obx(() {
-        final isSelected = controller.selectedPeriod.value == value;
+        final isSelected = controller.selectedStatus.value == value;
         return GestureDetector(
-          onTap: () => controller.changePeriod(value),
+          onTap: () => controller.changeStatus(value),
           child: Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
@@ -102,6 +144,105 @@ class SalesView extends GetView<SalesController> {
         );
       }),
     );
+  }
+
+  Widget _buildFilterLabel(BuildContext context) {
+    return Obx(() {
+      return Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 8),
+        child: Row(
+          children: [
+            Icon(Icons.calendar_today, size: 14, color: context.text3Color),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                '${controller.selectedPeriod.value}: ${controller.dateRangeDisplay}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.text3Color,
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (controller.isFilterApplied)
+              TextButton(
+                onPressed: controller.resetFilters,
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text(
+                  'Reset',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
+    });
+  }
+
+  void _showFilterBottomSheet(BuildContext context) {
+    Get.bottomSheet(
+      SafeArea(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Filter by Period',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 15),
+              _buildFilterOption(context, 'Today'),
+              _buildFilterOption(context, 'Week'),
+              _buildFilterOption(context, 'Month'),
+              _buildFilterOption(context, 'Year'),
+              _buildFilterOption(context, 'Custom'),
+            ],
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
+  Widget _buildFilterOption(BuildContext context, String period) {
+    return Obx(() {
+      final isSelected = controller.selectedPeriod.value == period;
+      return ListTile(
+        title: Text(period),
+        trailing: isSelected ? const Icon(Icons.check, color: AppColors.mintInk) : null,
+        onTap: () async {
+          if (period == 'Custom') {
+            final range = await showDateRangePicker(
+              context: context,
+              firstDate: DateTime(2020),
+              lastDate: DateTime.now(),
+            );
+            if (range != null) {
+              controller.setPeriod('Custom', customRange: range);
+              Get.back();
+            }
+          } else {
+            controller.setPeriod(period);
+            Get.back();
+          }
+        },
+      );
+    });
   }
 
   Widget _buildSaleCard(BuildContext context, dynamic sale) {
