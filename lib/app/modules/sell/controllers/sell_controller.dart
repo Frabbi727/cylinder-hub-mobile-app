@@ -56,7 +56,7 @@ class SellController extends BaseController {
     final allocations = _authService.user.value?.allocations;
     if (allocations != null) {
       final match = allocations.firstWhereOrNull((a) => a.cylinderId == cylinderId);
-      if (match != null) return double.tryParse(match.salePrice) ?? 0.0;
+      if (match != null) return match.salePrice;
     }
     return 0.0;
   }

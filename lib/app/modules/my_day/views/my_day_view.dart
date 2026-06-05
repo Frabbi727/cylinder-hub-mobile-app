@@ -133,7 +133,7 @@ class MyDayView extends GetView<MyDayController> {
                               time: s.saleDate,
                               qty: s.items?.first.qty ?? 0,
                               size: s.items?.first.cylinder?.size ?? '',
-                              amount: double.tryParse(s.totalAmount) ?? 0,
+                              amount: s.totalAmount,
                               status: s.paymentType,
                               statusColor: s.paymentType == 'cash'
                                 ? AppColors.green

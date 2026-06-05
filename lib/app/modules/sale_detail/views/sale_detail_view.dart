@@ -170,11 +170,11 @@ class SaleDetailView extends GetView<SaleDetailController> {
         child: Column(
           children: [
             _row(context, 'Total Amount',
-                '৳${double.tryParse(sale.totalAmount)?.toStringAsFixed(0) ?? sale.totalAmount}',
+                '৳${sale.totalAmount.toStringAsFixed(0)}',
                 bold: true),
             _divider(context),
             _row(context, 'Paid Amount',
-                '৳${double.tryParse(sale.paidAmount)?.toStringAsFixed(0) ?? sale.paidAmount}',
+                '৳${sale.paidAmount.toStringAsFixed(0)}',
                 color: AppColors.green),
             if (sale.dueAmount > 0) ...[
               _divider(context),

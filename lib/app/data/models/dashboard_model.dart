@@ -30,27 +30,27 @@ class DashboardData extends Equatable {
 
 @JsonSerializable(explicitToJson: true)
 class DashboardStats extends Equatable {
-  @JsonKey(name: 'total_allocated')
+  @JsonKey(name: 'total_allocated', fromJson: _toInt)
   final int totalAllocated;
-  @JsonKey(name: 'total_sold')
+  @JsonKey(name: 'total_sold', fromJson: _toInt)
   final int totalSold;
-  @JsonKey(name: 'total_returned')
+  @JsonKey(name: 'total_returned', fromJson: _toInt)
   final int totalReturned;
-  @JsonKey(name: 'total_remaining')
+  @JsonKey(name: 'total_remaining', fromJson: _toInt)
   final int totalRemaining;
-  @JsonKey(name: 'cash_collected')
+  @JsonKey(name: 'cash_collected', fromJson: _toDouble)
   final double cashCollected;
-  @JsonKey(name: 'today_total_sales_amount')
+  @JsonKey(name: 'today_total_sales_amount', fromJson: _toDouble)
   final double todayTotalSalesAmount;
-  @JsonKey(name: 'today_due_amount')
+  @JsonKey(name: 'today_due_amount', fromJson: _toDouble)
   final double todayDueAmount;
-  @JsonKey(name: 'pending_due_collections')
+  @JsonKey(name: 'pending_due_collections', fromJson: _toDouble)
   final double pendingDueCollections;
-  @JsonKey(name: 'total_cash_to_hand_in')
+  @JsonKey(name: 'total_cash_to_hand_in', fromJson: _toDouble)
   final double totalCashToHandIn;
-  @JsonKey(name: 'total_outstanding_dues')
+  @JsonKey(name: 'total_outstanding_dues', fromJson: _toDouble)
   final double totalOutstandingDues;
-  @JsonKey(name: 'today_profit')
+  @JsonKey(name: 'today_profit', fromJson: _toDouble)
   final double todayProfit;
 
   const DashboardStats({

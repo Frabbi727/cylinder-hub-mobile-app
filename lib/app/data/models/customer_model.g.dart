@@ -7,11 +7,11 @@ part of 'customer_model.dart';
 // **************************************************************************
 
 Customer _$CustomerFromJson(Map<String, dynamic> json) => Customer(
-  id: _toInt(json['id']),
+  id: (json['id'] as num).toInt(),
   name: json['name'] as String,
   phone: json['phone'] as String?,
   address: json['address'] as String?,
-  totalDue: json['total_due'] as String?,
+  totalDue: _toDoubleNull(json['total_due']),
   totalRevenue: _toDoubleNull(json['total_revenue']),
   totalPaid: _toDoubleNull(json['total_paid']),
   addedBy: _toIntNull(json['added_by']),

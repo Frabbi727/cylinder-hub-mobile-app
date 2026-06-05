@@ -7,28 +7,29 @@ part 'allocation_model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class Allocation extends Equatable {
   final int id;
-  @JsonKey(name: 'cylinder_id')
+  @JsonKey(name: 'cylinder_id', fromJson: _toInt)
   final int cylinderId;
   @JsonKey(name: 'allocation_date')
   final String allocationDate;
+  @JsonKey(fromJson: _toInt)
   final int qty;
-  @JsonKey(name: 'sale_price')
-  final String salePrice;
-  @JsonKey(name: 'sold_qty')
+  @JsonKey(name: 'sale_price', fromJson: _toDouble)
+  final double salePrice;
+  @JsonKey(name: 'sold_qty', fromJson: _toInt)
   final int soldQty;
-  @JsonKey(name: 'returned_qty')
+  @JsonKey(name: 'returned_qty', fromJson: _toInt)
   final int returnedQty;
-  @JsonKey(name: 'collected_amount')
-  final String collectedAmount;
+  @JsonKey(name: 'collected_amount', fromJson: _toDouble)
+  final double collectedAmount;
   @JsonKey(name: 'is_reconciled')
   final bool isReconciled;
-  @JsonKey(name: 'with_salesman')
+  @JsonKey(name: 'with_salesman', fromJson: _toInt)
   final int withSalesman;
-  @JsonKey(name: 'sold_pct')
+  @JsonKey(name: 'sold_pct', fromJson: _toInt)
   final int soldPct;
-  @JsonKey(name: 'cash_collected_actual')
+  @JsonKey(name: 'cash_collected_actual', fromJson: _toDoubleNull)
   final double? cashCollectedActual;
-  @JsonKey(name: 'due_from_sales')
+  @JsonKey(name: 'due_from_sales', fromJson: _toDoubleNull)
   final double? dueFromSales;
   @JsonKey(name: 'customer_dues')
   final List<CustomerDue>? customerDues;
@@ -78,7 +79,7 @@ class Allocation extends Equatable {
 @JsonSerializable(explicitToJson: true)
 class CustomerDue extends Equatable {
   final String customer;
-  @JsonKey(name: 'due_amount')
+  @JsonKey(name: 'due_amount', fromJson: _toDouble)
   final double dueAmount;
 
   const CustomerDue({

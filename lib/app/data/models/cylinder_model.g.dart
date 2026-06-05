@@ -7,7 +7,7 @@ part of 'cylinder_model.dart';
 // **************************************************************************
 
 Cylinder _$CylinderFromJson(Map<String, dynamic> json) => Cylinder(
-  id: _toInt(json['id']),
+  id: (json['id'] as num).toInt(),
   name: json['name'] as String,
   size: json['size'] as String,
   shortCode: json['short_code'] as String?,

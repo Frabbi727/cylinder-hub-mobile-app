@@ -43,12 +43,12 @@ Object? _$nullableGenericToJson<T>(
 ) => input == null ? null : toJson(input);
 
 Meta _$MetaFromJson(Map<String, dynamic> json) => Meta(
-  currentPage: _toInt(json['current_page']),
-  perPage: _toInt(json['per_page']),
-  total: _toInt(json['total']),
-  lastPage: _toInt(json['last_page']),
-  from: _toIntNull(json['from']),
-  to: _toIntNull(json['to']),
+  currentPage: (json['current_page'] as num).toInt(),
+  perPage: (json['per_page'] as num).toInt(),
+  total: (json['total'] as num).toInt(),
+  lastPage: (json['last_page'] as num).toInt(),
+  from: (json['from'] as num?)?.toInt(),
+  to: (json['to'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$MetaToJson(Meta instance) => <String, dynamic>{

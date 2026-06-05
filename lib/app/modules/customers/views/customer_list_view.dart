@@ -78,8 +78,7 @@ class CustomerListView extends GetView<CustomerListController> {
   }
 
   Widget _buildCustomerCard(BuildContext context, dynamic customer) {
-    final hasDue = double.tryParse(customer.totalDue ?? '0') != null &&
-        double.parse(customer.totalDue ?? '0') > 0;
+    final hasDue = (customer.totalDue ?? 0.0) > 0;
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: InkWell(
@@ -119,7 +118,7 @@ class CustomerListView extends GetView<CustomerListController> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    '৳${double.parse(customer.totalDue ?? '0').toStringAsFixed(0)} due',
+                    '৳${(customer.totalDue as double).toStringAsFixed(0)} due',
                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.red),
                   ),
                 ),

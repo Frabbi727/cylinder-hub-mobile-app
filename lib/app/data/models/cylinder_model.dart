@@ -12,8 +12,9 @@ class Cylinder extends Equatable {
   final String? shortCode;
   final String? color1;
   final String? color2;
-  @JsonKey(name: 'reorder_level')
+  @JsonKey(name: 'reorder_level', fromJson: _toIntNull)
   final int? reorderLevel;
+  @JsonKey(fromJson: _toIntNull)
   final int? capacity;
   final String? status;
   final CylinderStock? stock;
@@ -40,10 +41,11 @@ class Cylinder extends Equatable {
 
 @JsonSerializable(explicitToJson: true)
 class CylinderStock extends Equatable {
-  @JsonKey(name: 'filled_qty')
+  @JsonKey(name: 'filled_qty', fromJson: _toInt)
   final int filledQty;
-  @JsonKey(name: 'empty_qty')
+  @JsonKey(name: 'empty_qty', fromJson: _toInt)
   final int emptyQty;
+  @JsonKey(fromJson: _toIntNull)
   final int? capacity;
 
   const CylinderStock({

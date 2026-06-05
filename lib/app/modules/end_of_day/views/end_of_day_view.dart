@@ -111,7 +111,7 @@ class EndOfDayView extends GetView<EndOfDayController> {
                     children: [
                       Text(c?.name ?? 'Allocation #${allocation.id}',
                           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                      Text('${allocation.qty} allocated · ৳${allocation.salePrice} / pc',
+                      Text('${allocation.qty} allocated · ৳${allocation.salePrice.toStringAsFixed(0)} / pc',
                           style: const TextStyle(fontSize: 13, color: AppColors.text2Light)),
                     ],
                   ),

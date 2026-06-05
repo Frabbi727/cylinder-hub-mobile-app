@@ -7,14 +7,14 @@ part of 'allocation_model.dart';
 // **************************************************************************
 
 Allocation _$AllocationFromJson(Map<String, dynamic> json) => Allocation(
-  id: _toInt(json['id']),
+  id: (json['id'] as num).toInt(),
   cylinderId: _toInt(json['cylinder_id']),
   allocationDate: json['allocation_date'] as String,
   qty: _toInt(json['qty']),
-  salePrice: json['sale_price'] as String,
+  salePrice: _toDouble(json['sale_price']),
   soldQty: _toInt(json['sold_qty']),
   returnedQty: _toInt(json['returned_qty']),
-  collectedAmount: json['collected_amount'] as String,
+  collectedAmount: _toDouble(json['collected_amount']),
   isReconciled: json['is_reconciled'] as bool,
   withSalesman: _toInt(json['with_salesman']),
   soldPct: _toInt(json['sold_pct']),

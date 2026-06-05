@@ -9,13 +9,13 @@ class Customer extends Equatable {
   final String name;
   final String? phone;
   final String? address;
-  @JsonKey(name: 'total_due')
-  final String? totalDue;
-  @JsonKey(name: 'total_revenue')
+  @JsonKey(name: 'total_due', fromJson: _toDoubleNull)
+  final double? totalDue;
+  @JsonKey(name: 'total_revenue', fromJson: _toDoubleNull)
   final double? totalRevenue;
-  @JsonKey(name: 'total_paid')
+  @JsonKey(name: 'total_paid', fromJson: _toDoubleNull)
   final double? totalPaid;
-  @JsonKey(name: 'added_by')
+  @JsonKey(name: 'added_by', fromJson: _toIntNull)
   final int? addedBy;
   @JsonKey(name: 'is_active')
   final bool? isActive;
@@ -55,17 +55,17 @@ class Customer extends Equatable {
 
 @JsonSerializable(explicitToJson: true)
 class OverdueCustomer extends Equatable {
-  @JsonKey(name: 'customer_id')
+  @JsonKey(name: 'customer_id', fromJson: _toInt)
   final int customerId;
   final String name;
   final String? phone;
-  @JsonKey(name: 'total_due')
+  @JsonKey(name: 'total_due', fromJson: _toDouble)
   final double totalDue;
   @JsonKey(name: 'oldest_due_date')
   final String oldestDueDate;
-  @JsonKey(name: 'days_overdue')
+  @JsonKey(name: 'days_overdue', fromJson: _toInt)
   final int daysOverdue;
-  @JsonKey(name: 'unpaid_sales_count')
+  @JsonKey(name: 'unpaid_sales_count', fromJson: _toInt)
   final int unpaidSalesCount;
   @JsonKey(name: 'salesman_name')
   final String? salesmanName;

@@ -46,7 +46,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
       ),
       bottomNavigationBar: Obx(() {
         final customer = controller.customer.value;
-        final due = double.tryParse(customer?.totalDue ?? '0') ?? 0;
+        final due = customer?.totalDue ?? 0;
         if (due <= 0) return const SizedBox.shrink();
         return SafeArea(
           child: Padding(
@@ -107,7 +107,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
   }
 
   Widget _buildSummaryRow(dynamic customer) {
-    final due = double.tryParse(customer.totalDue ?? '0') ?? 0;
+    final due = customer.totalDue ?? 0;
     final revenue = customer.totalRevenue ?? 0.0;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
@@ -237,7 +237,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('৳${double.tryParse(sale.totalAmount)?.toStringAsFixed(0) ?? sale.totalAmount}',
+                      Text('৳${sale.totalAmount.toStringAsFixed(0)}',
                           style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
                       const SizedBox(height: 4),
                       Container(

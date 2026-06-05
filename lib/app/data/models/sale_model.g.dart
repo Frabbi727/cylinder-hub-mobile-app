@@ -7,10 +7,10 @@ part of 'sale_model.dart';
 // **************************************************************************
 
 Sale _$SaleFromJson(Map<String, dynamic> json) => Sale(
-  id: _toInt(json['id']),
+  id: (json['id'] as num).toInt(),
   saleDate: json['sale_date'] as String,
-  totalAmount: json['total_amount'] as String,
-  paidAmount: json['paid_amount'] as String,
+  totalAmount: _toDouble(json['total_amount']),
+  paidAmount: _toDouble(json['paid_amount']),
   dueAmount: _toDouble(json['due_amount']),
   paymentType: json['payment_type'] as String,
   notes: json['notes'] as String?,
@@ -37,7 +37,7 @@ Map<String, dynamic> _$SaleToJson(Sale instance) => <String, dynamic>{
 };
 
 SaleItem _$SaleItemFromJson(Map<String, dynamic> json) => SaleItem(
-  id: _toInt(json['id']),
+  id: (json['id'] as num).toInt(),
   cylinder: json['cylinder'] == null
       ? null
       : Cylinder.fromJson(json['cylinder'] as Map<String, dynamic>),
@@ -58,7 +58,7 @@ Map<String, dynamic> _$SaleItemToJson(SaleItem instance) => <String, dynamic>{
 
 DueCollection _$DueCollectionFromJson(Map<String, dynamic> json) =>
     DueCollection(
-      id: _toInt(json['id']),
+      id: (json['id'] as num).toInt(),
       amount: _toDouble(json['amount']),
       collectionDate: json['collection_date'] as String,
       collectedBy: json['collected_by'] as String?,

@@ -150,7 +150,7 @@ class SalesView extends GetView<SalesController> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '৳${sale.totalAmount}',
+                    '৳${sale.totalAmount.toStringAsFixed(0)}',
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w800),
                   ),

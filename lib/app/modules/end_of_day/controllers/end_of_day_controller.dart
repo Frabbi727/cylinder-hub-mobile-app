@@ -31,7 +31,7 @@ class EndOfDayController extends BaseController {
     for (final a in allocations) {
       soldQtyControllers[a.id] = TextEditingController(text: a.soldQty.toString());
       collectedAmountControllers[a.id] = TextEditingController(
-        text: double.tryParse(a.collectedAmount)?.toStringAsFixed(0) ?? '0',
+        text: a.collectedAmount.toStringAsFixed(0),
       );
     }
 

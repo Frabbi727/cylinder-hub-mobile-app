@@ -8,7 +8,7 @@ part of 'notification_model.dart';
 
 AppNotification _$AppNotificationFromJson(Map<String, dynamic> json) =>
     AppNotification(
-      id: _toInt(json['id']),
+      id: (json['id'] as num).toInt(),
       type: json['type'] as String,
       title: json['title'] as String,
       body: json['body'] as String,

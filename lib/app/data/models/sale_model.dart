@@ -10,11 +10,11 @@ class Sale extends Equatable {
   final int id;
   @JsonKey(name: 'sale_date')
   final String saleDate;
-  @JsonKey(name: 'total_amount')
-  final String totalAmount;
-  @JsonKey(name: 'paid_amount')
-  final String paidAmount;
-  @JsonKey(name: 'due_amount')
+  @JsonKey(name: 'total_amount', fromJson: _toDouble)
+  final double totalAmount;
+  @JsonKey(name: 'paid_amount', fromJson: _toDouble)
+  final double paidAmount;
+  @JsonKey(name: 'due_amount', fromJson: _toDouble)
   final double dueAmount;
   @JsonKey(name: 'payment_type')
   final String paymentType;
