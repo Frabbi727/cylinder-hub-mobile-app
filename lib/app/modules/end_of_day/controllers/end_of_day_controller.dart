@@ -41,9 +41,11 @@ class EndOfDayController extends BaseController {
         pendingCollections.assignAll(data.pendingCollections ?? []);
         
         final userAllocations = data.salesman?.allocations ?? [];
-        allocations.assignAll(userAllocations.where((a) => !a.isReconciled).toList());
+        allocations.assignAll(userAllocations);
 
         for (final a in allocations) {
+          if (a.isReconciled) continue; // Skip controllers for already reconciled items
+
           soldQtyControllers[a.id]?.dispose();
           collectedAmountControllers[a.id]?.dispose();
 
@@ -145,7 +147,6 @@ class EndOfDayController extends BaseController {
       final response = await repository.reconcileAllocation(allocation.id, soldQty, collected);
       if (response.success) {
         reconciledIds.add(allocation.id);
-        allocations.removeWhere((a) => a.id == allocation.id);
         
         if (Get.isRegistered<MyDayController>()) Get.find<MyDayController>().refresh();
         

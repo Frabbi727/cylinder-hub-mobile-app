@@ -46,10 +46,6 @@ class EndOfDayView extends GetView<EndOfDayController> {
                       if (controller.allocations.isNotEmpty) ...[
                         ...controller.allocations.map((a) => _buildAllocationCard(a)),
                       ],
-                      if (controller.reconciledIds.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        _buildReconciledBadge(),
-                      ],
                       const SizedBox(height: 40),
                     ],
                   ),
@@ -260,6 +256,7 @@ class EndOfDayView extends GetView<EndOfDayController> {
     final c = a.cylinder;
     final cardColor = Get.isDarkMode ? AppColors.surfaceDark : Colors.white;
     final titleColor = Get.isDarkMode ? AppColors.text1Dark : AppColors.text1Light;
+    final isReconciled = a.isReconciled || controller.reconciledIds.contains(a.id);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -284,6 +281,7 @@ class EndOfDayView extends GetView<EndOfDayController> {
         child: ExpansionTile(
           initiallyExpanded: false,
           tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          enabled: !isReconciled,
           leading: c != null
               ? CylBadge(
                   shortCode: c.shortCode ?? '',
@@ -307,14 +305,18 @@ class EndOfDayView extends GetView<EndOfDayController> {
                   const SizedBox(width: 8),
                   _buildMiniStat(a.soldQty.toString(), 'Sold', color: AppColors.greenInk),
                   const SizedBox(width: 8),
-                  _buildMiniStat((a.qty - a.soldQty).toString(), 'To Return', color: const Color(0xFFD35400)),
+                  _buildMiniStat((isReconciled ? a.returnedQty : (a.qty - a.soldQty)).toString(), isReconciled ? 'Returned' : 'To Return', color: const Color(0xFFD35400)),
                 ],
               ),
               const SizedBox(height: 2),
-              _buildReconcileButtonTrigger(),
+              isReconciled
+                  ? _buildStatusBadge('Reconciled', AppColors.greenBgLight, AppColors.greenInk)
+                  : _buildReconcileButtonTrigger(),
             ],
           ),
-          children: [
+          children: isReconciled
+              ? []
+              : [
             const Divider(height: 1, color: Color(0xFFEEEEEE), indent: 16, endIndent: 16),
             Padding(
               padding: const EdgeInsets.all(16),
@@ -361,6 +363,14 @@ class EndOfDayView extends GetView<EndOfDayController> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStatusBadge(String text, Color bgColor, Color textColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(6)),
+      child: Text(text, style: TextStyle(color: textColor, fontSize: 11, fontWeight: FontWeight.w800)),
     );
   }
 
