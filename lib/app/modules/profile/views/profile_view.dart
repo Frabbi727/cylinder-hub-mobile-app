@@ -6,6 +6,8 @@ import '../../../core/values/languages/translation_keys.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../controllers/profile_controller.dart';
 import '../../main_navigation/controllers/main_navigation_controller.dart';
+import '../../../core/widgets/quick_action.dart';
+import '../../../routes/app_pages.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -78,6 +80,68 @@ class ProfileView extends GetView<ProfileController> {
                     ),
                   ),
                   const SizedBox(height: 32),
+
+                  // Quickest Action
+                  _buildSectionHeader(context, TranslationKeys.quickActions.tr),
+                  const SizedBox(height: 12),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          const cols = 4;
+                          const hGap = 8.0;
+                          final itemW = (constraints.maxWidth - hGap * (cols - 1)) / cols;
+                          final items = [
+                            QuickAction(
+                              icon: Icons.account_balance_wallet,
+                              tintColor: AppColors.greenInk,
+                              bgColor: AppColors.greenBgLight,
+                              label: TranslationKeys.collect.tr,
+                              onTap: () => Get.find<MainNavigationController>().changeIndex(3),
+                            ),
+                            QuickAction(
+                              icon: Icons.rotate_left,
+                              tintColor: AppColors.mintInk,
+                              bgColor: AppColors.mintBgLight,
+                              label: TranslationKeys.emptyCyl.tr,
+                              onTap: () => Get.toNamed(Routes.EMPTY_RETURNS),
+                            ),
+                            QuickAction(
+                              icon: Icons.people,
+                              tintColor: AppColors.purpleInk,
+                              bgColor: AppColors.purpleBgLight,
+                              label: TranslationKeys.customers.tr,
+                              onTap: () => Get.toNamed(Routes.CUSTOMER_LIST),
+                            ),
+                            QuickAction(
+                              icon: Icons.bar_chart,
+                              tintColor: AppColors.pinkInk,
+                              bgColor: AppColors.pinkBgLight,
+                              label: TranslationKeys.myReports.tr,
+                              onTap: () => Get.toNamed(Routes.MY_REPORTS),
+                            ),
+                            QuickAction(
+                              icon: Icons.send,
+                              tintColor: AppColors.amberInk,
+                              bgColor: AppColors.amberBgLight,
+                              label: TranslationKeys.endOfDay.tr,
+                              onTap: () => Get.toNamed(Routes.END_OF_DAY),
+                            ),
+                          ];
+                          return Wrap(
+                            spacing: hGap,
+                            runSpacing: 16,
+                            children: items
+                                .map((child) => SizedBox(width: itemW, child: child))
+                                .toList(),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
 
                   // Language Selection
                   _buildSectionHeader(context, TranslationKeys.language.tr),
