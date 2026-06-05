@@ -7,14 +7,14 @@ part of 'user_model.dart';
 // **************************************************************************
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
-  id: (json['id'] as num).toInt(),
+  id: _toInt(json['id']),
   name: json['name'] as String,
   email: json['email'] as String,
   phone: json['phone'] as String?,
   role: json['role'] as String,
   avatarInitials: json['avatar_initials'] as String?,
   isActive: json['is_active'] as bool?,
-  unreadNotifications: (json['unread_notifications'] as num?)?.toInt(),
+  unreadNotifications: _toIntNull(json['unread_notifications']),
   allocations: (json['allocations'] as List<dynamic>?)
       ?.map((e) => Allocation.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -37,7 +37,7 @@ AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) => AuthResponse(
   accessToken: json['access_token'] as String,
   refreshToken: json['refresh_token'] as String,
   tokenType: json['token_type'] as String,
-  expiresIn: (json['expires_in'] as num).toInt(),
+  expiresIn: _toInt(json['expires_in']),
 );
 
 Map<String, dynamic> _$AuthResponseToJson(AuthResponse instance) =>

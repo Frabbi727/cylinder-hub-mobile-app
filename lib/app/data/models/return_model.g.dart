@@ -8,9 +8,9 @@ part of 'return_model.dart';
 
 CylinderReturn _$CylinderReturnFromJson(Map<String, dynamic> json) =>
     CylinderReturn(
-      id: (json['id'] as num).toInt(),
+      id: _toInt(json['id']),
       returnDate: json['return_date'] as String,
-      qty: (json['qty'] as num).toInt(),
+      qty: _toInt(json['qty']),
       type: json['type'] as String,
       isExtra: json['is_extra'] as bool,
       extraReason: json['extra_reason'] as String?,

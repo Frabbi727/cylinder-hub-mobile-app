@@ -7,11 +7,11 @@ part of 'sale_model.dart';
 // **************************************************************************
 
 Sale _$SaleFromJson(Map<String, dynamic> json) => Sale(
-  id: (json['id'] as num).toInt(),
+  id: _toInt(json['id']),
   saleDate: json['sale_date'] as String,
   totalAmount: json['total_amount'] as String,
   paidAmount: json['paid_amount'] as String,
-  dueAmount: (json['due_amount'] as num).toDouble(),
+  dueAmount: _toDouble(json['due_amount']),
   paymentType: json['payment_type'] as String,
   notes: json['notes'] as String?,
   customer: json['customer'] == null
@@ -37,14 +37,14 @@ Map<String, dynamic> _$SaleToJson(Sale instance) => <String, dynamic>{
 };
 
 SaleItem _$SaleItemFromJson(Map<String, dynamic> json) => SaleItem(
-  id: (json['id'] as num).toInt(),
+  id: _toInt(json['id']),
   cylinder: json['cylinder'] == null
       ? null
       : Cylinder.fromJson(json['cylinder'] as Map<String, dynamic>),
-  qty: (json['qty'] as num).toInt(),
-  unitPrice: (json['unit_price'] as num).toDouble(),
-  unitCost: (json['unit_cost'] as num?)?.toDouble(),
-  profit: (json['profit'] as num?)?.toDouble(),
+  qty: _toInt(json['qty']),
+  unitPrice: _toDouble(json['unit_price']),
+  unitCost: _toDoubleNull(json['unit_cost']),
+  profit: _toDoubleNull(json['profit']),
 );
 
 Map<String, dynamic> _$SaleItemToJson(SaleItem instance) => <String, dynamic>{
@@ -58,8 +58,8 @@ Map<String, dynamic> _$SaleItemToJson(SaleItem instance) => <String, dynamic>{
 
 DueCollection _$DueCollectionFromJson(Map<String, dynamic> json) =>
     DueCollection(
-      id: (json['id'] as num).toInt(),
-      amount: (json['amount'] as num).toDouble(),
+      id: _toInt(json['id']),
+      amount: _toDouble(json['amount']),
       collectionDate: json['collection_date'] as String,
       collectedBy: json['collected_by'] as String?,
       notes: json['notes'] as String?,

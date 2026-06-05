@@ -7,14 +7,14 @@ part of 'customer_model.dart';
 // **************************************************************************
 
 Customer _$CustomerFromJson(Map<String, dynamic> json) => Customer(
-  id: (json['id'] as num).toInt(),
+  id: _toInt(json['id']),
   name: json['name'] as String,
   phone: json['phone'] as String?,
   address: json['address'] as String?,
   totalDue: json['total_due'] as String?,
-  totalRevenue: (json['total_revenue'] as num?)?.toDouble(),
-  totalPaid: (json['total_paid'] as num?)?.toDouble(),
-  addedBy: (json['added_by'] as num?)?.toInt(),
+  totalRevenue: _toDoubleNull(json['total_revenue']),
+  totalPaid: _toDoubleNull(json['total_paid']),
+  addedBy: _toIntNull(json['added_by']),
   isActive: json['is_active'] as bool?,
   createdAt: json['created_at'] as String?,
 );
@@ -34,13 +34,13 @@ Map<String, dynamic> _$CustomerToJson(Customer instance) => <String, dynamic>{
 
 OverdueCustomer _$OverdueCustomerFromJson(Map<String, dynamic> json) =>
     OverdueCustomer(
-      customerId: (json['customer_id'] as num).toInt(),
+      customerId: _toInt(json['customer_id']),
       name: json['name'] as String,
       phone: json['phone'] as String?,
-      totalDue: (json['total_due'] as num).toDouble(),
+      totalDue: _toDouble(json['total_due']),
       oldestDueDate: json['oldest_due_date'] as String,
-      daysOverdue: (json['days_overdue'] as num).toInt(),
-      unpaidSalesCount: (json['unpaid_sales_count'] as num).toInt(),
+      daysOverdue: _toInt(json['days_overdue']),
+      unpaidSalesCount: _toInt(json['unpaid_sales_count']),
       salesmanName: json['salesman_name'] as String?,
     );
 

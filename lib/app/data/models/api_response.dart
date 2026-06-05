@@ -77,3 +77,8 @@ class Links extends Equatable {
   @override
   List<Object?> get props => [first, last, prev, next];
 }
+
+double _toDouble(dynamic v) { if (v == null) return 0.0; if (v is double) return v; if (v is int) return v.toDouble(); if (v is String) return double.tryParse(v) ?? 0.0; return (v as num).toDouble(); }
+int _toInt(dynamic v) { if (v == null) return 0; if (v is int) return v; if (v is double) return v.toInt(); if (v is String) return int.tryParse(v) ?? 0; return (v as num).toInt(); }
+double? _toDoubleNull(dynamic v) => v == null ? null : _toDouble(v);
+int? _toIntNull(dynamic v) => v == null ? null : _toInt(v);

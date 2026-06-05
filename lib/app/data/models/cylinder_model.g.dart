@@ -7,14 +7,14 @@ part of 'cylinder_model.dart';
 // **************************************************************************
 
 Cylinder _$CylinderFromJson(Map<String, dynamic> json) => Cylinder(
-  id: (json['id'] as num).toInt(),
+  id: _toInt(json['id']),
   name: json['name'] as String,
   size: json['size'] as String,
   shortCode: json['short_code'] as String?,
   color1: json['color1'] as String?,
   color2: json['color2'] as String?,
-  reorderLevel: (json['reorder_level'] as num?)?.toInt(),
-  capacity: (json['capacity'] as num?)?.toInt(),
+  reorderLevel: _toIntNull(json['reorder_level']),
+  capacity: _toIntNull(json['capacity']),
   status: json['status'] as String?,
   stock: json['stock'] == null
       ? null
@@ -36,9 +36,9 @@ Map<String, dynamic> _$CylinderToJson(Cylinder instance) => <String, dynamic>{
 
 CylinderStock _$CylinderStockFromJson(Map<String, dynamic> json) =>
     CylinderStock(
-      filledQty: (json['filled_qty'] as num).toInt(),
-      emptyQty: (json['empty_qty'] as num).toInt(),
-      capacity: (json['capacity'] as num?)?.toInt(),
+      filledQty: _toInt(json['filled_qty']),
+      emptyQty: _toInt(json['empty_qty']),
+      capacity: _toIntNull(json['capacity']),
     );
 
 Map<String, dynamic> _$CylinderStockToJson(CylinderStock instance) =>

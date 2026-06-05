@@ -35,17 +35,17 @@ Map<String, dynamic> _$DashboardDataToJson(DashboardData instance) =>
 DashboardStats _$DashboardStatsFromJson(
   Map<String, dynamic> json,
 ) => DashboardStats(
-  totalAllocated: (json['total_allocated'] as num).toInt(),
-  totalSold: (json['total_sold'] as num).toInt(),
-  totalReturned: (json['total_returned'] as num).toInt(),
-  totalRemaining: (json['total_remaining'] as num).toInt(),
-  cashCollected: (json['cash_collected'] as num).toDouble(),
-  todayTotalSalesAmount: (json['today_total_sales_amount'] as num).toDouble(),
-  todayDueAmount: (json['today_due_amount'] as num).toDouble(),
-  pendingDueCollections: (json['pending_due_collections'] as num).toDouble(),
-  totalCashToHandIn: (json['total_cash_to_hand_in'] as num).toDouble(),
-  totalOutstandingDues: (json['total_outstanding_dues'] as num).toDouble(),
-  todayProfit: (json['today_profit'] as num).toDouble(),
+  totalAllocated: _toInt(json['total_allocated']),
+  totalSold: _toInt(json['total_sold']),
+  totalReturned: _toInt(json['total_returned']),
+  totalRemaining: _toInt(json['total_remaining']),
+  cashCollected: _toDouble(json['cash_collected']),
+  todayTotalSalesAmount: _toDouble(json['today_total_sales_amount']),
+  todayDueAmount: _toDouble(json['today_due_amount']),
+  pendingDueCollections: _toDouble(json['pending_due_collections']),
+  totalCashToHandIn: _toDouble(json['total_cash_to_hand_in']),
+  totalOutstandingDues: _toDouble(json['total_outstanding_dues']),
+  todayProfit: _toDouble(json['today_profit']),
 );
 
 Map<String, dynamic> _$DashboardStatsToJson(DashboardStats instance) =>

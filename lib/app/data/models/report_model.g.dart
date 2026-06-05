@@ -14,22 +14,22 @@ SalesmanReport _$SalesmanReportFromJson(Map<String, dynamic> json) =>
       period: json['period'] == null
           ? null
           : ReportPeriod.fromJson(json['period'] as Map<String, dynamic>),
-      totalAllocated: (json['total_allocated'] as num).toInt(),
-      totalSold: (json['total_sold'] as num).toInt(),
-      totalReturned: (json['total_returned'] as num).toInt(),
-      totalRevenue: (json['total_revenue'] as num).toDouble(),
-      totalCashCollected: (json['total_cash_collected'] as num).toDouble(),
-      totalDuesCreated: (json['total_dues_created'] as num).toDouble(),
-      totalDuesCollected: (json['total_dues_collected'] as num).toDouble(),
-      stillOutstanding: (json['still_outstanding'] as num).toDouble(),
-      collectionRatePct: (json['collection_rate_pct'] as num).toDouble(),
-      customersReached: (json['customers_reached'] as num).toInt(),
-      sellThroughRate: (json['sell_through_rate'] as num).toDouble(),
+      totalAllocated: _toInt(json['total_allocated']),
+      totalSold: _toInt(json['total_sold']),
+      totalReturned: _toInt(json['total_returned']),
+      totalRevenue: _toDouble(json['total_revenue']),
+      totalCashCollected: _toDouble(json['total_cash_collected']),
+      totalDuesCreated: _toDouble(json['total_dues_created']),
+      totalDuesCollected: _toDouble(json['total_dues_collected']),
+      stillOutstanding: _toDouble(json['still_outstanding']),
+      collectionRatePct: _toDouble(json['collection_rate_pct']),
+      customersReached: _toInt(json['customers_reached']),
+      sellThroughRate: _toDouble(json['sell_through_rate']),
       payBreakdown: (json['pay_breakdown'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, (e as num).toInt()),
+        (k, e) => MapEntry(k, _toInt(e)),
       ),
       dailyRevenue: (json['daily_revenue'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, (e as num).toDouble()),
+        (k, e) => MapEntry(k, _toDouble(e)),
       ),
       sales: (json['sales'] as List<dynamic>?)
           ?.map((e) => Sale.fromJson(e as Map<String, dynamic>))

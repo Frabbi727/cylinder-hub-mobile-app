@@ -7,19 +7,19 @@ part of 'allocation_model.dart';
 // **************************************************************************
 
 Allocation _$AllocationFromJson(Map<String, dynamic> json) => Allocation(
-  id: (json['id'] as num).toInt(),
-  cylinderId: (json['cylinder_id'] as num).toInt(),
+  id: _toInt(json['id']),
+  cylinderId: _toInt(json['cylinder_id']),
   allocationDate: json['allocation_date'] as String,
-  qty: (json['qty'] as num).toInt(),
+  qty: _toInt(json['qty']),
   salePrice: json['sale_price'] as String,
-  soldQty: (json['sold_qty'] as num).toInt(),
-  returnedQty: (json['returned_qty'] as num).toInt(),
+  soldQty: _toInt(json['sold_qty']),
+  returnedQty: _toInt(json['returned_qty']),
   collectedAmount: json['collected_amount'] as String,
   isReconciled: json['is_reconciled'] as bool,
-  withSalesman: (json['with_salesman'] as num).toInt(),
-  soldPct: (json['sold_pct'] as num).toInt(),
-  cashCollectedActual: (json['cash_collected_actual'] as num?)?.toDouble(),
-  dueFromSales: (json['due_from_sales'] as num?)?.toDouble(),
+  withSalesman: _toInt(json['with_salesman']),
+  soldPct: _toInt(json['sold_pct']),
+  cashCollectedActual: _toDoubleNull(json['cash_collected_actual']),
+  dueFromSales: _toDoubleNull(json['due_from_sales']),
   customerDues: (json['customer_dues'] as List<dynamic>?)
       ?.map((e) => CustomerDue.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -49,7 +49,7 @@ Map<String, dynamic> _$AllocationToJson(Allocation instance) =>
 
 CustomerDue _$CustomerDueFromJson(Map<String, dynamic> json) => CustomerDue(
   customer: json['customer'] as String,
-  dueAmount: (json['due_amount'] as num).toDouble(),
+  dueAmount: _toDouble(json['due_amount']),
 );
 
 Map<String, dynamic> _$CustomerDueToJson(CustomerDue instance) =>
