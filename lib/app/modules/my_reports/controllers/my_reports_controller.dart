@@ -128,9 +128,18 @@ class MyReportsController extends BaseController {
     final daily = report.value?.dailyRevenue;
     if (daily == null || daily.isEmpty) return [];
 
+    final spots = <FlSpot>[];
+    
+    if (selectedPeriod.value == 'Today') {
+      final now = DateTime.now();
+      final dateStr = DateFormat('yyyy-MM-dd').format(now);
+      final revenue = daily[dateStr] ?? 0.0;
+      spots.add(FlSpot(0, revenue));
+      return spots;
+    }
+
     final from = DateTime.parse(_fromDate);
     final to = DateTime.parse(_toDate);
-    final spots = <FlSpot>[];
     var index = 0.0;
 
     for (var date = from;

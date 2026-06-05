@@ -15,68 +15,65 @@ class MyReportsView extends GetView<MyReportsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.surfaceColor,
-      body: Column(
-        children: [
-          Obx(() => VibrantAppBar(
-            title: TranslationKeys.myReports.tr,
-            sub: controller.isFilterApplied.value 
-                ? '${TranslationKeys.filter.tr}: ${controller.formattedDateRange}' 
-                : 'Performance for ${controller.formattedDateRange}',
-            accent: AppColors.reportsGradient,
-            curve: true,
-            onBack: () => Get.back(),
-            onReset: controller.isFilterApplied.value ? controller.resetFilter : null,
-            onFilter: () => _showFilterBottomSheet(context),
-          )),
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return RefreshIndicator(
-                onRefresh: controller.fetchAllData,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSectionLabel(context, TranslationKeys.keyMetrics.tr, Icons.speed),
-                      const SizedBox(height: 12),
-                      _buildKpiGrid(),
-                      const SizedBox(height: 20),
-                      _buildSectionLabel(context, TranslationKeys.dailyRevenue.tr, Icons.insights),
-                      const SizedBox(height: 12),
-                      _buildRevenueChart(context),
-                      const SizedBox(height: 20),
-                      _buildSectionLabel(context, TranslationKeys.paymentTypes.tr, Icons.pie_chart),
-                      const SizedBox(height: 12),
-                      _buildPaymentDonut(context),
-                      const SizedBox(height: 20),
-                      _buildSectionLabel(context, TranslationKeys.allocation.tr, Icons.bar_chart),
-                      const SizedBox(height: 12),
-                      _buildAllocationBarChart(context),
-                      const SizedBox(height: 20),
-                      _buildSectionLabel(context, TranslationKeys.performanceSummary.tr, Icons.star_border),
-                      const SizedBox(height: 12),
-                      _buildPerformanceList(context),
-                      const SizedBox(height: 20),
-                      _buildSectionLabel(context, TranslationKeys.cylinderFlow.tr, Icons.swap_horiz),
-                      const SizedBox(height: 12),
-                      _buildCylinderFlowTable(context),
-                      const SizedBox(height: 20),
-                      _buildSectionLabel(context, TranslationKeys.todaysReturns.tr, Icons.receipt_long),
-                      const SizedBox(height: 12),
-                      _buildDailyCollections(context),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              );
-            }),
-          ),
-        ],
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(120),
+        child: Obx(() => VibrantAppBar(
+          title: TranslationKeys.myReports.tr,
+          sub: controller.isFilterApplied.value 
+              ? '${TranslationKeys.filter.tr}: ${controller.formattedDateRange}' 
+              : 'Performance for ${controller.formattedDateRange}',
+          accent: AppColors.reportsGradient,
+          curve: true,
+          onBack: () => Get.back(),
+          onReset: controller.isFilterApplied.value ? controller.resetFilter : null,
+          onFilter: () => _showFilterBottomSheet(context),
+        )),
       ),
+      body: Obx(() {
+        if (controller.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return RefreshIndicator(
+          onRefresh: controller.fetchAllData,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionLabel(context, TranslationKeys.keyMetrics.tr, Icons.speed),
+                const SizedBox(height: 12),
+                _buildKpiGrid(),
+                const SizedBox(height: 20),
+                _buildSectionLabel(context, TranslationKeys.dailyRevenue.tr, Icons.insights),
+                const SizedBox(height: 12),
+                _buildRevenueChart(context),
+                const SizedBox(height: 20),
+                _buildSectionLabel(context, TranslationKeys.paymentTypes.tr, Icons.pie_chart),
+                const SizedBox(height: 12),
+                _buildPaymentDonut(context),
+                const SizedBox(height: 20),
+                _buildSectionLabel(context, TranslationKeys.allocation.tr, Icons.bar_chart),
+                const SizedBox(height: 12),
+                _buildAllocationBarChart(context),
+                const SizedBox(height: 20),
+                _buildSectionLabel(context, TranslationKeys.performanceSummary.tr, Icons.star_border),
+                const SizedBox(height: 12),
+                _buildPerformanceList(context),
+                const SizedBox(height: 20),
+                _buildSectionLabel(context, TranslationKeys.cylinderFlow.tr, Icons.swap_horiz),
+                const SizedBox(height: 12),
+                _buildCylinderFlowTable(context),
+                const SizedBox(height: 20),
+                _buildSectionLabel(context, TranslationKeys.todaysReturns.tr, Icons.receipt_long),
+                const SizedBox(height: 12),
+                _buildDailyCollections(context),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        );
+      }),
     );
   }
 
@@ -309,7 +306,7 @@ class MyReportsView extends GetView<MyReportsController> {
                   isCurved: true,
                   color: AppColors.blue,
                   barWidth: 4,
-                  dotData: const FlDotData(show: false),
+                  dotData: const FlDotData(show: true),
                   belowBarData: BarAreaData(
                     show: true,
                     gradient: LinearGradient(
