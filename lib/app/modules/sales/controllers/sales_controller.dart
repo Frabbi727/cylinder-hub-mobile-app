@@ -26,6 +26,7 @@ class SalesController extends BaseController {
   
   final scrollController = ScrollController();
   final searchController = TextEditingController();
+  final searchFocusNode = FocusNode();
   Timer? _debounce;
 
   SalesController({required this.repository});
@@ -173,6 +174,7 @@ class SalesController extends BaseController {
   void onClose() {
     scrollController.dispose();
     searchController.dispose();
+    searchFocusNode.dispose();
     _debounce?.cancel();
     super.onClose();
   }

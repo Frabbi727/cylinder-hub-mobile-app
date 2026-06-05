@@ -66,32 +66,34 @@ class SalesView extends GetView<SalesController> {
   Widget _buildSearchBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 20, 0),
-      child: Obx(() {
-        return TextField(
-          controller: controller.searchController,
-          onChanged: controller.onSearchChanged,
-          decoration: InputDecoration(
-            hintText: TranslationKeys.search.tr,
-            prefixIcon: const Icon(Icons.search, size: 20),
-            suffixIcon: controller.searchText.value.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear, size: 18),
-                    onPressed: () {
-                      controller.searchController.clear();
-                      controller.onSearchChanged('');
-                    },
-                  )
-                : null,
-            filled: true,
-            fillColor: context.line2Color,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(13),
-              borderSide: BorderSide.none,
-            ),
+      child: TextField(
+        controller: controller.searchController,
+        focusNode: controller.searchFocusNode,
+        onChanged: controller.onSearchChanged,
+        autofocus: false,
+        decoration: InputDecoration(
+          hintText: TranslationKeys.search.tr,
+          prefixIcon: const Icon(Icons.search, size: 20),
+          suffixIcon: Obx(() {
+            if (controller.searchText.value.isEmpty) return const SizedBox.shrink();
+            return IconButton(
+              icon: const Icon(Icons.clear, size: 18),
+              onPressed: () {
+                controller.searchController.clear();
+                controller.onSearchChanged('');
+                FocusScope.of(context).unfocus();
+              },
+            );
+          }),
+          filled: true,
+          fillColor: context.line2Color,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(13),
+            borderSide: BorderSide.none,
           ),
-        );
-      }),
+        ),
+      ),
     );
   }
 
@@ -119,7 +121,10 @@ class SalesView extends GetView<SalesController> {
       child: Obx(() {
         final isSelected = controller.selectedStatus.value == value;
         return GestureDetector(
-          onTap: () => controller.changeStatus(value),
+          onTap: () {
+            controller.searchFocusNode.unfocus();
+            controller.changeStatus(value);
+          },
           child: Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
@@ -167,7 +172,10 @@ class SalesView extends GetView<SalesController> {
             ),
             if (controller.isFilterApplied)
               TextButton(
-                onPressed: controller.resetFilters,
+                onPressed: () {
+                  FocusScope.of(context).unfocus();
+                  controller.resetFilters();
+                },
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   minimumSize: Size.zero,
@@ -226,6 +234,7 @@ class SalesView extends GetView<SalesController> {
         title: Text(period),
         trailing: isSelected ? const Icon(Icons.check, color: AppColors.mintInk) : null,
         onTap: () async {
+          controller.searchFocusNode.unfocus();
           if (period == 'Custom') {
             final range = await showDateRangePicker(
               context: context,
