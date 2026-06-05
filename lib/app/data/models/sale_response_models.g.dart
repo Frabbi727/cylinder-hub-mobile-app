@@ -8,22 +8,24 @@ part of 'sale_response_models.dart';
 
 SaleDetailResponse _$SaleDetailResponseFromJson(Map<String, dynamic> json) =>
     SaleDetailResponse(
-      sale: Sale.fromJson(json['sale'] as Map<String, dynamic>),
-      paymentHistory: json['payment_history'] as List<dynamic>,
+      sale: json['sale'] == null
+          ? null
+          : Sale.fromJson(json['sale'] as Map<String, dynamic>),
+      paymentHistory: json['payment_history'] as List<dynamic>?,
     );
 
 Map<String, dynamic> _$SaleDetailResponseToJson(SaleDetailResponse instance) =>
     <String, dynamic>{
-      'sale': instance.sale.toJson(),
+      'sale': instance.sale,
       'payment_history': instance.paymentHistory,
     };
 
 SaleCreateResponse _$SaleCreateResponseFromJson(Map<String, dynamic> json) =>
     SaleCreateResponse(
-      sale: Sale.fromJson(json['sale'] as Map<String, dynamic>),
+      sale: json['sale'] == null
+          ? null
+          : Sale.fromJson(json['sale'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$SaleCreateResponseToJson(SaleCreateResponse instance) =>
-    <String, dynamic>{
-      'sale': instance.sale.toJson(),
-    };
+    <String, dynamic>{'sale': instance.sale};

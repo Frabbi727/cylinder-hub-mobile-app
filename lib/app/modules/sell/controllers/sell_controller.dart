@@ -20,6 +20,8 @@ class SellController extends BaseController {
 
   final selectedCustomer = Rxn<Customer>();
   final selectedCylinders = <Map<String, dynamic>>[].obs;
+  final qtyControllers = <TextEditingController>[].obs;
+  final priceControllers = <TextEditingController>[].obs;
 
   final paymentType = 'cash'.obs;
   final paidAmountController = TextEditingController();
@@ -41,6 +43,14 @@ class SellController extends BaseController {
 
   void resetForm() {
     selectedCylinders.clear();
+    for (var controller in qtyControllers) {
+      controller.dispose();
+    }
+    qtyControllers.clear();
+    for (var controller in priceControllers) {
+      controller.dispose();
+    }
+    priceControllers.clear();
     selectedCustomer.value = null;
     paymentType.value = 'cash';
     paidAmountController.clear();
@@ -77,22 +87,50 @@ class SellController extends BaseController {
   void addCylinderItem(Cylinder cylinder) {
     final alreadyAdded = selectedCylinders.any((item) => item['cylinder_id'] == cylinder.id);
     if (alreadyAdded) return;
+
+    final stock = cylinder.stock?.filledQty ?? 0;
+    if (stock <= 0) {
+      handleError('Out of stock: ${cylinder.name}');
+      return;
+    }
+
+    final unitPrice = _priceForCylinder(cylinder.id);
     selectedCylinders.add({
       'cylinder_id': cylinder.id,
       'qty': 1,
-      'unit_price': _priceForCylinder(cylinder.id),
+      'unit_price': unitPrice,
       'name': cylinder.name,
-      'size': cylinder.size,
+      'size': '${cylinder.size}kg',
+      'stock': stock,
     });
+    qtyControllers.add(TextEditingController(text: '1'));
+    priceControllers.add(TextEditingController(text: unitPrice.toStringAsFixed(0)));
   }
 
-  void removeCylinderItem(int index) => selectedCylinders.removeAt(index);
+  void removeCylinderItem(int index) {
+    selectedCylinders.removeAt(index);
+    qtyControllers[index].dispose();
+    qtyControllers.removeAt(index);
+    priceControllers[index].dispose();
+    priceControllers.removeAt(index);
+  }
 
   void updateQty(int index, int qty) {
-    if (qty < 1) return;
+    final maxStock = selectedCylinders[index]['stock'] as int;
+
+    if (qty > maxStock) {
+      handleError('Max stock available: $maxStock');
+      qty = maxStock;
+    }
+    if (qty < 1) qty = 1;
+
     final item = Map<String, dynamic>.from(selectedCylinders[index]);
     item['qty'] = qty;
     selectedCylinders[index] = item;
+
+    if (qtyControllers[index].text != qty.toString()) {
+      qtyControllers[index].text = qty.toString();
+    }
   }
 
   void updatePrice(int index, double price) {
@@ -158,6 +196,12 @@ class SellController extends BaseController {
 
   @override
   void onClose() {
+    for (var controller in qtyControllers) {
+      controller.dispose();
+    }
+    for (var controller in priceControllers) {
+      controller.dispose();
+    }
     paidAmountController.dispose();
     notesController.dispose();
     super.onClose();

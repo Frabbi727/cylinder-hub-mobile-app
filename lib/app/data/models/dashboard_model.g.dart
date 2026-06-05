@@ -34,17 +34,37 @@ Map<String, dynamic> _$DashboardDataToJson(DashboardData instance) =>
 
 DashboardStats _$DashboardStatsFromJson(Map<String, dynamic> json) =>
     DashboardStats(
-      totalAllocated: _toInt(json['total_allocated']),
-      totalSold: _toInt(json['total_sold']),
-      totalReturned: _toInt(json['total_returned']),
-      totalRemaining: _toInt(json['total_remaining']),
-      cashCollected: _toDouble(json['cash_collected']),
-      todayTotalSalesAmount: _toDouble(json['today_total_sales_amount']),
-      todayDueAmount: _toDouble(json['today_due_amount']),
-      pendingDueCollections: _toDouble(json['pending_due_collections']),
-      totalCashToHandIn: _toDouble(json['total_cash_to_hand_in']),
-      totalOutstandingDues: _toDouble(json['total_outstanding_dues']),
-      todayProfit: _toDouble(json['today_profit']),
+      totalAllocated: json['total_allocated'] == null
+          ? 0
+          : _toInt(json['total_allocated']),
+      totalSold: json['total_sold'] == null ? 0 : _toInt(json['total_sold']),
+      totalReturned: json['total_returned'] == null
+          ? 0
+          : _toInt(json['total_returned']),
+      totalRemaining: json['total_remaining'] == null
+          ? 0
+          : _toInt(json['total_remaining']),
+      cashCollected: json['cash_collected'] == null
+          ? 0.0
+          : _toDouble(json['cash_collected']),
+      todayTotalSalesAmount: json['today_total_sales_amount'] == null
+          ? 0.0
+          : _toDouble(json['today_total_sales_amount']),
+      todayDueAmount: json['today_due_amount'] == null
+          ? 0.0
+          : _toDouble(json['today_due_amount']),
+      pendingDueCollections: json['pending_due_collections'] == null
+          ? 0.0
+          : _toDouble(json['pending_due_collections']),
+      totalCashToHandIn: json['total_cash_to_hand_in'] == null
+          ? 0.0
+          : _toDouble(json['total_cash_to_hand_in']),
+      totalOutstandingDues: json['total_outstanding_dues'] == null
+          ? 0.0
+          : _toDouble(json['total_outstanding_dues']),
+      todayProfit: json['today_profit'] == null
+          ? 0.0
+          : _toDouble(json['today_profit']),
     );
 
 Map<String, dynamic> _$DashboardStatsToJson(DashboardStats instance) =>

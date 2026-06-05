@@ -5,11 +5,11 @@ part 'sale_response_models.g.dart';
 
 @JsonSerializable()
 class SaleDetailResponse {
-  final Sale sale;
+  final Sale? sale;
   @JsonKey(name: 'payment_history')
-  final List<dynamic> paymentHistory;
+  final List<dynamic>? paymentHistory;
 
-  SaleDetailResponse({required this.sale, required this.paymentHistory});
+  SaleDetailResponse({this.sale, this.paymentHistory});
   
   factory SaleDetailResponse.fromJson(Map<String, dynamic> json) => _$SaleDetailResponseFromJson(json);
   Map<String, dynamic> toJson() => _$SaleDetailResponseToJson(this);
@@ -17,9 +17,9 @@ class SaleDetailResponse {
 
 @JsonSerializable()
 class SaleCreateResponse {
-  final Sale sale;
+  final Sale? sale;
   
-  SaleCreateResponse({required this.sale});
+  SaleCreateResponse({this.sale});
   
   factory SaleCreateResponse.fromJson(Map<String, dynamic> json) => _$SaleCreateResponseFromJson(json);
   Map<String, dynamic> toJson() => _$SaleCreateResponseToJson(this);

@@ -129,9 +129,27 @@ class SellView extends GetView<SellController> {
                         style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                       ),
                     ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: (item['stock'] as int) < 5 ? AppColors.redBgLight : AppColors.greenBgLight,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        'Stock: ${item['stock']}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: (item['stock'] as int) < 5 ? AppColors.redInk : AppColors.greenInk,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     IconButton(
-                      icon: const Icon(Icons.remove_circle_outline, color: AppColors.red),
+                      icon: const Icon(Icons.remove_circle_outline, color: AppColors.red, size: 22),
                       onPressed: () => controller.removeCylinderItem(i),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
                     ),
                   ],
                 ),
@@ -148,7 +166,7 @@ class SellView extends GetView<SellController> {
                                   fontWeight: FontWeight.bold,
                                   color: context.text3Color)),
                           const SizedBox(height: 5),
-                          _buildStepper(i),
+                          _buildStepper(i, item['stock'] as int),
                         ],
                       ),
                     ),
@@ -164,13 +182,26 @@ class SellView extends GetView<SellController> {
                                   color: context.text3Color)),
                           const SizedBox(height: 5),
                           TextFormField(
-                            initialValue: item['unit_price'].toString(),
-                            keyboardType: TextInputType.number,
-                            onChanged: (val) =>
-                                controller.updatePrice(i, double.tryParse(val) ?? 0),
-                            decoration: const InputDecoration(
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 10, vertical: 8)),
+                            controller: controller.priceControllers[i],
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: context.line2Color.withValues(alpha: 0.8),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: context.lineColor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: context.lineColor),
+                              ),
+                            ),
+                            style: TextStyle(
+                              color: context.text1Color, 
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
                           ),
                         ],
                       ),
@@ -185,7 +216,7 @@ class SellView extends GetView<SellController> {
     ));
   }
 
-  Widget _buildStepper(int index) {
+  Widget _buildStepper(int index, int stock) {
     return Container(
       height: 44,
       decoration: BoxDecoration(
@@ -200,11 +231,22 @@ class SellView extends GetView<SellController> {
                 index, (controller.selectedCylinders[index]['qty'] as int) - 1),
           ),
           Expanded(
-            child: Center(
-              child: Text(
-                '${controller.selectedCylinders[index]['qty']}',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+            child: TextFormField(
+              controller: controller.qtyControllers[index],
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              onChanged: (val) {
+                final qty = int.tryParse(val) ?? 1;
+                controller.updateQty(index, qty);
+              },
+              decoration: const InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
               ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.blueDark),
             ),
           ),
           IconButton(
@@ -253,38 +295,81 @@ class SellView extends GetView<SellController> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: context.surfaceColor,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (_) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 8),
-            child: Text('Select Cylinder Type',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-          ),
-          ...available.map((c) => ListTile(
-                leading: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: AppColors.blueBgLight,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.propane_tank, color: AppColors.blueInk, size: 18),
-                ),
-                title: Text(c.name,
-                    style: const TextStyle(fontWeight: FontWeight.w700)),
-                subtitle: Text(c.size),
-                trailing:
-                    const Icon(Icons.add_circle, color: AppColors.blue),
-                onTap: () {
-                  controller.addCylinderItem(c);
-                  Get.back();
-                },
-              )),
-          const SizedBox(height: 24),
-        ],
+      builder: (_) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: context.line2Color,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 16),
+              child: Text('Select Cylinder Type',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+            ),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+              child: ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                children: available.map((c) {
+                  final stock = c.stock?.filledQty ?? 0;
+                  return ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    leading: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.blueBgLight,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.propane_tank, color: AppColors.blueInk, size: 22),
+                    ),
+                    title: Text(c.name,
+                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                    subtitle: Row(
+                      children: [
+                        Text('${c.size}kg', style: TextStyle(color: context.text3Color, fontSize: 13)),
+                        const SizedBox(width: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: stock < 5 ? AppColors.redBgLight : AppColors.blueBgLight,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Stock: $stock',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: stock < 5 ? AppColors.redInk : AppColors.blueInk,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    trailing: const Icon(Icons.add_circle, color: AppColors.blue, size: 26),
+                    onTap: () {
+                      controller.addCylinderItem(c);
+                      Get.back();
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: 80),
+          ],
+        ),
       ),
     );
   }

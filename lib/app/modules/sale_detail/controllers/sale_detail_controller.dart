@@ -57,7 +57,7 @@ class SaleDetailController extends BaseController {
         notesController.text.trim().isEmpty ? null : notesController.text.trim(),
       );
       if (response.success && response.data != null) {
-        sale.value = response.data!.sale;
+        sale.value = response.data;
         amountController.clear();
         notesController.clear();
         if (Get.isRegistered<MyDayController>()) Get.find<MyDayController>().refresh();

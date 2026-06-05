@@ -24,6 +24,9 @@ class ApiClient {
           options.headers['Authorization'] = 'Bearer $token';
         }
         _logger.i('REQUEST[${options.method}] => PATH: ${options.path}');
+        if (options.data != null) {
+          _logger.d('REQUEST BODY: ${options.data}');
+        }
         return handler.next(options);
       },
       onResponse: (response, handler) {

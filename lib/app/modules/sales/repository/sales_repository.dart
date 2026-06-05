@@ -42,7 +42,7 @@ class SalesRepository extends BaseRepository {
     );
   }
 
-  Future<ApiResponse<SaleDetailResponse>> collectPayment(int saleId, double amount, String date, String? notes) async {
+  Future<ApiResponse<Sale>> collectPayment(int saleId, double amount, String date, String? notes) async {
     final response = await apiClient.post(
       Endpoints.salePay(saleId),
       data: {
@@ -51,9 +51,9 @@ class SalesRepository extends BaseRepository {
         if (notes != null) 'notes': notes,
       },
     );
-    return ApiResponse<SaleDetailResponse>.fromJson(
+    return ApiResponse<Sale>.fromJson(
       response.data,
-      (json) => SaleDetailResponse.fromJson(json as Map<String, dynamic>),
+      (json) => Sale.fromJson(json as Map<String, dynamic>),
     );
   }
 }
