@@ -13,6 +13,14 @@ class OnboardingController extends BaseController {
 
   void onPageChanged(int index) => currentPage.value = index;
 
+  void goToPage(int index) {
+    pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 380),
+      curve: Curves.easeInOut,
+    );
+  }
+
   void nextPage() {
     if (currentPage.value < totalPages - 1) {
       pageController.nextPage(
