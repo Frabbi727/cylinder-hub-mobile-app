@@ -99,7 +99,11 @@ class EndOfDayController extends BaseController {
 
   void _updateTotalFromAllocations() {
     totalFromAllocations.value = allocations.fold(0.0, (sum, a) {
-      final amount = double.tryParse(collectedAmountControllers[a.id]?.text ?? '0') ?? 0;
+      if (a.isReconciled || reconciledIds.contains(a.id)) {
+        return sum + a.collectedAmount;
+      }
+      final amount =
+          double.tryParse(collectedAmountControllers[a.id]?.text ?? '0') ?? 0;
       return sum + amount;
     });
   }
