@@ -6,6 +6,8 @@ import '../../../core/values/app_theme_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/cyl_badge.dart';
 import '../../../routes/app_pages.dart';
+import '../../../data/models/customer_model.dart';
+import '../../../data/models/customer_response_models.dart';
 import '../controllers/customer_detail_controller.dart';
 
 class CustomerDetailView extends GetView<CustomerDetailController> {
@@ -72,7 +74,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, dynamic customer) {
+  Widget _buildProfileHeader(BuildContext context, Customer customer) {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Row(
@@ -83,7 +85,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
             decoration: const BoxDecoration(color: AppColors.blueBgLight, shape: BoxShape.circle),
             child: Center(
               child: Text(
-                customer.name.substring(0, 1).toUpperCase(),
+                customer.name.isNotEmpty ? customer.name.substring(0, 1).toUpperCase() : '?',
                 style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.blueInk),
               ),
             ),
@@ -95,9 +97,9 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
               children: [
                 Text(customer.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                 if (customer.phone != null)
-                  Text(customer.phone, style: TextStyle(color: context.text2Color)),
+                  Text(customer.phone!, style: TextStyle(color: context.text2Color)),
                 if (customer.address != null)
-                  Text(customer.address, style: TextStyle(fontSize: 13, color: context.text3Color)),
+                  Text(customer.address!, style: TextStyle(fontSize: 13, color: context.text3Color)),
               ],
             ),
           ),
@@ -106,7 +108,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
     );
   }
 
-  Widget _buildSummaryRow(dynamic customer) {
+  Widget _buildSummaryRow(Customer customer) {
     final due = customer.totalDue ?? 0;
     final revenue = customer.totalRevenue ?? 0.0;
     return Padding(
@@ -262,13 +264,16 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
 
   Widget _buildEmptiesList(BuildContext context) {
     if (controller.empties.isEmpty) {
-      return Center(child: Text('No empty returns', style: TextStyle(color: context.text3Color)));
+      return Center(child: Text('No empty returns pending', style: TextStyle(color: context.text3Color)));
     }
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       itemCount: controller.empties.length,
       itemBuilder: (_, i) {
-        final r = controller.empties[i];
+        final CustomerEmptyBalance b = controller.empties[i];
+        final color1 = b.color1 != null ? Color(int.parse(b.color1!.replaceAll('#', '0xFF'))) : AppColors.blue;
+        final color2 = b.color2 != null ? Color(int.parse(b.color2!.replaceAll('#', '0xFF'))) : AppColors.blueInk;
+
         return Card(
           margin: const EdgeInsets.only(bottom: 10),
           child: Padding(
@@ -276,9 +281,9 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
             child: Row(
               children: [
                 CylBadge(
-                  shortCode: r.cylinder?.shortCode ?? '',
-                  color1: Color(int.parse(r.cylinder?.color1?.replaceAll('#', '0xFF') ?? '0xFF2E5BFF')),
-                  color2: Color(int.parse(r.cylinder?.color2?.replaceAll('#', '0xFF') ?? '0xFF6C4DF6')),
+                  shortCode: b.cylinderName.substring(0, 1),
+                  color1: color1,
+                  color2: color2,
                   size: 38,
                 ),
                 const SizedBox(width: 13),
@@ -286,22 +291,18 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(r.cylinder?.name ?? '', style: const TextStyle(fontWeight: FontWeight.w700)),
-                      Text('${r.qty} pcs · ${r.returnDate}',
-                          style: TextStyle(fontSize: 13, color: context.text2Color)),
+                      Text(b.cylinderName, style: const TextStyle(fontWeight: FontWeight.w700)),
+                      Text('${b.cylinderSize} kg', style: TextStyle(fontSize: 12, color: context.text3Color)),
                     ],
                   ),
                 ),
-                if (r.isExtra)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: AppColors.orange.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(99),
-                    ),
-                    child: const Text('EXTRA',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.orange)),
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('${b.pendingQty}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: AppColors.red)),
+                    const Text('PENDING', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.text3Light)),
+                  ],
+                ),
               ],
             ),
           ),

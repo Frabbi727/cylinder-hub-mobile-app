@@ -7,32 +7,32 @@ part of 'cylinder_model.dart';
 // **************************************************************************
 
 Cylinder _$CylinderFromJson(Map<String, dynamic> json) => Cylinder(
-  id: (json['id'] as num).toInt(),
-  name: json['name'] as String,
-  size: json['size'] as String,
-  shortCode: json['short_code'] as String?,
-  color1: json['color1'] as String?,
-  color2: json['color2'] as String?,
-  reorderLevel: _toIntNull(json['reorder_level']),
-  capacity: _toIntNull(json['capacity']),
-  status: json['status'] as String?,
-  stock: json['stock'] == null
-      ? null
-      : CylinderStock.fromJson(json['stock'] as Map<String, dynamic>),
-);
+      id: (json['id'] as num).toInt(),
+      name: _toString(json['name']),
+      size: _toString(json['size']),
+      shortCode: _toStringNull(json['short_code']),
+      color1: _toStringNull(json['color1']),
+      color2: _toStringNull(json['color2']),
+      reorderLevel: _toIntNull(json['reorder_level']),
+      capacity: _toIntNull(json['capacity']),
+      status: _toStringNull(json['status']),
+      stock: json['stock'] == null
+          ? null
+          : CylinderStock.fromJson(json['stock'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$CylinderToJson(Cylinder instance) => <String, dynamic>{
-  'id': instance.id,
-  'name': instance.name,
-  'size': instance.size,
-  'short_code': instance.shortCode,
-  'color1': instance.color1,
-  'color2': instance.color2,
-  'reorder_level': instance.reorderLevel,
-  'capacity': instance.capacity,
-  'status': instance.status,
-  'stock': instance.stock?.toJson(),
-};
+      'id': instance.id,
+      'name': instance.name,
+      'size': instance.size,
+      'short_code': instance.shortCode,
+      'color1': instance.color1,
+      'color2': instance.color2,
+      'reorder_level': instance.reorderLevel,
+      'capacity': instance.capacity,
+      'status': instance.status,
+      'stock': instance.stock?.toJson(),
+    };
 
 CylinderStock _$CylinderStockFromJson(Map<String, dynamic> json) =>
     CylinderStock(

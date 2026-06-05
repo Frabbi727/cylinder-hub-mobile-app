@@ -2,6 +2,7 @@ import '../../../core/base/base_repository.dart';
 import '../../../data/api/endpoints.dart';
 import '../../../data/models/api_response.dart';
 import '../../../data/models/customer_model.dart';
+import '../../../data/models/customer_response_models.dart';
 import '../../../data/models/return_model.dart';
 import '../../../data/models/sale_model.dart';
 
@@ -41,11 +42,11 @@ class CustomerRepository extends BaseRepository {
     );
   }
 
-  Future<ApiResponse<List<CylinderReturn>>> getCustomerEmpties(int id) async {
+  Future<ApiResponse<CustomerEmptyResponse>> getCustomerEmpties(int id) async {
     final response = await apiClient.get(Endpoints.customerEmpties(id));
-    return ApiResponse<List<CylinderReturn>>.fromJson(
+    return ApiResponse<CustomerEmptyResponse>.fromJson(
       response.data,
-      (json) => (json as List).map((i) => CylinderReturn.fromJson(i as Map<String, dynamic>)).toList(),
+      (json) => CustomerEmptyResponse.fromJson(json as Map<String, dynamic>),
     );
   }
 

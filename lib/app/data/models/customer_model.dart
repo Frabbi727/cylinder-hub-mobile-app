@@ -6,8 +6,11 @@ part 'customer_model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class Customer extends Equatable {
   final int id;
+  @JsonKey(fromJson: _toString)
   final String name;
+  @JsonKey(fromJson: _toStringNull)
   final String? phone;
+  @JsonKey(fromJson: _toStringNull)
   final String? address;
   @JsonKey(name: 'total_due', fromJson: _toDoubleNull)
   final double? totalDue;
@@ -17,14 +20,14 @@ class Customer extends Equatable {
   final double? totalPaid;
   @JsonKey(name: 'added_by', fromJson: _toIntNull)
   final int? addedBy;
-  @JsonKey(name: 'is_active')
+  @JsonKey(name: 'is_active', fromJson: _toBoolNull)
   final bool? isActive;
-  @JsonKey(name: 'created_at')
+  @JsonKey(name: 'created_at', fromJson: _toStringNull)
   final String? createdAt;
 
   const Customer({
     required this.id,
-    required this.name,
+    this.name = '',
     this.phone,
     this.address,
     this.totalDue,
@@ -57,27 +60,29 @@ class Customer extends Equatable {
 class OverdueCustomer extends Equatable {
   @JsonKey(name: 'customer_id', fromJson: _toInt)
   final int customerId;
+  @JsonKey(fromJson: _toString)
   final String name;
+  @JsonKey(fromJson: _toStringNull)
   final String? phone;
   @JsonKey(name: 'total_due', fromJson: _toDouble)
   final double totalDue;
-  @JsonKey(name: 'oldest_due_date')
+  @JsonKey(name: 'oldest_due_date', fromJson: _toString)
   final String oldestDueDate;
   @JsonKey(name: 'days_overdue', fromJson: _toInt)
   final int daysOverdue;
   @JsonKey(name: 'unpaid_sales_count', fromJson: _toInt)
   final int unpaidSalesCount;
-  @JsonKey(name: 'salesman_name')
+  @JsonKey(name: 'salesman_name', fromJson: _toStringNull)
   final String? salesmanName;
 
   const OverdueCustomer({
-    required this.customerId,
-    required this.name,
+    this.customerId = 0,
+    this.name = '',
     this.phone,
-    required this.totalDue,
-    required this.oldestDueDate,
-    required this.daysOverdue,
-    required this.unpaidSalesCount,
+    this.totalDue = 0.0,
+    this.oldestDueDate = '',
+    this.daysOverdue = 0,
+    this.unpaidSalesCount = 0,
     this.salesmanName,
   });
 
@@ -97,6 +102,19 @@ class OverdueCustomer extends Equatable {
       ];
 }
 
+String _toString(dynamic v) => v?.toString() ?? '';
+String? _toStringNull(dynamic v) => v?.toString();
+bool _toBool(dynamic v) {
+  if (v == null) return false;
+  if (v is bool) return v;
+  if (v is int) return v != 0;
+  if (v is String) {
+    final s = v.toLowerCase();
+    return s == 'true' || s == '1' || s == 'yes' || s == 'active';
+  }
+  return false;
+}
+bool? _toBoolNull(dynamic v) => v == null ? null : _toBool(v);
 double _toDouble(dynamic v) { if (v == null) return 0.0; if (v is double) return v; if (v is int) return v.toDouble(); if (v is String) return double.tryParse(v) ?? 0.0; return (v as num).toDouble(); }
 int _toInt(dynamic v) { if (v == null) return 0; if (v is int) return v; if (v is double) return v.toInt(); if (v is String) return int.tryParse(v) ?? 0; return (v as num).toInt(); }
 double? _toDoubleNull(dynamic v) => v == null ? null : _toDouble(v);

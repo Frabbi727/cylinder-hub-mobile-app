@@ -9,7 +9,7 @@ class Allocation extends Equatable {
   final int id;
   @JsonKey(name: 'cylinder_id', fromJson: _toInt)
   final int cylinderId;
-  @JsonKey(name: 'allocation_date')
+  @JsonKey(name: 'allocation_date', fromJson: _toString)
   final String allocationDate;
   @JsonKey(fromJson: _toInt)
   final int qty;
@@ -21,7 +21,7 @@ class Allocation extends Equatable {
   final int returnedQty;
   @JsonKey(name: 'collected_amount', fromJson: _toDouble)
   final double collectedAmount;
-  @JsonKey(name: 'is_reconciled')
+  @JsonKey(name: 'is_reconciled', fromJson: _toBool)
   final bool isReconciled;
   @JsonKey(name: 'with_salesman', fromJson: _toInt)
   final int withSalesman;
@@ -37,16 +37,16 @@ class Allocation extends Equatable {
 
   const Allocation({
     required this.id,
-    required this.cylinderId,
-    required this.allocationDate,
-    required this.qty,
-    required this.salePrice,
-    required this.soldQty,
-    required this.returnedQty,
-    required this.collectedAmount,
-    required this.isReconciled,
-    required this.withSalesman,
-    required this.soldPct,
+    this.cylinderId = 0,
+    this.allocationDate = '',
+    this.qty = 0,
+    this.salePrice = 0.0,
+    this.soldQty = 0,
+    this.returnedQty = 0,
+    this.collectedAmount = 0.0,
+    this.isReconciled = false,
+    this.withSalesman = 0,
+    this.soldPct = 0,
     this.cashCollectedActual,
     this.dueFromSales,
     this.customerDues,
@@ -78,13 +78,14 @@ class Allocation extends Equatable {
 
 @JsonSerializable(explicitToJson: true)
 class CustomerDue extends Equatable {
+  @JsonKey(fromJson: _toString)
   final String customer;
   @JsonKey(name: 'due_amount', fromJson: _toDouble)
   final double dueAmount;
 
   const CustomerDue({
-    required this.customer,
-    required this.dueAmount,
+    this.customer = '',
+    this.dueAmount = 0.0,
   });
 
   factory CustomerDue.fromJson(Map<String, dynamic> json) => _$CustomerDueFromJson(json);
@@ -94,6 +95,18 @@ class CustomerDue extends Equatable {
   List<Object?> get props => [customer, dueAmount];
 }
 
+String _toString(dynamic v) => v?.toString() ?? '';
+String? _toStringNull(dynamic v) => v?.toString();
+bool _toBool(dynamic v) {
+  if (v == null) return false;
+  if (v is bool) return v;
+  if (v is int) return v != 0;
+  if (v is String) {
+    final s = v.toLowerCase();
+    return s == 'true' || s == '1' || s == 'yes' || s == 'active';
+  }
+  return false;
+}
 double _toDouble(dynamic v) { if (v == null) return 0.0; if (v is double) return v; if (v is int) return v.toDouble(); if (v is String) return double.tryParse(v) ?? 0.0; return (v as num).toDouble(); }
 int _toInt(dynamic v) { if (v == null) return 0; if (v is int) return v; if (v is double) return v.toInt(); if (v is String) return int.tryParse(v) ?? 0; return (v as num).toInt(); }
 double? _toDoubleNull(dynamic v) => v == null ? null : _toDouble(v);

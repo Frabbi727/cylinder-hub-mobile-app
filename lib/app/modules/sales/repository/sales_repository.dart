@@ -19,13 +19,13 @@ class SalesRepository extends BaseRepository {
     final response = await apiClient.get(
       Endpoints.sales,
       queryParameters: {
-        'today': ?today,
-        'has_due': ?hasDue,
-        'from': ?from,
-        'to': ?to,
-        'payment_type': ?paymentType,
-        'search': ?search,
-        'page': ?page,
+        if (today != null) 'today': today,
+        if (hasDue != null) 'has_due': hasDue,
+        if (from != null) 'from': from,
+        if (to != null) 'to': to,
+        if (paymentType != null) 'payment_type': paymentType,
+        if (search != null) 'search': search,
+        if (page != null) 'page': page,
       },
     );
     return ApiResponse<List<Sale>>.fromJson(

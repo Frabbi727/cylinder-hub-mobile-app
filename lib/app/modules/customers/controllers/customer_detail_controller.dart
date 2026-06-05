@@ -1,7 +1,8 @@
 import 'package:get/get.dart';
 import '../../../core/base/base_controller.dart';
+import '../../../data/models/api_response.dart';
 import '../../../data/models/customer_model.dart';
-import '../../../data/models/return_model.dart';
+import '../../../data/models/customer_response_models.dart';
 import '../../../data/models/sale_model.dart';
 import '../repository/customer_repository.dart';
 
@@ -10,7 +11,7 @@ class CustomerDetailController extends BaseController {
 
   final customer = Rxn<Customer>();
   final sales = <Sale>[].obs;
-  final empties = <CylinderReturn>[].obs;
+  final empties = <CustomerEmptyBalance>[].obs;
   final selectedTab = 0.obs;
 
   CustomerDetailController({required this.repository});
@@ -31,18 +32,18 @@ class CustomerDetailController extends BaseController {
         repository.getCustomerEmpties(customerId),
       ]);
 
-      final customerResp = results[0] as dynamic;
-      final salesResp = results[1] as dynamic;
-      final emptiesResp = results[2] as dynamic;
+      final customerResp = results[0] as ApiResponse<Customer>;
+      final salesResp = results[1] as ApiResponse<List<Sale>>;
+      final emptiesResp = results[2] as ApiResponse<CustomerEmptyResponse>;
 
       if (customerResp.success && customerResp.data != null) {
         customer.value = customerResp.data;
       }
       if (salesResp.success && salesResp.data != null) {
-        sales.assignAll(salesResp.data);
+        sales.assignAll(salesResp.data!);
       }
       if (emptiesResp.success && emptiesResp.data != null) {
-        empties.assignAll(emptiesResp.data);
+        empties.assignAll(emptiesResp.data!.balances);
       }
     } catch (e) {
       handleError(e.toString());

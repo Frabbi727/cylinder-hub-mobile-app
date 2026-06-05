@@ -7,41 +7,41 @@ part of 'customer_model.dart';
 // **************************************************************************
 
 Customer _$CustomerFromJson(Map<String, dynamic> json) => Customer(
-  id: (json['id'] as num).toInt(),
-  name: json['name'] as String,
-  phone: json['phone'] as String?,
-  address: json['address'] as String?,
-  totalDue: _toDoubleNull(json['total_due']),
-  totalRevenue: _toDoubleNull(json['total_revenue']),
-  totalPaid: _toDoubleNull(json['total_paid']),
-  addedBy: _toIntNull(json['added_by']),
-  isActive: json['is_active'] as bool?,
-  createdAt: json['created_at'] as String?,
-);
+      id: (json['id'] as num).toInt(),
+      name: _toString(json['name']),
+      phone: _toStringNull(json['phone']),
+      address: _toStringNull(json['address']),
+      totalDue: _toDoubleNull(json['total_due']),
+      totalRevenue: _toDoubleNull(json['total_revenue']),
+      totalPaid: _toDoubleNull(json['total_paid']),
+      addedBy: _toIntNull(json['added_by']),
+      isActive: _toBoolNull(json['is_active']),
+      createdAt: _toStringNull(json['created_at']),
+    );
 
 Map<String, dynamic> _$CustomerToJson(Customer instance) => <String, dynamic>{
-  'id': instance.id,
-  'name': instance.name,
-  'phone': instance.phone,
-  'address': instance.address,
-  'total_due': instance.totalDue,
-  'total_revenue': instance.totalRevenue,
-  'total_paid': instance.totalPaid,
-  'added_by': instance.addedBy,
-  'is_active': instance.isActive,
-  'created_at': instance.createdAt,
-};
+      'id': instance.id,
+      'name': instance.name,
+      'phone': instance.phone,
+      'address': instance.address,
+      'total_due': instance.totalDue,
+      'total_revenue': instance.totalRevenue,
+      'total_paid': instance.totalPaid,
+      'added_by': instance.addedBy,
+      'is_active': instance.isActive,
+      'created_at': instance.createdAt,
+    };
 
 OverdueCustomer _$OverdueCustomerFromJson(Map<String, dynamic> json) =>
     OverdueCustomer(
       customerId: _toInt(json['customer_id']),
-      name: json['name'] as String,
-      phone: json['phone'] as String?,
+      name: _toString(json['name']),
+      phone: _toStringNull(json['phone']),
       totalDue: _toDouble(json['total_due']),
-      oldestDueDate: json['oldest_due_date'] as String,
+      oldestDueDate: _toString(json['oldest_due_date']),
       daysOverdue: _toInt(json['days_overdue']),
       unpaidSalesCount: _toInt(json['unpaid_sales_count']),
-      salesmanName: json['salesman_name'] as String?,
+      salesmanName: _toStringNull(json['salesman_name']),
     );
 
 Map<String, dynamic> _$OverdueCustomerToJson(OverdueCustomer instance) =>

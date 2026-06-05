@@ -7,26 +7,30 @@ part 'user_model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class User extends Equatable {
   final int id;
+  @JsonKey(fromJson: _toString)
   final String name;
+  @JsonKey(fromJson: _toString)
   final String email;
+  @JsonKey(fromJson: _toStringNull)
   final String? phone;
+  @JsonKey(fromJson: _toString)
   final String role;
-  @JsonKey(name: 'avatar_initials')
+  @JsonKey(name: 'avatar_initials', fromJson: _toStringNull)
   final String? avatarInitials;
-  @JsonKey(name: 'is_active')
+  @JsonKey(name: 'is_active', fromJson: _toBoolNull)
   final bool? isActive;
-  @JsonKey(name: 'unread_notifications')
+  @JsonKey(name: 'unread_notifications', fromJson: _toIntNull)
   final int? unreadNotifications;
   final List<Allocation>? allocations;
 
   const User({
     required this.id,
-    required this.name,
-    required this.email,
+    this.name = '',
+    this.email = '',
     this.phone,
-    required this.role,
+    this.role = '',
     this.avatarInitials,
-     this.isActive,
+    this.isActive,
     this.unreadNotifications,
     this.allocations,
   });
@@ -41,21 +45,21 @@ class User extends Equatable {
 @JsonSerializable(explicitToJson: true)
 class AuthResponse extends Equatable {
   final User user;
-  @JsonKey(name: 'access_token')
+  @JsonKey(name: 'access_token', fromJson: _toString)
   final String accessToken;
-  @JsonKey(name: 'refresh_token')
+  @JsonKey(name: 'refresh_token', fromJson: _toString)
   final String refreshToken;
-  @JsonKey(name: 'token_type')
+  @JsonKey(name: 'token_type', fromJson: _toString)
   final String tokenType;
-  @JsonKey(name: 'expires_in')
+  @JsonKey(name: 'expires_in', fromJson: _toInt)
   final int expiresIn;
 
   const AuthResponse({
     required this.user,
-    required this.accessToken,
-    required this.refreshToken,
-    required this.tokenType,
-    required this.expiresIn,
+    this.accessToken = '',
+    this.refreshToken = '',
+    this.tokenType = '',
+    this.expiresIn = 0,
   });
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) => _$AuthResponseFromJson(json);
@@ -65,6 +69,19 @@ class AuthResponse extends Equatable {
   List<Object?> get props => [user, accessToken, refreshToken, tokenType, expiresIn];
 }
 
+String _toString(dynamic v) => v?.toString() ?? '';
+String? _toStringNull(dynamic v) => v?.toString();
+bool _toBool(dynamic v) {
+  if (v == null) return false;
+  if (v is bool) return v;
+  if (v is int) return v != 0;
+  if (v is String) {
+    final s = v.toLowerCase();
+    return s == 'true' || s == '1' || s == 'yes' || s == 'active';
+  }
+  return false;
+}
+bool? _toBoolNull(dynamic v) => v == null ? null : _toBool(v);
 double _toDouble(dynamic v) { if (v == null) return 0.0; if (v is double) return v; if (v is int) return v.toDouble(); if (v is String) return double.tryParse(v) ?? 0.0; return (v as num).toDouble(); }
 int _toInt(dynamic v) { if (v == null) return 0; if (v is int) return v; if (v is double) return v.toInt(); if (v is String) return int.tryParse(v) ?? 0; return (v as num).toInt(); }
 double? _toDoubleNull(dynamic v) => v == null ? null : _toDouble(v);

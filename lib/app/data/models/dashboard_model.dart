@@ -54,17 +54,17 @@ class DashboardStats extends Equatable {
   final double todayProfit;
 
   const DashboardStats({
-    required this.totalAllocated,
-    required this.totalSold,
-    required this.totalReturned,
-    required this.totalRemaining,
-    required this.cashCollected,
-    required this.todayTotalSalesAmount,
-    required this.todayDueAmount,
-    required this.pendingDueCollections,
-    required this.totalCashToHandIn,
-    required this.totalOutstandingDues,
-    required this.todayProfit,
+    this.totalAllocated = 0,
+    this.totalSold = 0,
+    this.totalReturned = 0,
+    this.totalRemaining = 0,
+    this.cashCollected = 0.0,
+    this.todayTotalSalesAmount = 0.0,
+    this.todayDueAmount = 0.0,
+    this.pendingDueCollections = 0.0,
+    this.totalCashToHandIn = 0.0,
+    this.totalOutstandingDues = 0.0,
+    this.todayProfit = 0.0,
   });
 
   factory DashboardStats.fromJson(Map<String, dynamic> json) => _$DashboardStatsFromJson(json);
@@ -86,7 +86,6 @@ class DashboardStats extends Equatable {
       ];
 }
 
-// Safe parsers — API may return numeric fields as strings
 double _toDouble(dynamic v) {
   if (v == null) return 0.0;
   if (v is double) return v;

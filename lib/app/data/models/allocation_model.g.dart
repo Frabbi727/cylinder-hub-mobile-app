@@ -7,26 +7,26 @@ part of 'allocation_model.dart';
 // **************************************************************************
 
 Allocation _$AllocationFromJson(Map<String, dynamic> json) => Allocation(
-  id: (json['id'] as num).toInt(),
-  cylinderId: _toInt(json['cylinder_id']),
-  allocationDate: json['allocation_date'] as String,
-  qty: _toInt(json['qty']),
-  salePrice: _toDouble(json['sale_price']),
-  soldQty: _toInt(json['sold_qty']),
-  returnedQty: _toInt(json['returned_qty']),
-  collectedAmount: _toDouble(json['collected_amount']),
-  isReconciled: json['is_reconciled'] as bool,
-  withSalesman: _toInt(json['with_salesman']),
-  soldPct: _toInt(json['sold_pct']),
-  cashCollectedActual: _toDoubleNull(json['cash_collected_actual']),
-  dueFromSales: _toDoubleNull(json['due_from_sales']),
-  customerDues: (json['customer_dues'] as List<dynamic>?)
-      ?.map((e) => CustomerDue.fromJson(e as Map<String, dynamic>))
-      .toList(),
-  cylinder: json['cylinder'] == null
-      ? null
-      : Cylinder.fromJson(json['cylinder'] as Map<String, dynamic>),
-);
+      id: (json['id'] as num).toInt(),
+      cylinderId: _toInt(json['cylinder_id']),
+      allocationDate: _toString(json['allocation_date']),
+      qty: _toInt(json['qty']),
+      salePrice: _toDouble(json['sale_price']),
+      soldQty: _toInt(json['sold_qty']),
+      returnedQty: _toInt(json['returned_qty']),
+      collectedAmount: _toDouble(json['collected_amount']),
+      isReconciled: _toBool(json['is_reconciled']),
+      withSalesman: _toInt(json['with_salesman']),
+      soldPct: _toInt(json['sold_pct']),
+      cashCollectedActual: _toDoubleNull(json['cash_collected_actual']),
+      dueFromSales: _toDoubleNull(json['due_from_sales']),
+      customerDues: (json['customer_dues'] as List<dynamic>?)
+          ?.map((e) => CustomerDue.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      cylinder: json['cylinder'] == null
+          ? null
+          : Cylinder.fromJson(json['cylinder'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$AllocationToJson(Allocation instance) =>
     <String, dynamic>{
@@ -48,9 +48,9 @@ Map<String, dynamic> _$AllocationToJson(Allocation instance) =>
     };
 
 CustomerDue _$CustomerDueFromJson(Map<String, dynamic> json) => CustomerDue(
-  customer: json['customer'] as String,
-  dueAmount: _toDouble(json['due_amount']),
-);
+      customer: _toString(json['customer']),
+      dueAmount: _toDouble(json['due_amount']),
+    );
 
 Map<String, dynamic> _$CustomerDueToJson(CustomerDue instance) =>
     <String, dynamic>{
