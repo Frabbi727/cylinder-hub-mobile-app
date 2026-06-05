@@ -19,6 +19,8 @@ import '../modules/empty_returns/bindings/empty_returns_binding.dart';
 import '../modules/empty_returns/views/empty_returns_view.dart';
 import '../modules/notifications/bindings/notifications_binding.dart';
 import '../modules/notifications/views/notifications_view.dart';
+import '../modules/my_reports/bindings/my_reports_binding.dart';
+import '../modules/my_reports/views/my_reports_view.dart';
 
 part 'app_routes.dart';
 
@@ -75,6 +77,11 @@ class AppPages {
       name: Routes.NOTIFICATIONS,
       page: () => const NotificationsView(),
       binding: NotificationsBinding(),
+    ),
+    GetPage(
+      name: Routes.MY_REPORTS,
+      page: () => const MyReportsView(),
+      binding: MyReportsBinding(),
     ),
   ];
 }

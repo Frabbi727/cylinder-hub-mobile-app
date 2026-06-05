@@ -5,7 +5,6 @@ import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../controllers/my_reports_controller.dart';
-import '../../main_navigation/controllers/main_navigation_controller.dart';
 
 class MyReportsView extends GetView<MyReportsController> {
   const MyReportsView({super.key});
@@ -20,7 +19,7 @@ class MyReportsView extends GetView<MyReportsController> {
             sub: 'Personal performance overview',
             accent: AppColors.reportsGradient,
             curve: true,
-            onBack: () => Get.find<MainNavigationController>().changeIndex(0),
+            onBack: () => Get.back(),
           ),
           _buildPeriodTabs(context),
           Expanded(
@@ -29,7 +28,7 @@ class MyReportsView extends GetView<MyReportsController> {
                 return const Center(child: CircularProgressIndicator());
               }
               return RefreshIndicator(
-                onRefresh: controller.fetchReport,
+                onRefresh: controller.fetchAllData,
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -40,17 +39,29 @@ class MyReportsView extends GetView<MyReportsController> {
                       const SizedBox(height: 10),
                       _buildKpiGrid(),
                       const SizedBox(height: 24),
-                      _buildSectionLabel(context, 'Revenue Trend'),
+                      _buildSectionLabel(context, 'Daily Revenue Trend'),
                       const SizedBox(height: 10),
                       _buildRevenueChart(context),
                       const SizedBox(height: 24),
-                      _buildSectionLabel(context, 'Payment Breakdown'),
+                      _buildSectionLabel(context, 'Payment Types'),
                       const SizedBox(height: 10),
-                      _buildPaymentChart(context),
+                      _buildPaymentDonut(context),
                       const SizedBox(height: 24),
-                      _buildSectionLabel(context, 'Financial Summary'),
+                      _buildSectionLabel(context, 'Cylinder Allocation'),
                       const SizedBox(height: 10),
-                      _buildFinancialCard(context),
+                      _buildAllocationBarChart(context),
+                      const SizedBox(height: 24),
+                      _buildSectionLabel(context, 'Performance Summary'),
+                      const SizedBox(height: 10),
+                      _buildPerformanceList(context),
+                      const SizedBox(height: 24),
+                      _buildSectionLabel(context, 'Cylinder Flow'),
+                      const SizedBox(height: 10),
+                      _buildCylinderFlowTable(context),
+                      const SizedBox(height: 24),
+                      _buildSectionLabel(context, 'Today\'s Collections'),
+                      const SizedBox(height: 10),
+                      _buildDailyCollections(context),
                       const SizedBox(height: 40),
                     ],
                   ),
@@ -93,10 +104,12 @@ class MyReportsView extends GetView<MyReportsController> {
               color: isSelected ? context.surfaceColor : Colors.transparent,
               borderRadius: BorderRadius.circular(9),
               boxShadow: isSelected
-                  ? [BoxShadow(
-                      color: AppColors.shadowColor.withValues(alpha: 0.06),
-                      blurRadius: 2,
-                      offset: const Offset(0, 1))]
+                  ? [
+                      BoxShadow(
+                          color: AppColors.shadowColor.withValues(alpha: 0.06),
+                          blurRadius: 2,
+                          offset: const Offset(0, 1))
+                    ]
                   : null,
             ),
             child: Text(
@@ -123,12 +136,14 @@ class MyReportsView extends GetView<MyReportsController> {
       crossAxisSpacing: 10,
       childAspectRatio: 1.7,
       children: [
-        _kpiCard('Allocated', '${r?.totalAllocated ?? 0} pcs', AppColors.vibrantBlueGradient),
-        _kpiCard('Sold', '${r?.totalSold ?? 0} pcs', AppColors.mintGradient),
-        _kpiCard('Sell-through', '${((r?.sellThroughRate ?? 0) * 100).toStringAsFixed(1)}%', AppColors.reportsGradient),
-        _kpiCard('Collection Rate', '${(r?.collectionRatePct ?? 0).toStringAsFixed(1)}%', AppColors.orangeGradient),
-        _kpiCard('Customers', '${r?.customersReached ?? 0}', AppColors.homeGradient),
-        _kpiCard('Returned', '${r?.totalReturned ?? 0} pcs', AppColors.historyGradient),
+        _kpiCard('Revenue', '৳${_compactNum(r?.totalRevenue ?? 0)}',
+            AppColors.vibrantBlueGradient),
+        _kpiCard('Cash Collected', '৳${_compactNum(r?.totalCashCollected ?? 0)}',
+            AppColors.mintGradient),
+        _kpiCard('Units Sold', '${r?.totalSold ?? 0} pcs',
+            AppColors.reportsGradient),
+        _kpiCard('Outstanding', '৳${_compactNum(r?.stillOutstanding ?? 0)}',
+            AppColors.orangeGradient),
       ],
     );
   }
@@ -145,10 +160,15 @@ class MyReportsView extends GetView<MyReportsController> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label,
-              style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
+              style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600)),
           Text(value,
               style: const TextStyle(
-                  color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900)),
         ],
       ),
     );
@@ -157,9 +177,8 @@ class MyReportsView extends GetView<MyReportsController> {
   Widget _buildRevenueChart(BuildContext context) {
     final spots = controller.dailyRevenueSpots;
     if (spots.isEmpty) {
-      return _emptyChartPlaceholder(context, 'No revenue data for this period');
+      return _emptyCard(context, 'No revenue data for this period');
     }
-    final maxY = spots.map((s) => s.y).reduce((a, b) => a > b ? a : b) * 1.3;
     return Card(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 20, 20, 12),
@@ -167,28 +186,30 @@ class MyReportsView extends GetView<MyReportsController> {
           height: 180,
           child: LineChart(
             LineChartData(
-              minY: 0,
-              maxY: maxY == 0 ? 100 : maxY,
+              maxY: controller.maxRevenue,
               gridData: FlGridData(
-                show: true,
-                drawVerticalLine: false,
-                getDrawingHorizontalLine: (_) =>
-                    FlLine(color: context.lineColor, strokeWidth: 1),
-              ),
+                  show: true,
+                  drawVerticalLine: false,
+                  getDrawingHorizontalLine: (_) =>
+                      FlLine(color: context.lineColor, strokeWidth: 1)),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 46,
-                    getTitlesWidget: (v, _) => Text(
-                      '৳${_compactNum(v)}',
-                      style: TextStyle(fontSize: 10, color: context.text3Color),
-                    ),
+                    reservedSize: 40,
+                    getTitlesWidget: (v, _) => Text('৳${_compactNum(v)}',
+                        style:
+                            TextStyle(fontSize: 10, color: context.text3Color)),
                   ),
                 ),
-                bottomTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (v, _) => Text(
+                            (v.toInt() % 5 == 0) ? '${v.toInt() + 1}' : '',
+                            style: TextStyle(
+                                fontSize: 10, color: context.text3Color)))),
                 rightTitles:
                     AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 topTitles:
@@ -199,12 +220,8 @@ class MyReportsView extends GetView<MyReportsController> {
                   spots: spots,
                   isCurved: true,
                   color: AppColors.blue,
-                  barWidth: 2.5,
-                  dotData: FlDotData(
-                    show: true,
-                    getDotPainter: (p0, p1, p2, p3) => FlDotCirclePainter(
-                        radius: 3, color: AppColors.blue, strokeWidth: 0),
-                  ),
+                  barWidth: 3,
+                  dotData: const FlDotData(show: false),
                   belowBarData: BarAreaData(
                     show: true,
                     gradient: LinearGradient(
@@ -218,18 +235,6 @@ class MyReportsView extends GetView<MyReportsController> {
                   ),
                 ),
               ],
-              lineTouchData: LineTouchData(
-                touchTooltipData: LineTouchTooltipData(
-                  getTooltipItems: (spots) => spots
-                      .map((s) => LineTooltipItem(
-                            '৳${s.y.toStringAsFixed(0)}',
-                            const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ))
-                      .toList(),
-                ),
-              ),
             ),
           ),
         ),
@@ -237,98 +242,110 @@ class MyReportsView extends GetView<MyReportsController> {
     );
   }
 
-  Widget _buildPaymentChart(BuildContext context) {
-    final bars = controller.payBreakdownBars;
-    if (bars.isEmpty) {
-      return _emptyChartPlaceholder(context, 'No payment data for this period');
-    }
-    final labels = ['Cash', 'Partial', 'Due'];
-    final colors = [AppColors.green, AppColors.orange, AppColors.red];
+  Widget _buildPaymentDonut(BuildContext context) {
+    final sections = controller.paymentTypeSections;
+    if (sections.isEmpty) return _emptyCard(context, 'No payment data');
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 20, 20, 12),
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            SizedBox(
+              height: 120,
+              width: 120,
+              child: PieChart(
+                PieChartData(
+                  sections: sections,
+                  centerSpaceRadius: 30,
+                  sectionsSpace: 2,
+                ),
+              ),
+            ),
+            const SizedBox(width: 30),
+            Expanded(
+              child: Column(
+                children: [
+                  _legendItem('Cash', const Color(0xFF16A34A)),
+                  _legendItem('Partial', const Color(0xFFFF7A45)),
+                  _legendItem('Due', const Color(0xFFEF4444)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _legendItem(String label, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+          const SizedBox(width: 8),
+          Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAllocationBarChart(BuildContext context) {
+    final bars = controller.allocationBars;
+    if (bars.isEmpty) return _emptyCard(context, 'No allocations found');
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
         child: Column(
           children: [
             SizedBox(
-              height: 160,
+              height: 180,
               child: BarChart(
                 BarChartData(
-                  maxY: controller.maxBarValue,
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: false,
-                    getDrawingHorizontalLine: (_) =>
-                        FlLine(color: context.lineColor, strokeWidth: 1),
-                  ),
+                  barGroups: bars,
+                  gridData: FlGridData(show: false),
                   borderData: FlBorderData(show: false),
-                  barTouchData: BarTouchData(
-                    touchTooltipData: BarTouchTooltipData(
-                      getTooltipItem: (group, g2, rod, r2) => BarTooltipItem(
-                        '${rod.toY.toInt()} sales',
-                        const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
                   titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (v, _) => Padding(
-                          padding: const EdgeInsets.only(top: 6),
-                          child: Text(
-                            v.toInt() < labels.length ? labels[v.toInt()] : '',
-                            style: TextStyle(
-                                fontSize: 11,
-                                color: context.text2Color,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 28,
-                        getTitlesWidget: (v, _) => Text(
-                          v.toInt().toString(),
-                          style: TextStyle(
-                              fontSize: 10, color: context.text3Color),
-                        ),
-                      ),
-                    ),
+                    leftTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     rightTitles:
                         AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     topTitles:
                         AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (v, _) {
+                          final allocs = controller.report.value?.allocations;
+                          if (allocs == null || v.toInt() >= allocs.length) {
+                            return const Text('');
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(allocs[v.toInt()].cylinder?.size ?? '',
+                                style: TextStyle(
+                                    fontSize: 9, color: context.text3Color)),
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                  barGroups: bars,
                 ),
               ),
             ),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                3,
-                (i) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    children: [
-                      Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                              color: colors[i], shape: BoxShape.circle)),
-                      const SizedBox(width: 4),
-                      Text(labels[i],
-                          style: TextStyle(
-                              fontSize: 12, color: context.text2Color)),
-                    ],
-                  ),
-                ),
-              ),
+              children: [
+                _legendItem('Sold', const Color(0xFF16A34A)),
+                const SizedBox(width: 20),
+                _legendItem('Returned', const Color(0xFFFF7A45)),
+              ],
             ),
           ],
         ),
@@ -336,100 +353,127 @@ class MyReportsView extends GetView<MyReportsController> {
     );
   }
 
-  Widget _buildFinancialCard(BuildContext context) {
+  Widget _buildPerformanceList(BuildContext context) {
     final r = controller.report.value;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _finRow(context, 'Total Revenue',
-                '৳${(r?.totalRevenue ?? 0).toStringAsFixed(0)}',
-                bold: true),
-            _divider(context),
-            _finRow(context, 'Cash Collected',
-                '৳${(r?.totalCashCollected ?? 0).toStringAsFixed(0)}',
-                color: AppColors.green),
-            _divider(context),
-            _finRow(context, 'Dues Created',
-                '৳${(r?.totalDuesCreated ?? 0).toStringAsFixed(0)}',
-                color: AppColors.orange),
-            _divider(context),
-            _finRow(context, 'Dues Collected',
-                '৳${(r?.totalDuesCollected ?? 0).toStringAsFixed(0)}',
-                color: AppColors.blue),
-            _divider(context),
-            _finRow(
-              context,
-              'Still Outstanding',
-              '৳${(r?.stillOutstanding ?? 0).toStringAsFixed(0)}',
-              color: (r?.stillOutstanding ?? 0) > 0
-                  ? AppColors.red
-                  : AppColors.green,
-              bold: true,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+    final sellThrough = (r?.sellThroughRate ?? 0) * 100;
+    final collRate = r?.collectionRatePct ?? 0;
 
-  Widget _finRow(BuildContext context, String label, String value,
-      {Color? color, bool bold = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Card(
+      child: Column(
         children: [
-          Text(label,
-              style: TextStyle(
-                  color: context.text2Color, fontWeight: FontWeight.w600)),
-          Text(value,
-              style: TextStyle(
-                fontWeight: bold ? FontWeight.w800 : FontWeight.w700,
-                fontSize: bold ? 16 : 15,
-                color: color,
-              )),
+          _performanceRow(context, 'Sell-through Rate', sellThrough, AppColors.blue),
+          _performanceRow(context, 'Collection Rate', collRate, AppColors.green),
+          _performanceRow(context, 'Customer Reach', 
+              (r?.customersReached ?? 0).toDouble(), AppColors.orange, isPct: false, max: 50),
         ],
       ),
     );
   }
 
-  Widget _divider(BuildContext context) =>
-      Divider(height: 1, color: context.lineColor);
-
-  Widget _buildSectionLabel(BuildContext context, String text) {
-    return Text(
-      text.toUpperCase(),
-      style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: context.text3Color,
-          letterSpacing: 0.05),
+  Widget _performanceRow(BuildContext context, String label, double val, Color color,
+      {bool isPct = true, double max = 100}) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+              Text(isPct ? '${val.toStringAsFixed(1)}%' : '${val.toInt()}',
+                  style: TextStyle(fontWeight: FontWeight.w800, color: color)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: val / max,
+              backgroundColor: context.lineColor,
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+              minHeight: 8,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _emptyChartPlaceholder(BuildContext context, String message) {
+  Widget _buildCylinderFlowTable(BuildContext context) {
+    final items = controller.cylinderFlow.value?.byCylinder;
+    if (items == null || items.isEmpty) return _emptyCard(context, 'No flow data');
+
     return Card(
-      child: SizedBox(
-        height: 120,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.bar_chart, color: context.text3Color, size: 32),
-              const SizedBox(height: 8),
-              Text(message,
-                  style: TextStyle(color: context.text3Color, fontSize: 13)),
-            ],
-          ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          columnSpacing: 20,
+          columns: const [
+            DataColumn(label: Text('Type')),
+            DataColumn(label: Text('Alloc')),
+            DataColumn(label: Text('Sold')),
+            DataColumn(label: Text('Ret')),
+            DataColumn(label: Text('Emp')),
+          ],
+          rows: items.map((i) {
+            return DataRow(cells: [
+              DataCell(Text(i.cylinderSize ?? '-')),
+              DataCell(Text('${i.allocated ?? 0}')),
+              DataCell(Text('${i.sold ?? 0}')),
+              DataCell(Text('${i.returnedUnsold ?? 0}')),
+              DataCell(Text('${i.emptiesCollected ?? 0}')),
+            ]);
+          }).toList(),
         ),
       ),
     );
   }
 
+  Widget _buildDailyCollections(BuildContext context) {
+    final dc = controller.dailyCollections.value;
+    if (dc == null || dc.collections == null || dc.collections!.isEmpty) {
+      return _emptyCard(context, 'No collections today');
+    }
+
+    return Column(
+      children: dc.collections!.map((c) {
+        return Card(
+          margin: const EdgeInsets.only(bottom: 8),
+          child: ListTile(
+            leading: const CircleAvatar(child: Icon(Icons.wallet)),
+            title: Text(c.customer?.name ?? 'Walk-in'),
+            subtitle: Text('Sale #${c.sale?.id ?? "-"} · ${c.collectionDate}'),
+            trailing: Text('৳${c.amount.toStringAsFixed(0)}',
+                style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.green)),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildSectionLabel(BuildContext context, String text) {
+    return Text(text.toUpperCase(),
+        style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            color: context.text3Color,
+            letterSpacing: 0.5));
+  }
+
+  Widget _emptyCard(BuildContext context, String msg) {
+    return Card(
+      child: Container(
+        height: 100,
+        alignment: Alignment.center,
+        child: Text(msg, style: TextStyle(color: context.text3Color)),
+      ),
+    );
+  }
+
   String _compactNum(double v) {
-    if (v >= 1000) return '${(v / 1000).toStringAsFixed(0)}k';
+    if (v >= 1000000) return '${(v / 1000000).toStringAsFixed(1)}M';
+    if (v >= 1000) return '${(v / 1000).toStringAsFixed(1)}k';
     return v.toStringAsFixed(0);
   }
 }

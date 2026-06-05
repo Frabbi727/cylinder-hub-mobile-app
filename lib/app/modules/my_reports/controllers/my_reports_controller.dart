@@ -3,8 +3,11 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../data/models/api_response.dart';
 import '../repository/my_reports_repository.dart';
 import '../../../data/models/report_model.dart';
+import '../../../data/models/cylinder_flow_model.dart';
+import '../../../data/models/daily_collection_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class MyReportsController extends BaseController {
@@ -12,6 +15,9 @@ class MyReportsController extends BaseController {
   final _authService = Get.find<AuthService>();
 
   final report = Rxn<SalesmanReport>();
+  final cylinderFlow = Rxn<CylinderFlowResponse>();
+  final dailyCollections = Rxn<DailyCollectionResponse>();
+
   final selectedPeriod = 'Month'.obs;
   String _fromDate = '';
   String _toDate = '';
@@ -22,7 +28,7 @@ class MyReportsController extends BaseController {
   void onInit() {
     super.onInit();
     _recalcDates();
-    fetchReport();
+    fetchAllData();
   }
 
   void _recalcDates() {
@@ -32,24 +38,38 @@ class MyReportsController extends BaseController {
       final monday = now.subtract(Duration(days: now.weekday - 1));
       _fromDate = DateFormat('yyyy-MM-dd').format(monday);
     } else {
-      _fromDate = DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
+      _fromDate =
+          DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
     }
   }
 
   void changePeriod(String period) {
     selectedPeriod.value = period;
     _recalcDates();
-    fetchReport();
+    fetchAllData();
   }
 
-  Future<void> fetchReport() async {
+  Future<void> fetchAllData() async {
     final userId = _authService.user.value?.id;
     if (userId == null) return;
     showLoading();
     try {
-      final response = await repository.getReport(userId, from: _fromDate, to: _toDate);
-      if (response.success && response.data != null) {
-        report.value = response.data;
+      final results = await Future.wait([
+        repository.getReport(userId, from: _fromDate, to: _toDate),
+        repository.getCylinderFlow(userId, from: _fromDate, to: _toDate),
+        repository.getDailyCollections(userId,
+            date: DateFormat('yyyy-MM-dd').format(DateTime.now())),
+      ]);
+
+      final reportResponse = results[0] as ApiResponse<SalesmanReport>;
+      final flowResponse = results[1] as ApiResponse<CylinderFlowResponse>;
+      final collectionsResponse =
+          results[2] as ApiResponse<DailyCollectionResponse>;
+
+      if (reportResponse.success) report.value = reportResponse.data;
+      if (flowResponse.success) cylinderFlow.value = flowResponse.data;
+      if (collectionsResponse.success) {
+        dailyCollections.value = collectionsResponse.data;
       }
     } catch (e) {
       handleError(e.toString());
@@ -61,39 +81,73 @@ class MyReportsController extends BaseController {
   List<FlSpot> get dailyRevenueSpots {
     final daily = report.value?.dailyRevenue;
     if (daily == null || daily.isEmpty) return [];
-    final sorted = daily.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
-    return sorted
-        .asMap()
-        .entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value.value))
-        .toList();
+
+    final from = DateTime.parse(_fromDate);
+    final to = DateTime.parse(_toDate);
+    final spots = <FlSpot>[];
+    var index = 0.0;
+
+    for (var date = from;
+        date.isBefore(to.add(const Duration(days: 1)));
+        date = date.add(const Duration(days: 1))) {
+      final dateStr = DateFormat('yyyy-MM-dd').format(date);
+      final revenue = daily[dateStr] ?? 0.0;
+      spots.add(FlSpot(index, revenue));
+      index += 1.0;
+    }
+    return spots;
   }
 
-  List<BarChartGroupData> get payBreakdownBars {
+  List<PieChartSectionData> get paymentTypeSections {
     final breakdown = report.value?.payBreakdown;
-    if (breakdown == null) return [];
-    final labels = ['cash', 'partial', 'due'];
-    final colors = [const Color(0xFF4CAF50), const Color(0xFFFF9800), const Color(0xFFF44336)];
-    return labels.asMap().entries.map((e) {
-      final count = (breakdown[e.value] ?? 0).toDouble();
+    if (breakdown == null || breakdown.isEmpty) return [];
+
+    final colors = {
+      'cash': const Color(0xFF16A34A),
+      'partial': const Color(0xFFFF7A45),
+      'due': const Color(0xFFEF4444),
+    };
+
+    return breakdown.entries.map((e) {
+      return PieChartSectionData(
+        value: e.value.toDouble(),
+        title: '${e.value}',
+        color: colors[e.key.toLowerCase()] ?? Colors.grey,
+        radius: 40,
+        titleStyle: const TextStyle(
+            fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+      );
+    }).toList();
+  }
+
+  List<BarChartGroupData> get allocationBars {
+    final allocs = report.value?.allocations;
+    if (allocs == null) return [];
+
+    return allocs.asMap().entries.map((e) {
+      final a = e.value;
       return BarChartGroupData(
         x: e.key,
         barRods: [
           BarChartRodData(
-            toY: count,
-            color: colors[e.key],
-            width: 28,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+            toY: a.qty.toDouble(),
+            color: const Color(0xFFE2E8F0),
+            width: 16,
+            borderRadius: BorderRadius.circular(4),
+            rodStackItems: [
+              BarChartRodStackItem(0, a.soldQty.toDouble(), const Color(0xFF16A34A)),
+              BarChartRodStackItem(a.soldQty.toDouble(),
+                  (a.soldQty + a.returnedQty).toDouble(), const Color(0xFFFF7A45)),
+            ],
           ),
         ],
       );
     }).toList();
   }
 
-  double get maxBarValue {
-    final breakdown = report.value?.payBreakdown;
-    if (breakdown == null || breakdown.isEmpty) return 10;
-    return (breakdown.values.reduce((a, b) => a > b ? a : b).toDouble() * 1.3).ceilToDouble();
+  double get maxRevenue {
+    final spots = dailyRevenueSpots;
+    if (spots.isEmpty) return 1000;
+    return spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.2;
   }
 }

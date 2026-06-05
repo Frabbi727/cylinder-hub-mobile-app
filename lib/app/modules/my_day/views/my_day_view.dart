@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shimmer/shimmer.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
 import '../../../core/values/languages/translation_keys.dart';
@@ -295,7 +294,7 @@ class MyDayView extends GetView<MyDayController> {
               tintColor: AppColors.pinkInk,
               bgColor: AppColors.pinkBgLight,
               label: TranslationKeys.myReports.tr,
-              onTap: () => Get.find<MainNavigationController>().changeIndex(4),
+              onTap: () => Get.toNamed(Routes.MY_REPORTS),
             ),
             QuickAction(
               icon: Icons.shopping_cart,

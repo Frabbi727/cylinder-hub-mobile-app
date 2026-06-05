@@ -8,6 +8,7 @@ class Endpoints {
   // Dashboard & Salesman
   static String salesmanDashboard(int id) => '/salesmen/$id';
   static String salesmanReport(int id) => '/salesmen/$id/report';
+  static String salesmanCylinderFlow(int id) => '/salesmen/$id/cylinder-flow';
   static String salesmanDailyCollections(int id) => '/salesmen/$id/daily-collections';
 
   // Allocations

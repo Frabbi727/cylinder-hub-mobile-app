@@ -11,4 +11,5 @@ abstract class Routes {
   static const END_OF_DAY = '/end-of-day';
   static const EMPTY_RETURNS = '/empty-returns';
   static const NOTIFICATIONS = '/notifications';
+  static const MY_REPORTS = '/my-reports';
 }
