@@ -331,31 +331,21 @@ class EndOfDayView extends GetView<EndOfDayController> {
                   const SizedBox(height: 24),
                   _buildAutomaticCalculation(a),
                   const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () {
-                            // expansion tile doesn't have a direct collapse method easily accessible here 
-                            // but usually it's handled by the user clicking it again.
-                          },
-                          child: const Text('Cancel', style: TextStyle(color: AppColors.text3Light, fontWeight: FontWeight.w700)),
-                        ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => controller.reconcile(a),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF13696D),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        flex: 2,
-                        child: ElevatedButton(
-                          onPressed: () => controller.reconcile(a),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF13696D),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                          child: const Text('Review & Submit →', style: TextStyle(fontWeight: FontWeight.w800)),
-                        ),
-                      ),
-                    ],
+                      child: const Text('Review & Submit →',
+                          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
+                    ),
                   ),
                 ],
               ),

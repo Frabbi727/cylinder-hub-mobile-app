@@ -8,6 +8,7 @@ import '../../../data/models/sale_model.dart';
 import '../../my_day/repository/my_day_repository.dart';
 import '../../my_day/controllers/my_day_controller.dart';
 import '../../../core/values/currency_ext.dart';
+import '../../../core/values/app_colors.dart';
 
 class EndOfDayController extends BaseController {
   final MyDayRepository repository;
@@ -132,17 +133,15 @@ class EndOfDayController extends BaseController {
       return;
     }
 
+    final toReturn = getToReturn(allocation);
+    final expectedFullCash = soldQty * allocation.salePrice;
+    final shortfall = expectedFullCash - collected;
+    final hasShortfall = shortfall > 0.01;
+
     final confirmed = await Get.dialog<bool>(
-      AlertDialog(
-        title: const Text('Confirm End of Day'),
-        content: Text(
-          'Submit: Sold $soldQty pcs, Collected ${collected.toCurrency} for ${allocation.cylinder?.name ?? "allocation"}?',
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(result: false), child: const Text('Cancel')),
-          ElevatedButton(onPressed: () => Get.back(result: true), child: const Text('Submit')),
-        ],
-      ),
+      _buildConfirmationDialog(allocation, soldQty, toReturn, collected,
+          shortfall: hasShortfall ? shortfall : null),
+      barrierDismissible: false,
     );
     if (confirmed != true) return;
 
@@ -164,6 +163,167 @@ class EndOfDayController extends BaseController {
     } finally {
       hideLoading();
     }
+  }
+
+  Widget _buildConfirmationDialog(
+    Allocation a,
+    int sold,
+    int returned,
+    double cash, {
+    double? shortfall,
+  }) {
+    final titleColor = Get.isDarkMode ? AppColors.text1Dark : AppColors.text1Light;
+    final subColor = Get.isDarkMode ? AppColors.text3Dark : AppColors.text3Light;
+    final cardColor = Get.isDarkMode ? AppColors.surfaceDark : Colors.white;
+
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      backgroundColor: cardColor,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Confirm Before Submitting',
+                style: TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.w900, color: titleColor)),
+            const SizedBox(height: 8),
+            Text(a.cylinder?.name ?? 'Allocation',
+                style: TextStyle(fontSize: 14, color: subColor, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSummaryBox(
+                    sold.toString(),
+                    'Sold',
+                    AppColors.greenBgLight,
+                    AppColors.greenInk,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildSummaryBox(
+                    returned.toString(),
+                    'Return',
+                    const Color(0xFFFFF4E5),
+                    const Color(0xFFD35400),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildSummaryBox(
+                    cash.toCurrency,
+                    'Cash',
+                    const Color(0xFFEEF2F6),
+                    const Color(0xFF13696D),
+                  ),
+                ),
+              ],
+            ),
+            if (shortfall != null) ...[
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF4E5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFFFE5C4)),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.warning_amber_rounded,
+                        color: Color(0xFFE67E22), size: 18),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Cash (${cash.toCurrency}) is less than expected (${(sold * a.salePrice).toCurrency}). The difference of ${shortfall.toCurrency} will remain as customer dues.',
+                        style: const TextStyle(
+                            color: Color(0xFF8A5A2E),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            height: 1.4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 24),
+            Text(
+              '⚠ This action cannot be undone. Only admin can edit after submission.',
+              style: TextStyle(
+                  color: AppColors.redInk, fontSize: 11, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 32),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Get.back(result: false),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: Text('Cancel',
+                        style: TextStyle(
+                            color: subColor,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: () => Get.back(result: true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF13696D),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Confirm & Submit',
+                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryBox(String value, String label, Color bgColor, Color textColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Text(value,
+              style: TextStyle(
+                  fontSize: value.length > 8 ? 12 : 16,
+                  fontWeight: FontWeight.w900,
+                  color: textColor),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
+          const SizedBox(height: 4),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 10, fontWeight: FontWeight.w700, color: textColor)),
+        ],
+      ),
+    );
   }
 
   @override
