@@ -50,13 +50,13 @@ class MyDayView extends GetView<MyDayController> {
             
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildSyncBanner(),
-                    const SizedBox(height: 14),
-                    
+                    const SizedBox(height: 10),
+
                     // Stat Grid
                     GridView.count(
                       crossAxisCount: 2,
@@ -64,7 +64,7 @@ class MyDayView extends GetView<MyDayController> {
                       physics: const NeverScrollableScrollPhysics(),
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
-                      childAspectRatio: 1.5,
+                      childAspectRatio: 1.1,
                       children: [
                         CStatCard(
                           gradient: AppColors.vibrantBlueGradient,

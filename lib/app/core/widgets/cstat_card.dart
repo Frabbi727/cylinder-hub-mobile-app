@@ -22,7 +22,6 @@ class CStatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minHeight: 104),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         gradient: gradient,

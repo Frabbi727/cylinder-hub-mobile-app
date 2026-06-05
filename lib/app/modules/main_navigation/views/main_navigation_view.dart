@@ -41,48 +41,54 @@ class MainNavigationView extends GetView<MainNavigationController> {
         )),
         bottomNavigationBar: Obx(() {
           final isDark = Theme.of(context).brightness == Brightness.dark;
+          final bottomInset = MediaQuery.of(context).padding.bottom;
 
-          return SizedBox(
-            height: 88,
-            child: Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.topCenter,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-                    border: Border(
-                      top: BorderSide(
-                        color: isDark ? AppColors.lineDark : AppColors.lineLight,
-                        width: 1,
-                      ),
+          return Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topCenter,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+                  border: Border(
+                    top: BorderSide(
+                      color: isDark ? AppColors.lineDark : AppColors.lineLight,
+                      width: 1,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.shadowColor.withValues(alpha: isDark ? 0.3 : 0.06),
-                        blurRadius: 24,
-                        offset: const Offset(0, -4),
-                      ),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.shadowColor
+                          .withValues(alpha: isDark ? 0.3 : 0.06),
+                      blurRadius: 24,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                // Fixed 60px nav-item row + system bottom inset
+                height: 60 + bottomInset,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: bottomInset),
+                  child: Row(
+                    children: [
+                      _buildNavItem(context, 0, Icons.home_filled,
+                          TranslationKeys.dashboard.tr),
+                      _buildNavItem(context, 1, Icons.shopping_cart,
+                          TranslationKeys.history.tr),
+                      const Expanded(child: SizedBox()),
+                      _buildNavItem(context, 3, Icons.account_balance_wallet,
+                          TranslationKeys.dues.tr),
+                      _buildNavItem(context, 4, Icons.grid_view_rounded,
+                          TranslationKeys.more.tr),
                     ],
                   ),
-                  child: SafeArea(
-                    child: Row(
-                      children: [
-                        _buildNavItem(context, 0, Icons.home_filled, TranslationKeys.dashboard.tr),
-                        _buildNavItem(context, 1, Icons.shopping_cart, TranslationKeys.history.tr),
-                        const Expanded(child: SizedBox()),
-                        _buildNavItem(context, 3, Icons.account_balance_wallet, TranslationKeys.dues.tr),
-                        _buildNavItem(context, 4, Icons.grid_view_rounded, TranslationKeys.more.tr),
-                      ],
-                    ),
-                  ),
                 ),
-                Positioned(
-                  top: -20,
-                  child: _buildSellItem(2),
-                ),
-              ],
-            ),
+              ),
+              Positioned(
+                top: -22,
+                child: _buildSellItem(context, 2),
+              ),
+            ],
           );
         }),
       ),
@@ -99,12 +105,10 @@ class MainNavigationView extends GetView<MainNavigationController> {
         onTap: () => controller.changeIndex(index),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
           children: [
-            Icon(
-              icon, 
-              color: color, 
-              size: 22,
-            ),
+            Icon(icon, color: color, size: 22),
             const SizedBox(height: 3),
             Text(
               label,
@@ -113,6 +117,7 @@ class MainNavigationView extends GetView<MainNavigationController> {
                 fontSize: 10.5,
                 fontWeight: FontWeight.w600,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -120,7 +125,7 @@ class MainNavigationView extends GetView<MainNavigationController> {
     );
   }
 
-  Widget _buildSellItem(int index) {
+  Widget _buildSellItem(BuildContext context, int index) {
     final isSelected = controller.currentIndex == index;
 
     return GestureDetector(
@@ -152,7 +157,9 @@ class MainNavigationView extends GetView<MainNavigationController> {
           Text(
             TranslationKeys.sell.tr,
             style: TextStyle(
-              color: isSelected ? AppColors.blue : AppColors.text3Light,
+              color: isSelected
+                  ? AppColors.blue
+                  : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
               fontSize: 10.5,
               fontWeight: FontWeight.w600,
             ),
