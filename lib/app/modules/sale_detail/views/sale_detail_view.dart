@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
+import '../../../core/values/currency_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/cyl_badge.dart';
 import '../../../data/models/sale_model.dart';
@@ -63,7 +64,7 @@ class SaleDetailView extends GetView<SaleDetailController> {
             child: ElevatedButton.icon(
               onPressed: () => _showCollectSheet(context, sale),
               icon: const Icon(Icons.account_balance_wallet),
-              label: Text('Collect ৳${sale.dueAmount.toStringAsFixed(0)} Due'),
+              label: Text('Collect ${sale.dueAmount.toCurrency} Due'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.green,
                 foregroundColor: Colors.white,
@@ -146,13 +147,13 @@ class SaleDetailView extends GetView<SaleDetailController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(item.cylinder?.name ?? '', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-                          Text('${item.cylinder?.size ?? ''} · ${item.qty} pcs × ৳${item.unitPrice.toStringAsFixed(0)}',
+                          Text('${item.cylinder?.size ?? ''} · ${item.qty} pcs × ${item.unitPrice.toCurrency}',
                               style: const TextStyle(fontSize: 13, color: AppColors.text2Light)),
                         ],
                       ),
                     ),
                     Text(
-                      '৳${(item.qty * item.unitPrice).toStringAsFixed(0)}',
+                      (item.qty * item.unitPrice).toCurrency,
                       style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
                     ),
                   ],
@@ -170,16 +171,16 @@ class SaleDetailView extends GetView<SaleDetailController> {
         child: Column(
           children: [
             _row(context, 'Total Amount',
-                '৳${sale.totalAmount.toStringAsFixed(0)}',
+                sale.totalAmount.toCurrency,
                 bold: true),
             _divider(context),
             _row(context, 'Paid Amount',
-                '৳${sale.paidAmount.toStringAsFixed(0)}',
+                sale.paidAmount.toCurrency,
                 color: AppColors.green),
             if (sale.dueAmount > 0) ...[
               _divider(context),
               _row(context, 'Remaining Due',
-                  '৳${sale.dueAmount.toStringAsFixed(0)}',
+                  sale.dueAmount.toCurrency,
                   color: AppColors.red, bold: true),
             ],
             if (sale.notes != null && sale.notes!.isNotEmpty) ...[
@@ -260,14 +261,14 @@ class SaleDetailView extends GetView<SaleDetailController> {
           children: [
             const Text('Collect Payment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
             const SizedBox(height: 4),
-            Text('Outstanding: ৳${sale.dueAmount.toStringAsFixed(0)}',
+            Text('Outstanding: ${sale.dueAmount.toCurrency}',
                 style: const TextStyle(color: AppColors.text2Light)),
             const SizedBox(height: 20),
             TextField(
               controller: controller.amountController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'Amount to collect (৳)',
+                labelText: 'Amount to collect',
                 hintText: sale.dueAmount.toStringAsFixed(0),
                 prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
               ),

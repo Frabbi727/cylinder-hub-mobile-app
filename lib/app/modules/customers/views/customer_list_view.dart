@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
+import '../../../core/values/currency_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/customer_list_controller.dart';
@@ -119,7 +120,7 @@ class CustomerListView extends GetView<CustomerListController> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    '৳${(customer.totalDue as double).toStringAsFixed(0)} due',
+                    '${(customer.totalDue as num).toCurrency} due',
                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.red),
                   ),
                 ),

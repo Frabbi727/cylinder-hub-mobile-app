@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
+import '../../../core/values/currency_ext.dart';
 import '../../../core/widgets/lang_pill.dart';
 import '../controllers/onboarding_controller.dart';
 
@@ -454,7 +455,7 @@ class _SaleCard extends StatelessWidget {
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: context.text1Color)),
-                    Text('৳1,450 / pc',
+                    Text('${1450.toCurrency} / pc',
                         style: TextStyle(
                             fontSize: 12,
                             color: context.text2Color)),
@@ -867,8 +868,6 @@ class _HeroCard extends StatelessWidget {
             children: [
               Row(
                 children: const [
-                  Icon(Icons.account_balance_wallet, size: 14, color: Colors.white70),
-                  SizedBox(width: 5),
                   Text('Cash in hand',
                       style: TextStyle(
                           fontSize: 12.5,
@@ -877,8 +876,8 @@ class _HeroCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 5),
-              const Text('৳18,420',
-                  style: TextStyle(
+              Text(18420.toCurrency,
+                  style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.025,
@@ -886,9 +885,9 @@ class _HeroCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  _HeroFoot(label: 'Profit', value: '৳2,140'),
+                  _HeroFoot(label: 'Profit', value: 2140.toCurrency),
                   const SizedBox(width: 28),
-                  _HeroFoot(label: 'Collected', value: '৳9,600'),
+                  _HeroFoot(label: 'Collected', value: 9600.toCurrency),
                 ],
               ),
             ],
@@ -970,7 +969,7 @@ class _CustomerCard extends StatelessWidget {
                         fontSize: 13.5,
                         fontWeight: FontWeight.w700,
                         color: context.text1Color)),
-                Text('Due · ৳1,450',
+                Text('Due · ${1450.toCurrency}',
                     style: TextStyle(
                         fontSize: 11.5, color: context.text2Color)),
               ],

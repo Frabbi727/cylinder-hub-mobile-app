@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
+import '../../../core/values/currency_ext.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/cyl_badge.dart';
@@ -300,7 +301,7 @@ class SalesView extends GetView<SalesController> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '৳${sale.totalAmount.toStringAsFixed(0)}',
+                    (sale.totalAmount as num).toCurrency,
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w800),
                   ),

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
+import '../../../core/values/currency_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/cyl_badge.dart';
 import '../../../routes/app_pages.dart';
@@ -59,7 +60,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
                 if (firstSale != null) Get.toNamed(Routes.SALE_DETAIL, arguments: firstSale.id);
               },
               icon: const Icon(Icons.account_balance_wallet),
-              label: Text('Collect ৳${due.toStringAsFixed(0)} Due'),
+              label: Text('Collect ${due.toCurrency} Due'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.green,
                 foregroundColor: Colors.white,
@@ -115,9 +116,9 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
         children: [
-          _summaryChip('Revenue', '৳${revenue.toStringAsFixed(0)}', AppColors.blue),
+          _summaryChip('Revenue', revenue.toCurrency, AppColors.blue),
           const SizedBox(width: 10),
-          _summaryChip('Outstanding', '৳${due.toStringAsFixed(0)}', due > 0 ? AppColors.red : AppColors.green),
+          _summaryChip('Outstanding', due.toCurrency, due > 0 ? AppColors.red : AppColors.green),
           const SizedBox(width: 10),
           _summaryChip('Sales', '${controller.sales.length}', AppColors.mint),
         ],
@@ -239,7 +240,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('৳${sale.totalAmount.toStringAsFixed(0)}',
+                      Text(sale.totalAmount.toCurrency,
                           style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
                       const SizedBox(height: 4),
                       Container(

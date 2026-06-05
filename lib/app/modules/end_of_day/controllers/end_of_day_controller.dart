@@ -5,6 +5,7 @@ import '../../../core/services/auth_service.dart';
 import '../../../data/models/allocation_model.dart';
 import '../../my_day/repository/my_day_repository.dart';
 import '../../my_day/controllers/my_day_controller.dart';
+import '../../../core/values/currency_ext.dart';
 
 class EndOfDayController extends BaseController {
   final MyDayRepository repository;
@@ -59,7 +60,7 @@ class EndOfDayController extends BaseController {
       AlertDialog(
         title: const Text('Confirm End of Day'),
         content: Text(
-          'Submit: Sold $soldQty pcs, Collected ৳${collected.toStringAsFixed(0)} for ${allocation.cylinder?.name ?? 'allocation'}?',
+          'Submit: Sold $soldQty pcs, Collected ${collected.toCurrency} for ${allocation.cylinder?.name ?? 'allocation'}?',
         ),
         actions: [
           TextButton(onPressed: () => Get.back(result: false), child: const Text('Cancel')),

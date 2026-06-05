@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
 import '../../../core/values/languages/translation_keys.dart';
+import '../../../core/values/currency_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/hero_card.dart';
 import '../../../core/widgets/cstat_card.dart';
@@ -37,15 +38,15 @@ class MyDayView extends GetView<MyDayController> {
                   child: AppHeroCard(
                     icon: Icons.account_balance_wallet,
                     label: TranslationKeys.cashInHand.tr,
-                    amount: '৳${controller.stats.value?.totalCashToHandIn.toStringAsFixed(0) ?? '0'}',
+                    amount: (controller.stats.value?.totalCashToHandIn ?? 0).toCurrency,
                     foot: [
                       HeroFootItem(
                         label: TranslationKeys.todaysProfit.tr,
-                        value: '৳${controller.stats.value?.todayProfit.toStringAsFixed(0) ?? '0'}'
+                        value: (controller.stats.value?.todayProfit ?? 0).toCurrency
                       ),
                       HeroFootItem(
                         label: TranslationKeys.cashCollected.tr,
-                        value: '৳${controller.stats.value?.cashCollected.toStringAsFixed(0) ?? '0'}'
+                        value: (controller.stats.value?.cashCollected ?? 0).toCurrency
                       ),
                     ],
                   ),
@@ -84,7 +85,7 @@ class MyDayView extends GetView<MyDayController> {
                           CStatCard(
                             gradient: AppColors.orangeGradient,
                             icon: Icons.timer,
-                            num: '৳${controller.stats.value?.todayDueAmount.toStringAsFixed(0) ?? '0'}',
+                            num: (controller.stats.value?.todayDueAmount ?? 0).toCurrency,
                             label: TranslationKeys.toCollect.tr,
                             sub: '${controller.recentSales.where((s) => s.dueAmount > 0).length} ${TranslationKeys.salesDue.tr}',
                           ),
@@ -391,7 +392,7 @@ class MyDayView extends GetView<MyDayController> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '৳${amount.toStringAsFixed(0)}',
+                amount.toCurrency,
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 4),

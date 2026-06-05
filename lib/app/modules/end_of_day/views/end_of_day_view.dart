@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/currency_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/cyl_badge.dart';
 import '../controllers/end_of_day_controller.dart';
@@ -76,7 +77,7 @@ class EndOfDayView extends GetView<EndOfDayController> {
                 const Text('Total Cash to Hand In',
                     style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
-                Text('৳${total.toStringAsFixed(0)}',
+                Text((total as num).toCurrency,
                     style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900)),
               ],
             ),
@@ -111,7 +112,7 @@ class EndOfDayView extends GetView<EndOfDayController> {
                     children: [
                       Text(c?.name ?? 'Allocation #${allocation.id}',
                           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                      Text('${allocation.qty} allocated · ৳${allocation.salePrice.toStringAsFixed(0)} / pc',
+                      Text('${allocation.qty} allocated · ${(allocation.salePrice as num).toCurrency} / pc',
                           style: const TextStyle(fontSize: 13, color: AppColors.text2Light)),
                     ],
                   ),

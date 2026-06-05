@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
+import '../../../core/values/currency_ext.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../controllers/sell_controller.dart';
@@ -175,7 +176,7 @@ class SellView extends GetView<SellController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Price ৳',
+                          Text('Price',
                               style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -440,7 +441,7 @@ class SellView extends GetView<SellController> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              _buildSummaryRow(context, 'Total', '৳${total.toStringAsFixed(0)}', isBold: true),
+              _buildSummaryRow(context, 'Total', total.toCurrency, isBold: true),
               if (payType == 'partial') ...[
                 const SizedBox(height: 10),
                 Row(
@@ -467,7 +468,7 @@ class SellView extends GetView<SellController> {
               if (due > 0) ...[
                 const SizedBox(height: 10),
                 _buildSummaryRow(context, 'Due after this sale',
-                    '৳${due.toStringAsFixed(0)}',
+                    due.toCurrency,
                     color: AppColors.red),
               ],
             ],

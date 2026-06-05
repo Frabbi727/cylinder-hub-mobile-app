@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:intl/intl.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
+import '../../../core/values/currency_ext.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../controllers/my_reports_controller.dart';
@@ -192,7 +192,6 @@ class MyReportsView extends GetView<MyReportsController> {
 
   Widget _buildKpiGrid() {
     final r = controller.report.value;
-    final currencyFormat = NumberFormat("#,###");
     
     return GridView.count(
       crossAxisCount: 2,
@@ -202,15 +201,15 @@ class MyReportsView extends GetView<MyReportsController> {
       crossAxisSpacing: 10,
       childAspectRatio: 1.8,
       children: [
-        _kpiCard(TranslationKeys.revenue.tr, '৳${currencyFormat.format(r?.totalRevenue ?? 0)}',
+        _kpiCard(TranslationKeys.revenue.tr, (r?.totalRevenue ?? 0).toCurrency,
             AppColors.vibrantBlueGradient, Icons.attach_money),
-        _kpiCard(TranslationKeys.cashCollected.tr, '৳${currencyFormat.format(r?.totalCashCollected ?? 0)}',
+        _kpiCard(TranslationKeys.cashCollected.tr, (r?.totalCashCollected ?? 0).toCurrency,
             AppColors.mintGradient, Icons.payments),
-        _kpiCard('Dues Created', '৳${currencyFormat.format(r?.totalDuesCreated ?? 0)}',
+        _kpiCard('Dues Created', (r?.totalDuesCreated ?? 0).toCurrency,
             AppColors.orangeGradient, Icons.money_off),
-        _kpiCard('Dues Collected', '৳${currencyFormat.format(r?.totalDuesCollected ?? 0)}',
+        _kpiCard('Dues Collected', (r?.totalDuesCollected ?? 0).toCurrency,
             AppColors.greenGradient, Icons.account_balance_wallet),
-        _kpiCard('Still Outstanding', '৳${currencyFormat.format(r?.stillOutstanding ?? 0)}',
+        _kpiCard('Still Outstanding', (r?.stillOutstanding ?? 0).toCurrency,
             AppColors.eodGradient, Icons.pending_actions),
         _kpiCard('Total Allocated', '${r?.totalAllocated ?? 0} pcs',
             AppColors.reportsGradient, Icons.assignment),
@@ -400,7 +399,7 @@ class MyReportsView extends GetView<MyReportsController> {
                             height: 1.0,
                           )),
                         const SizedBox(height: 2),
-                        Text('৳${_compactNum(controller.report.value?.totalRevenue ?? 0)}', 
+                        Text((controller.report.value?.totalRevenue ?? 0).toCurrency, 
                           style: const TextStyle(
                             fontSize: 15, 
                             fontWeight: FontWeight.w900,
@@ -691,7 +690,7 @@ class MyReportsView extends GetView<MyReportsController> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('৳${NumberFormat("#,###").format(c.amount)}',
+                Text(c.amount.toCurrency,
                     style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.green, fontSize: 17)),
                 const Text('Collected', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.green)),
               ],
