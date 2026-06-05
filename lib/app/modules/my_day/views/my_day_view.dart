@@ -50,14 +50,12 @@ class MyDayView extends GetView<MyDayController> {
             
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(18, 10, 18, 18),
+                padding: const EdgeInsets.fromLTRB(18, 6, 18, 18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildSyncBanner(),
-                    const SizedBox(height: 10),
-
-                    // Stat Grid
+                    const SizedBox(height: 6),
                     GridView.count(
                       crossAxisCount: 2,
                       shrinkWrap: true,
@@ -161,7 +159,7 @@ class MyDayView extends GetView<MyDayController> {
 
   Widget _buildSyncBanner() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       decoration: BoxDecoration(
         color: AppColors.greenBgLight,
         borderRadius: BorderRadius.circular(8),
