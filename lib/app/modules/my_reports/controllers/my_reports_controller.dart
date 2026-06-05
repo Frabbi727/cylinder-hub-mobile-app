@@ -157,15 +157,19 @@ class MyReportsController extends BaseController {
       'due': const Color(0xFFEF4444),
     };
 
-    return breakdown.entries.map((e) {
+    return breakdown.entries.where((e) => e.value > 0).map((e) {
       final pct = (e.value / total) * 100;
       return PieChartSectionData(
         value: e.value.toDouble(),
-        title: '${pct.toStringAsFixed(0)}%',
+        title: pct > 5 ? '${pct.toStringAsFixed(0)}%' : '',
         color: colors[e.key.toLowerCase()] ?? Colors.grey,
-        radius: 50,
+        radius: 22,
         titleStyle: const TextStyle(
-            fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        titlePositionPercentageOffset: 0.55,
       );
     }).toList();
   }

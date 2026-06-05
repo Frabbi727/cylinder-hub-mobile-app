@@ -36,7 +36,7 @@ class MyReportsView extends GetView<MyReportsController> {
               return RefreshIndicator(
                 onRefresh: controller.fetchAllData,
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,31 +44,31 @@ class MyReportsView extends GetView<MyReportsController> {
                       _buildSectionLabel(context, TranslationKeys.keyMetrics.tr, Icons.speed),
                       const SizedBox(height: 12),
                       _buildKpiGrid(),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 20),
                       _buildSectionLabel(context, TranslationKeys.dailyRevenue.tr, Icons.insights),
                       const SizedBox(height: 12),
                       _buildRevenueChart(context),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 20),
                       _buildSectionLabel(context, TranslationKeys.paymentTypes.tr, Icons.pie_chart),
                       const SizedBox(height: 12),
                       _buildPaymentDonut(context),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 20),
                       _buildSectionLabel(context, TranslationKeys.allocation.tr, Icons.bar_chart),
                       const SizedBox(height: 12),
                       _buildAllocationBarChart(context),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 20),
                       _buildSectionLabel(context, TranslationKeys.performanceSummary.tr, Icons.star_border),
                       const SizedBox(height: 12),
                       _buildPerformanceList(context),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 20),
                       _buildSectionLabel(context, TranslationKeys.cylinderFlow.tr, Icons.swap_horiz),
                       const SizedBox(height: 12),
                       _buildCylinderFlowTable(context),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 20),
                       _buildSectionLabel(context, TranslationKeys.todaysReturns.tr, Icons.receipt_long),
                       const SizedBox(height: 12),
                       _buildDailyCollections(context),
-                      const SizedBox(height: 60),
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -203,13 +203,13 @@ class MyReportsView extends GetView<MyReportsController> {
       crossAxisSpacing: 12,
       childAspectRatio: 1.6,
       children: [
-        _kpiCard(TranslationKeys.revenue.tr, '৳${_compactNum(r?.totalRevenue ?? 0)}',
+        _kpiCard(TranslationKeys.revenue.tr, '৳${NumberFormat("#,###").format(r?.totalRevenue ?? 0)}',
             AppColors.vibrantBlueGradient, Icons.attach_money),
-        _kpiCard(TranslationKeys.cashCollected.tr, '৳${_compactNum(r?.totalCashCollected ?? 0)}',
+        _kpiCard(TranslationKeys.cashCollected.tr, '৳${NumberFormat("#,###").format(r?.totalCashCollected ?? 0)}',
             AppColors.mintGradient, Icons.payments),
         _kpiCard(TranslationKeys.totalSold.tr, '${r?.totalSold ?? 0} pcs',
             AppColors.reportsGradient, Icons.shopping_bag),
-        _kpiCard(TranslationKeys.due.tr, '৳${_compactNum(r?.stillOutstanding ?? 0)}',
+        _kpiCard(TranslationKeys.due.tr, '৳${NumberFormat("#,###").format(r?.stillOutstanding ?? 0)}',
             AppColors.orangeGradient, Icons.pending_actions),
       ],
     );
@@ -265,7 +265,7 @@ class MyReportsView extends GetView<MyReportsController> {
         side: BorderSide(color: context.lineColor),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 24, 24, 12),
+        padding: const EdgeInsets.fromLTRB(12, 16, 16, 10),
         child: SizedBox(
           height: 200,
           child: LineChart(
@@ -336,41 +336,56 @@ class MyReportsView extends GetView<MyReportsController> {
 
     return Card(
       elevation: 0,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
         side: BorderSide(color: context.lineColor),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             SizedBox(
-              height: 130,
-              width: 130,
+              height: 140,
+              width: 140,
               child: Stack(
                 children: [
-                  PieChart(
-                    PieChartData(
-                      sections: sections,
-                      centerSpaceRadius: 40,
-                      sectionsSpace: 4,
-                      startDegreeOffset: 270,
+                  Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: PieChart(
+                      PieChartData(
+                        sections: sections,
+                        centerSpaceRadius: 38,
+                        sectionsSpace: 2,
+                        startDegreeOffset: 270,
+                      ),
                     ),
                   ),
                   Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Total', style: TextStyle(fontSize: 10, color: context.text3Color, fontWeight: FontWeight.bold)),
+                        Text('Total', 
+                          style: TextStyle(
+                            fontSize: 11, 
+                            color: context.text3Color, 
+                            fontWeight: FontWeight.bold,
+                            height: 1.0,
+                          )),
+                        const SizedBox(height: 2),
                         Text('৳${_compactNum(controller.report.value?.totalRevenue ?? 0)}', 
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
+                          style: const TextStyle(
+                            fontSize: 15, 
+                            fontWeight: FontWeight.w900,
+                            height: 1.0,
+                          )),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 30),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -389,7 +404,7 @@ class MyReportsView extends GetView<MyReportsController> {
 
   Widget _legendItem(BuildContext context, String label, Color color, num val) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
         children: [
           Container(
@@ -400,7 +415,7 @@ class MyReportsView extends GetView<MyReportsController> {
           Expanded(
             child: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
           ),
-          Text('৳${_compactNum(val.toDouble())}', 
+          Text('${val.toInt()}',
             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: context.text2Color)),
         ],
       ),
@@ -418,7 +433,7 @@ class MyReportsView extends GetView<MyReportsController> {
         side: BorderSide(color: context.lineColor),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             SizedBox(
@@ -453,7 +468,7 @@ class MyReportsView extends GetView<MyReportsController> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -492,7 +507,7 @@ class MyReportsView extends GetView<MyReportsController> {
         side: BorderSide(color: context.lineColor),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Column(
           children: [
             _performanceRow(context, 'Sell-through Rate', sellThrough, AppColors.blue, Icons.trending_up),
@@ -510,7 +525,7 @@ class MyReportsView extends GetView<MyReportsController> {
   Widget _performanceRow(BuildContext context, String label, double val, Color color, IconData icon,
       {bool isPct = true, double max = 100}) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -525,7 +540,7 @@ class MyReportsView extends GetView<MyReportsController> {
                   style: TextStyle(fontWeight: FontWeight.w900, color: color, fontSize: 15)),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           Stack(
             children: [
               Container(
@@ -558,6 +573,9 @@ class MyReportsView extends GetView<MyReportsController> {
     final items = controller.cylinderFlow.value?.byCylinder;
     if (items == null || items.isEmpty) return _emptyCard(context, TranslationKeys.noData.tr);
 
+    const headerStyle = TextStyle(fontWeight: FontWeight.w900, fontSize: 13);
+    const centerAlign = TextAlign.center;
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -566,31 +584,42 @@ class MyReportsView extends GetView<MyReportsController> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            columnSpacing: 20,
-            headingRowHeight: 56,
-            dataRowMinHeight: 60,
-            dataRowMaxHeight: 60,
-            headingRowColor: WidgetStateProperty.all(context.lineColor.withValues(alpha: 0.2)),
-            columns: const [
-              DataColumn(label: Text('Type', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13))),
-              DataColumn(label: Text('Alloc', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13))),
-              DataColumn(label: Text('Sold', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13))),
-              DataColumn(label: Text('Ret', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13))),
-              DataColumn(label: Text('Emp', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13))),
-            ],
-            rows: items.map((i) {
-              return DataRow(cells: [
-                DataCell(Text(i.cylinderSize ?? '-', style: const TextStyle(fontWeight: FontWeight.w800))),
-                DataCell(Text('${i.allocated ?? 0}', style: const TextStyle(fontWeight: FontWeight.w500))),
-                DataCell(Text('${i.sold ?? 0}', style: const TextStyle(color: Color(0xFF16A34A), fontWeight: FontWeight.w900))),
-                DataCell(Text('${i.returnedUnsold ?? 0}', style: const TextStyle(fontWeight: FontWeight.w500))),
-                DataCell(Text('${i.emptiesCollected ?? 0}', style: const TextStyle(color: Color(0xFFFF7A45), fontWeight: FontWeight.w900))),
-              ]);
-            }).toList(),
-          ),
+        child: Column(
+          children: [
+            Container(
+              color: context.lineColor.withValues(alpha: 0.2),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: const Row(
+                children: [
+                  Expanded(flex: 3, child: Text('Type', style: headerStyle)),
+                  Expanded(flex: 2, child: Text('Alloc', textAlign: centerAlign, style: headerStyle)),
+                  Expanded(flex: 2, child: Text('Sold', textAlign: centerAlign, style: headerStyle)),
+                  Expanded(flex: 2, child: Text('Ret', textAlign: centerAlign, style: headerStyle)),
+                  Expanded(flex: 2, child: Text('Emp', textAlign: centerAlign, style: headerStyle)),
+                ],
+              ),
+            ),
+            ...items.map((i) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: context.lineColor.withValues(alpha: 0.3))),
+              ),
+              child: Row(
+                children: [
+                  Expanded(flex: 3, child: Text(i.cylinderSize ?? '-',
+                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13))),
+                  Expanded(flex: 2, child: Text('${i.allocated ?? 0}', textAlign: centerAlign,
+                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13))),
+                  Expanded(flex: 2, child: Text('${i.sold ?? 0}', textAlign: centerAlign,
+                      style: const TextStyle(color: Color(0xFF16A34A), fontWeight: FontWeight.w900, fontSize: 13))),
+                  Expanded(flex: 2, child: Text('${i.returnedUnsold ?? 0}', textAlign: centerAlign,
+                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13))),
+                  Expanded(flex: 2, child: Text('${i.emptiesCollected ?? 0}', textAlign: centerAlign,
+                      style: const TextStyle(color: Color(0xFFFF7A45), fontWeight: FontWeight.w900, fontSize: 13))),
+                ],
+              ),
+            )),
+          ],
         ),
       ),
     );
@@ -661,7 +690,7 @@ class MyReportsView extends GetView<MyReportsController> {
   Widget _emptyCard(BuildContext context, String msg) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 40),
+      padding: const EdgeInsets.symmetric(vertical: 28),
       decoration: BoxDecoration(
         color: context.lineColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(24),
