@@ -249,7 +249,7 @@ class MyDayView extends GetView<MyDayController> {
   Widget _buildQuickActionsCard() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
         child: LayoutBuilder(
           builder: (context, constraints) {
             const cols = 4;
