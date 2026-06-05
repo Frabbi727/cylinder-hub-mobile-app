@@ -285,6 +285,7 @@ class MyReportsView extends GetView<MyReportsController> {
           child: BarChart(
             BarChartData(
               maxY: controller.maxAggregatedRevenue,
+              alignment: BarChartAlignment.center, // Better alignment for fewer bars
               gridData: FlGridData(
                 show: true,
                 drawVerticalLine: false,
@@ -323,14 +324,23 @@ class MyReportsView extends GetView<MyReportsController> {
                 topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
               barGroups: data.asMap().entries.map((e) {
+                double barWidth = 16;
+                if (data.length == 1) {
+                  barWidth = 45; // Much thicker for "Today"
+                } else if (data.length <= 7) {
+                  barWidth = 24; // Thicker for "Week"
+                } else if (data.length > 15) {
+                  barWidth = 8; // Thinner for long ranges
+                }
+
                 return BarChartGroupData(
                   x: e.key,
                   barRods: [
                     BarChartRodData(
                       toY: e.value,
                       color: AppColors.blue,
-                      width: data.length > 15 ? 8 : 16,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                      width: barWidth,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
                       backDrawRodData: BackgroundBarChartRodData(
                         show: true,
                         toY: controller.maxAggregatedRevenue,
