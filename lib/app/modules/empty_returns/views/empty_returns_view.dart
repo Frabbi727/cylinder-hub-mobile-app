@@ -205,7 +205,8 @@ class EmptyReturnsView extends GetView<EmptyReturnsController> {
             subtitle: const Text('Toggle if returning more than allocated', style: TextStyle(fontSize: 12)),
             value: controller.isExtra.value,
             onChanged: (v) => controller.isExtra.value = v,
-            activeColor: AppColors.orange,
+            activeThumbColor: AppColors.orange,
+            activeTrackColor: AppColors.orange.withValues(alpha: 0.5),
           ),
         ));
   }

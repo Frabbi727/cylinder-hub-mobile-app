@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/app_theme_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/customer_list_controller.dart';
@@ -27,7 +28,7 @@ class CustomerListView extends GetView<CustomerListController> {
               onChanged: (v) => controller.searchQuery.value = v,
               decoration: InputDecoration(
                 hintText: 'Search by name or phone...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.text3Light),
+                prefixIcon: Icon(Icons.search, color: context.text3Color),
                 suffixIcon: Obx(() => controller.searchQuery.value.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.close, size: 18),
@@ -57,7 +58,7 @@ class CustomerListView extends GetView<CustomerListController> {
                     if (index == controller.customers.length - 3) {
                       controller.fetchCustomers(loadMore: true);
                     }
-                    return _buildCustomerCard(controller.customers[index]);
+                    return _buildCustomerCard(context, controller.customers[index]);
                   },
                 ),
               );
@@ -75,7 +76,7 @@ class CustomerListView extends GetView<CustomerListController> {
     );
   }
 
-  Widget _buildCustomerCard(dynamic customer) {
+  Widget _buildCustomerCard(BuildContext context, dynamic customer) {
     final hasDue = double.tryParse(customer.totalDue ?? '0') != null &&
         double.parse(customer.totalDue ?? '0') > 0;
     return Card(
@@ -105,7 +106,7 @@ class CustomerListView extends GetView<CustomerListController> {
                   children: [
                     Text(customer.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
                     if (customer.phone != null)
-                      Text(customer.phone, style: const TextStyle(fontSize: 13, color: AppColors.text2Light)),
+                      Text(customer.phone, style: TextStyle(fontSize: 13, color: context.text2Color)),
                   ],
                 ),
               ),
@@ -122,7 +123,7 @@ class CustomerListView extends GetView<CustomerListController> {
                   ),
                 ),
               const SizedBox(width: 4),
-              const Icon(Icons.chevron_right, color: AppColors.text3Light, size: 18),
+              Icon(Icons.chevron_right, color: context.text3Color, size: 18),
             ],
           ),
         ),
@@ -143,7 +144,7 @@ class CustomerListView extends GetView<CustomerListController> {
           ),
           const SizedBox(height: 16),
           const Text('No customers found', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-          const Text('Add your first customer below', style: TextStyle(color: AppColors.text3Light)),
+          Builder(builder: (ctx) => Text('Add your first customer below', style: TextStyle(color: ctx.text3Color))),
         ],
       ),
     );

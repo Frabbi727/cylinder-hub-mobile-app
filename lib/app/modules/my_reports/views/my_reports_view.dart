@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/app_theme_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../controllers/my_reports_controller.dart';
 import '../../main_navigation/controllers/main_navigation_controller.dart';
@@ -21,7 +22,7 @@ class MyReportsView extends GetView<MyReportsController> {
             curve: true,
             onBack: () => Get.find<MainNavigationController>().changeIndex(0),
           ),
-          _buildPeriodTabs(),
+          _buildPeriodTabs(context),
           Expanded(
             child: Obx(() {
               if (controller.isLoading) {
@@ -35,21 +36,21 @@ class MyReportsView extends GetView<MyReportsController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSectionLabel('Key Metrics'),
+                      _buildSectionLabel(context, 'Key Metrics'),
                       const SizedBox(height: 10),
                       _buildKpiGrid(),
                       const SizedBox(height: 24),
-                      _buildSectionLabel('Revenue Trend'),
+                      _buildSectionLabel(context, 'Revenue Trend'),
                       const SizedBox(height: 10),
-                      _buildRevenueChart(),
+                      _buildRevenueChart(context),
                       const SizedBox(height: 24),
-                      _buildSectionLabel('Payment Breakdown'),
+                      _buildSectionLabel(context, 'Payment Breakdown'),
                       const SizedBox(height: 10),
-                      _buildPaymentChart(),
+                      _buildPaymentChart(context),
                       const SizedBox(height: 24),
-                      _buildSectionLabel('Financial Summary'),
+                      _buildSectionLabel(context, 'Financial Summary'),
                       const SizedBox(height: 10),
-                      _buildFinancialCard(),
+                      _buildFinancialCard(context),
                       const SizedBox(height: 40),
                     ],
                   ),
@@ -62,25 +63,25 @@ class MyReportsView extends GetView<MyReportsController> {
     );
   }
 
-  Widget _buildPeriodTabs() {
+  Widget _buildPeriodTabs(BuildContext context) {
     return Container(
       height: 50,
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: AppColors.line2Light,
+        color: context.line2Color,
         borderRadius: BorderRadius.circular(13),
       ),
       child: Row(
         children: [
-          _tabOption('Week', 'This Week'),
-          _tabOption('Month', 'This Month'),
+          _tabOption(context, 'Week', 'This Week'),
+          _tabOption(context, 'Month', 'This Month'),
         ],
       ),
     );
   }
 
-  Widget _tabOption(String value, String label) {
+  Widget _tabOption(BuildContext context, String value, String label) {
     return Expanded(
       child: Obx(() {
         final isSelected = controller.selectedPeriod.value == value;
@@ -89,16 +90,19 @@ class MyReportsView extends GetView<MyReportsController> {
           child: Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.white : Colors.transparent,
+              color: isSelected ? context.surfaceColor : Colors.transparent,
               borderRadius: BorderRadius.circular(9),
               boxShadow: isSelected
-                  ? [const BoxShadow(color: AppColors.black15, blurRadius: 2, offset: Offset(0, 1))]
+                  ? [BoxShadow(
+                      color: AppColors.shadowColor.withValues(alpha: 0.06),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1))]
                   : null,
             ),
             child: Text(
               label,
               style: TextStyle(
-                color: isSelected ? AppColors.mintInk : AppColors.text2Light,
+                color: isSelected ? AppColors.mintInk : context.text2Color,
                 fontWeight: FontWeight.w700,
                 fontSize: 13,
               ),
@@ -140,17 +144,20 @@ class MyReportsView extends GetView<MyReportsController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
-          Text(value, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
+          Text(label,
+              style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
+          Text(value,
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
         ],
       ),
     );
   }
 
-  Widget _buildRevenueChart() {
+  Widget _buildRevenueChart(BuildContext context) {
     final spots = controller.dailyRevenueSpots;
     if (spots.isEmpty) {
-      return _emptyChartPlaceholder('No revenue data for this period');
+      return _emptyChartPlaceholder(context, 'No revenue data for this period');
     }
     final maxY = spots.map((s) => s.y).reduce((a, b) => a > b ? a : b) * 1.3;
     return Card(
@@ -165,7 +172,8 @@ class MyReportsView extends GetView<MyReportsController> {
               gridData: FlGridData(
                 show: true,
                 drawVerticalLine: false,
-                getDrawingHorizontalLine: (_) => FlLine(color: AppColors.lineLight, strokeWidth: 1),
+                getDrawingHorizontalLine: (_) =>
+                    FlLine(color: context.lineColor, strokeWidth: 1),
               ),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
@@ -175,29 +183,35 @@ class MyReportsView extends GetView<MyReportsController> {
                     reservedSize: 46,
                     getTitlesWidget: (v, _) => Text(
                       '৳${_compactNum(v)}',
-                      style: const TextStyle(fontSize: 10, color: AppColors.text3Light),
+                      style: TextStyle(fontSize: 10, color: context.text3Color),
                     ),
                   ),
                 ),
-                bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                bottomTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
               lineBarsData: [
                 LineChartBarData(
                   spots: spots,
                   isCurved: true,
-                  color: const Color(0xFF2E5BFF),
+                  color: AppColors.blue,
                   barWidth: 2.5,
                   dotData: FlDotData(
                     show: true,
-                    getDotPainter: (p0, p1, p2, p3) =>
-                        FlDotCirclePainter(radius: 3, color: const Color(0xFF2E5BFF), strokeWidth: 0),
+                    getDotPainter: (p0, p1, p2, p3) => FlDotCirclePainter(
+                        radius: 3, color: AppColors.blue, strokeWidth: 0),
                   ),
                   belowBarData: BarAreaData(
                     show: true,
                     gradient: LinearGradient(
-                      colors: [const Color(0xFF2E5BFF).withValues(alpha: 0.2), Colors.transparent],
+                      colors: [
+                        AppColors.blue.withValues(alpha: 0.2),
+                        Colors.transparent
+                      ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
@@ -209,7 +223,9 @@ class MyReportsView extends GetView<MyReportsController> {
                   getTooltipItems: (spots) => spots
                       .map((s) => LineTooltipItem(
                             '৳${s.y.toStringAsFixed(0)}',
-                            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ))
                       .toList(),
                 ),
@@ -221,10 +237,10 @@ class MyReportsView extends GetView<MyReportsController> {
     );
   }
 
-  Widget _buildPaymentChart() {
+  Widget _buildPaymentChart(BuildContext context) {
     final bars = controller.payBreakdownBars;
     if (bars.isEmpty) {
-      return _emptyChartPlaceholder('No payment data for this period');
+      return _emptyChartPlaceholder(context, 'No payment data for this period');
     }
     final labels = ['Cash', 'Partial', 'Due'];
     final colors = [AppColors.green, AppColors.orange, AppColors.red];
@@ -242,14 +258,16 @@ class MyReportsView extends GetView<MyReportsController> {
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    getDrawingHorizontalLine: (_) => FlLine(color: AppColors.lineLight, strokeWidth: 1),
+                    getDrawingHorizontalLine: (_) =>
+                        FlLine(color: context.lineColor, strokeWidth: 1),
                   ),
                   borderData: FlBorderData(show: false),
                   barTouchData: BarTouchData(
                     touchTooltipData: BarTouchTooltipData(
                       getTooltipItem: (group, g2, rod, r2) => BarTooltipItem(
                         '${rod.toY.toInt()} sales',
-                        const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        const TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -259,8 +277,13 @@ class MyReportsView extends GetView<MyReportsController> {
                         showTitles: true,
                         getTitlesWidget: (v, _) => Padding(
                           padding: const EdgeInsets.only(top: 6),
-                          child: Text(labels[v.toInt()],
-                              style: const TextStyle(fontSize: 11, color: AppColors.text2Light, fontWeight: FontWeight.w600)),
+                          child: Text(
+                            v.toInt() < labels.length ? labels[v.toInt()] : '',
+                            style: TextStyle(
+                                fontSize: 11,
+                                color: context.text2Color,
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ),
                     ),
@@ -270,12 +293,15 @@ class MyReportsView extends GetView<MyReportsController> {
                         reservedSize: 28,
                         getTitlesWidget: (v, _) => Text(
                           v.toInt().toString(),
-                          style: const TextStyle(fontSize: 10, color: AppColors.text3Light),
+                          style: TextStyle(
+                              fontSize: 10, color: context.text3Color),
                         ),
                       ),
                     ),
-                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
                   barGroups: bars,
                 ),
@@ -290,9 +316,15 @@ class MyReportsView extends GetView<MyReportsController> {
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Row(
                     children: [
-                      Container(width: 10, height: 10, decoration: BoxDecoration(color: colors[i], shape: BoxShape.circle)),
+                      Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                              color: colors[i], shape: BoxShape.circle)),
                       const SizedBox(width: 4),
-                      Text(labels[i], style: const TextStyle(fontSize: 12, color: AppColors.text2Light)),
+                      Text(labels[i],
+                          style: TextStyle(
+                              fontSize: 12, color: context.text2Color)),
                     ],
                   ),
                 ),
@@ -304,36 +336,54 @@ class MyReportsView extends GetView<MyReportsController> {
     );
   }
 
-  Widget _buildFinancialCard() {
+  Widget _buildFinancialCard(BuildContext context) {
     final r = controller.report.value;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _finRow('Total Revenue', '৳${(r?.totalRevenue ?? 0).toStringAsFixed(0)}', bold: true),
-            _divider(),
-            _finRow('Cash Collected', '৳${(r?.totalCashCollected ?? 0).toStringAsFixed(0)}', color: AppColors.green),
-            _divider(),
-            _finRow('Dues Created', '৳${(r?.totalDuesCreated ?? 0).toStringAsFixed(0)}', color: AppColors.orange),
-            _divider(),
-            _finRow('Dues Collected', '৳${(r?.totalDuesCollected ?? 0).toStringAsFixed(0)}', color: AppColors.blue),
-            _divider(),
-            _finRow('Still Outstanding', '৳${(r?.stillOutstanding ?? 0).toStringAsFixed(0)}',
-                color: (r?.stillOutstanding ?? 0) > 0 ? AppColors.red : AppColors.green, bold: true),
+            _finRow(context, 'Total Revenue',
+                '৳${(r?.totalRevenue ?? 0).toStringAsFixed(0)}',
+                bold: true),
+            _divider(context),
+            _finRow(context, 'Cash Collected',
+                '৳${(r?.totalCashCollected ?? 0).toStringAsFixed(0)}',
+                color: AppColors.green),
+            _divider(context),
+            _finRow(context, 'Dues Created',
+                '৳${(r?.totalDuesCreated ?? 0).toStringAsFixed(0)}',
+                color: AppColors.orange),
+            _divider(context),
+            _finRow(context, 'Dues Collected',
+                '৳${(r?.totalDuesCollected ?? 0).toStringAsFixed(0)}',
+                color: AppColors.blue),
+            _divider(context),
+            _finRow(
+              context,
+              'Still Outstanding',
+              '৳${(r?.stillOutstanding ?? 0).toStringAsFixed(0)}',
+              color: (r?.stillOutstanding ?? 0) > 0
+                  ? AppColors.red
+                  : AppColors.green,
+              bold: true,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _finRow(String label, String value, {Color? color, bool bold = false}) {
+  Widget _finRow(BuildContext context, String label, String value,
+      {Color? color, bool bold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.text2Light, fontWeight: FontWeight.w600)),
+          Text(label,
+              style: TextStyle(
+                  color: context.text2Color, fontWeight: FontWeight.w600)),
           Text(value,
               style: TextStyle(
                 fontWeight: bold ? FontWeight.w800 : FontWeight.w700,
@@ -345,16 +395,21 @@ class MyReportsView extends GetView<MyReportsController> {
     );
   }
 
-  Widget _divider() => const Divider(height: 1, color: AppColors.lineLight);
+  Widget _divider(BuildContext context) =>
+      Divider(height: 1, color: context.lineColor);
 
-  Widget _buildSectionLabel(String text) {
+  Widget _buildSectionLabel(BuildContext context, String text) {
     return Text(
       text.toUpperCase(),
-      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.text3Light, letterSpacing: 0.05),
+      style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: context.text3Color,
+          letterSpacing: 0.05),
     );
   }
 
-  Widget _emptyChartPlaceholder(String message) {
+  Widget _emptyChartPlaceholder(BuildContext context, String message) {
     return Card(
       child: SizedBox(
         height: 120,
@@ -362,9 +417,10 @@ class MyReportsView extends GetView<MyReportsController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.bar_chart, color: AppColors.text3Light, size: 32),
+              Icon(Icons.bar_chart, color: context.text3Color, size: 32),
               const SizedBox(height: 8),
-              Text(message, style: const TextStyle(color: AppColors.text3Light, fontSize: 13)),
+              Text(message,
+                  style: TextStyle(color: context.text3Color, fontSize: 13)),
             ],
           ),
         ),

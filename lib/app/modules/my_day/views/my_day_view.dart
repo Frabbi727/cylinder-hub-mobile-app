@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/app_theme_ext.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/hero_card.dart';
@@ -84,7 +85,7 @@ class MyDayView extends GetView<MyDayController> {
                           icon: Icons.timer,
                           num: '৳${controller.stats.value?.todayDueAmount.toStringAsFixed(0) ?? '0'}',
                           label: TranslationKeys.toCollect.tr,
-                          sub: '1 ${TranslationKeys.salesDue.tr}', // Dynamic count
+                          sub: '${controller.recentSales.where((s) => s.dueAmount > 0).length} ${TranslationKeys.salesDue.tr}',
                         ),
                         CStatCard(
                           gradient: AppColors.reportsGradient,
@@ -97,13 +98,14 @@ class MyDayView extends GetView<MyDayController> {
                     ),
                     
                     const SizedBox(height: 24),
-                    _buildSectionHeader(TranslationKeys.myStock.tr),
+                    _buildSectionHeader(TranslationKeys.myStock.tr, ctx: context),
                     const SizedBox(height: 10),
                     Obx(() => Card(
                       child: Column(
-                        children: controller.allocations.isEmpty 
+                        children: controller.allocations.isEmpty
                           ? [Padding(padding: const EdgeInsets.all(20), child: Text(TranslationKeys.noData.tr))]
                           : controller.allocations.map((a) => _buildStockItem(
+                              context: context,
                               name: a.cylinder?.name ?? 'Unknown',
                               size: a.cylinder?.size ?? '',
                               sold: a.soldQty,
@@ -114,20 +116,21 @@ class MyDayView extends GetView<MyDayController> {
                             )).toList(),
                       ),
                     )),
-                    
+
                     const SizedBox(height: 24),
-                    _buildSectionHeader(TranslationKeys.quickActions.tr),
+                    _buildSectionHeader(TranslationKeys.quickActions.tr, ctx: context),
                     const SizedBox(height: 10),
                     _buildQuickActionsCard(),
-                    
+
                     const SizedBox(height: 24),
-                    _buildRecentSalesHeader(),
+                    _buildRecentSalesHeader(context),
                     const SizedBox(height: 10),
                     Obx(() => Card(
                       child: Column(
                         children: controller.recentSales.isEmpty
                           ? [Padding(padding: const EdgeInsets.all(20), child: Text(TranslationKeys.noData.tr))]
                           : controller.recentSales.map((s) => _buildSaleRow(
+                              context: context,
                               saleId: s.id,
                               customer: s.customer?.name ?? TranslationKeys.walkIn.tr,
                               time: s.saleDate,
@@ -180,16 +183,16 @@ class MyDayView extends GetView<MyDayController> {
     );
   }
 
-  Widget _buildSectionHeader(String title, {VoidCallback? onAction, String? actionText}) {
+  Widget _buildSectionHeader(String title, {VoidCallback? onAction, String? actionText, BuildContext? ctx}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title.toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w700,
-            color: AppColors.text3Light,
+            color: ctx != null ? ctx.text3Color : AppColors.text3Light,
             letterSpacing: 0.05,
           ),
         ),
@@ -211,6 +214,7 @@ class MyDayView extends GetView<MyDayController> {
   }
 
   Widget _buildStockItem({
+    required BuildContext context,
     required String name,
     required String size,
     required int sold,
@@ -220,7 +224,7 @@ class MyDayView extends GetView<MyDayController> {
     required String short,
   }) {
     final left = total - sold;
-    final pct = sold / total;
+    final pct = total > 0 ? sold / total : 0.0;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -241,8 +245,8 @@ class MyDayView extends GetView<MyDayController> {
                         children: [
                           TextSpan(text: '$left ', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
                           TextSpan(
-                            text: TranslationKeys.left.tr, 
-                            style: const TextStyle(fontSize: 12.5, color: AppColors.text3Light, fontWeight: FontWeight.w600)
+                            text: TranslationKeys.left.tr,
+                            style: TextStyle(fontSize: 12.5, color: context.text3Color, fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
@@ -252,7 +256,7 @@ class MyDayView extends GetView<MyDayController> {
                 const SizedBox(height: 9),
                 LinearProgressIndicator(
                   value: pct,
-                  backgroundColor: AppColors.lineLight,
+                  backgroundColor: context.lineColor,
                   valueColor: const AlwaysStoppedAnimation<Color>(AppColors.mint),
                   minHeight: 7,
                   borderRadius: BorderRadius.circular(99),
@@ -260,7 +264,7 @@ class MyDayView extends GetView<MyDayController> {
                 const SizedBox(height: 5),
                 Text(
                   '$size · $sold ${TranslationKeys.sold.tr.toLowerCase()} / $total',
-                  style: const TextStyle(fontSize: 12.5, color: AppColors.text3Light, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 12.5, color: context.text3Color, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -343,11 +347,11 @@ class MyDayView extends GetView<MyDayController> {
     );
   }
 
-  Widget _buildRecentSalesHeader() {
+  Widget _buildRecentSalesHeader(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildSectionHeader(TranslationKeys.recentSales.tr),
+        _buildSectionHeader(TranslationKeys.recentSales.tr, ctx: context),
         TextButton(
           onPressed: () => Get.find<MainNavigationController>().changeIndex(1),
           child: Row(
@@ -365,6 +369,7 @@ class MyDayView extends GetView<MyDayController> {
   }
 
   Widget _buildSaleRow({
+    required BuildContext context,
     required int saleId,
     required String customer,
     required String time,
@@ -392,7 +397,7 @@ class MyDayView extends GetView<MyDayController> {
                 Text(customer, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                 Text(
                   '$qty × $size · $time',
-                  style: const TextStyle(fontSize: 13, color: AppColors.text2Light),
+                  style: TextStyle(fontSize: 13, color: context.text2Color),
                 ),
               ],
             ),

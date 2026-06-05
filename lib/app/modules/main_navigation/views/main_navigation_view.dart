@@ -40,36 +40,48 @@ class MainNavigationView extends GetView<MainNavigationController> {
           children: pages,
         )),
         bottomNavigationBar: Obx(() {
-          final isDark = Get.isDarkMode;
-          
-          return Container(
-            height: 88, // nav-h: 66px + padding
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-              border: Border(
-                top: BorderSide(
-                  color: isDark ? AppColors.lineDark : AppColors.lineLight,
-                  width: 1,
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+
+          return SizedBox(
+            height: 88,
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.topCenter,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+                    border: Border(
+                      top: BorderSide(
+                        color: isDark ? AppColors.lineDark : AppColors.lineLight,
+                        width: 1,
+                      ),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.shadowColor.withValues(alpha: isDark ? 0.3 : 0.06),
+                        blurRadius: 24,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
+                  ),
+                  child: SafeArea(
+                    child: Row(
+                      children: [
+                        _buildNavItem(context, 0, Icons.home_filled, TranslationKeys.dashboard.tr),
+                        _buildNavItem(context, 1, Icons.shopping_cart, TranslationKeys.history.tr),
+                        const Expanded(child: SizedBox()),
+                        _buildNavItem(context, 3, Icons.account_balance_wallet, TranslationKeys.dues.tr),
+                        _buildNavItem(context, 4, Icons.grid_view_rounded, TranslationKeys.more.tr),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadowColor.withValues(alpha: isDark ? 0.3 : 0.06),
-                  blurRadius: 24,
-                  offset: const Offset(0, -4),
+                Positioned(
+                  top: -20,
+                  child: _buildSellItem(2),
                 ),
               ],
-            ),
-            child: SafeArea(
-              child: Row(
-                children: [
-                  _buildNavItem(context, 0, Icons.home_filled, TranslationKeys.dashboard.tr),
-                  _buildNavItem(context, 1, Icons.shopping_cart, TranslationKeys.history.tr),
-                  _buildSellItem(2),
-                  _buildNavItem(context, 3, Icons.account_balance_wallet, TranslationKeys.dues.tr),
-                  _buildNavItem(context, 4, Icons.grid_view_rounded, TranslationKeys.more.tr),
-                ],
-              ),
             ),
           );
         }),
@@ -110,49 +122,42 @@ class MainNavigationView extends GetView<MainNavigationController> {
 
   Widget _buildSellItem(int index) {
     final isSelected = controller.currentIndex == index;
-    
-    return Expanded(
-      child: InkWell(
-        onTap: () => controller.changeIndex(index),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Transform.translate(
-              offset: const Offset(0, -22),
-              child: Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [AppColors.blue, AppColors.purple],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.blue.withValues(alpha: 0.45),
-                      blurRadius: 22,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.add, color: Colors.white, size: 26),
+
+    return GestureDetector(
+      onTap: () => controller.changeIndex(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.blue, AppColors.purple],
               ),
-            ),
-            Transform.translate(
-              offset: const Offset(0, -14),
-              child: Text(
-                TranslationKeys.sell.tr,
-                style: TextStyle(
-                  color: isSelected ? AppColors.blue : AppColors.text3Light,
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w600,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.blue.withValues(alpha: 0.45),
+                  blurRadius: 22,
+                  offset: const Offset(0, 8),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+            child: const Icon(Icons.add, color: Colors.white, size: 26),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            TranslationKeys.sell.tr,
+            style: TextStyle(
+              color: isSelected ? AppColors.blue : AppColors.text3Light,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

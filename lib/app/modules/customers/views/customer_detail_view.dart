@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/app_theme_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/cyl_badge.dart';
 import '../../../routes/app_pages.dart';
@@ -33,10 +34,10 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
               }
               return Column(
                 children: [
-                  _buildProfileHeader(customer),
+                  _buildProfileHeader(context, customer),
                   _buildSummaryRow(customer),
-                  _buildTabBar(),
-                  Expanded(child: _buildTabContent()),
+                  _buildTabBar(context),
+                  Expanded(child: _buildTabContent(context)),
                 ],
               );
             }),
@@ -71,7 +72,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
     );
   }
 
-  Widget _buildProfileHeader(dynamic customer) {
+  Widget _buildProfileHeader(BuildContext context, dynamic customer) {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Row(
@@ -94,9 +95,9 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
               children: [
                 Text(customer.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                 if (customer.phone != null)
-                  Text(customer.phone, style: const TextStyle(color: AppColors.text2Light)),
+                  Text(customer.phone, style: TextStyle(color: context.text2Color)),
                 if (customer.address != null)
-                  Text(customer.address, style: const TextStyle(fontSize: 13, color: AppColors.text3Light)),
+                  Text(customer.address, style: TextStyle(fontSize: 13, color: context.text3Color)),
               ],
             ),
           ),
@@ -142,22 +143,23 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
     );
   }
 
-  Widget _buildTabBar() {
+  Widget _buildTabBar(BuildContext context) {
     return Container(
       height: 44,
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: AppColors.line2Light, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+          color: context.line2Color, borderRadius: BorderRadius.circular(12)),
       child: Row(
         children: [
-          _tabOption(0, 'Sales History'),
-          _tabOption(1, 'Empties'),
+          _tabOption(context, 0, 'Sales History'),
+          _tabOption(context, 1, 'Empties'),
         ],
       ),
     );
   }
 
-  Widget _tabOption(int index, String label) {
+  Widget _tabOption(BuildContext context, int index, String label) {
     return Expanded(
       child: Obx(() {
         final isSelected = controller.selectedTab.value == index;
@@ -166,14 +168,19 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
           child: Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.white : Colors.transparent,
+              color: isSelected ? context.surfaceColor : Colors.transparent,
               borderRadius: BorderRadius.circular(9),
-              boxShadow: isSelected ? [const BoxShadow(color: AppColors.black15, blurRadius: 2, offset: Offset(0, 1))] : null,
+              boxShadow: isSelected
+                  ? [BoxShadow(
+                      color: AppColors.shadowColor.withValues(alpha: 0.06),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1))]
+                  : null,
             ),
             child: Text(
               label,
               style: TextStyle(
-                color: isSelected ? AppColors.mintInk : AppColors.text2Light,
+                color: isSelected ? AppColors.mintInk : context.text2Color,
                 fontWeight: FontWeight.w700,
                 fontSize: 13,
               ),
@@ -184,18 +191,18 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
     );
   }
 
-  Widget _buildTabContent() {
+  Widget _buildTabContent(BuildContext context) {
     return Obx(() {
       if (controller.selectedTab.value == 0) {
-        return _buildSalesList();
+        return _buildSalesList(context);
       }
-      return _buildEmptiesList();
+      return _buildEmptiesList(context);
     });
   }
 
-  Widget _buildSalesList() {
+  Widget _buildSalesList(BuildContext context) {
     if (controller.sales.isEmpty) {
-      return const Center(child: Text('No sales yet', style: TextStyle(color: AppColors.text3Light)));
+      return Center(child: Text('No sales yet', style: TextStyle(color: context.text3Color)));
     }
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -223,7 +230,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                         Text('${sale.items?.length ?? 0} item(s)',
-                            style: const TextStyle(fontSize: 13, color: AppColors.text2Light)),
+                            style: TextStyle(fontSize: 13, color: context.text2Color)),
                       ],
                     ),
                   ),
@@ -253,9 +260,9 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
     );
   }
 
-  Widget _buildEmptiesList() {
+  Widget _buildEmptiesList(BuildContext context) {
     if (controller.empties.isEmpty) {
-      return const Center(child: Text('No empty returns', style: TextStyle(color: AppColors.text3Light)));
+      return Center(child: Text('No empty returns', style: TextStyle(color: context.text3Color)));
     }
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -281,7 +288,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
                     children: [
                       Text(r.cylinder?.name ?? '', style: const TextStyle(fontWeight: FontWeight.w700)),
                       Text('${r.qty} pcs · ${r.returnDate}',
-                          style: const TextStyle(fontSize: 13, color: AppColors.text2Light)),
+                          style: TextStyle(fontSize: 13, color: context.text2Color)),
                     ],
                   ),
                 ),

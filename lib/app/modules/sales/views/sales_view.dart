@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/app_theme_ext.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/cyl_badge.dart';
@@ -23,24 +24,27 @@ class SalesView extends GetView<SalesController> {
             curve: true,
             onBack: () => Get.find<MainNavigationController>().changeIndex(0),
           ),
-          _buildPeriodTabs(),
+          _buildPeriodTabs(context),
           Expanded(
             child: Obx(() {
               if (controller.isLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (controller.sales.isEmpty) {
-                return _buildEmptyState();
+                return _buildEmptyState(context);
               }
-              
-              return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                itemCount: controller.sales.length,
-                itemBuilder: (context, index) {
-                  final sale = controller.sales[index];
-                  return _buildSaleCard(sale);
-                },
+
+              return RefreshIndicator(
+                onRefresh: controller.fetchSales,
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  itemCount: controller.sales.length,
+                  itemBuilder: (_, index) {
+                    final sale = controller.sales[index];
+                    return _buildSaleCard(context, sale);
+                  },
+                ),
               );
             }),
           ),
@@ -49,26 +53,26 @@ class SalesView extends GetView<SalesController> {
     );
   }
 
-  Widget _buildPeriodTabs() {
+  Widget _buildPeriodTabs(BuildContext context) {
     return Container(
       height: 50,
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: AppColors.line2Light,
+        color: context.line2Color,
         borderRadius: BorderRadius.circular(13),
       ),
       child: Row(
         children: [
-          _buildTabOption('Today', TranslationKeys.today.tr),
-          _buildTabOption('Week', TranslationKeys.thisWeek.tr),
-          _buildTabOption('Month', TranslationKeys.thisMonth.tr),
+          _buildTabOption(context, 'Today', TranslationKeys.today.tr),
+          _buildTabOption(context, 'Week', TranslationKeys.thisWeek.tr),
+          _buildTabOption(context, 'Month', TranslationKeys.thisMonth.tr),
         ],
       ),
     );
   }
 
-  Widget _buildTabOption(String value, String label) {
+  Widget _buildTabOption(BuildContext context, String value, String label) {
     return Expanded(
       child: Obx(() {
         final isSelected = controller.selectedPeriod.value == value;
@@ -77,14 +81,19 @@ class SalesView extends GetView<SalesController> {
           child: Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.white : Colors.transparent,
+              color: isSelected ? context.surfaceColor : Colors.transparent,
               borderRadius: BorderRadius.circular(9),
-              boxShadow: isSelected ? [const BoxShadow(color: AppColors.black15, blurRadius: 2, offset: Offset(0, 1))] : null,
+              boxShadow: isSelected
+                  ? [BoxShadow(
+                      color: AppColors.shadowColor.withValues(alpha: 0.06),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1))]
+                  : null,
             ),
             child: Text(
               label,
               style: TextStyle(
-                color: isSelected ? AppColors.mintInk : AppColors.text2Light,
+                color: isSelected ? AppColors.mintInk : context.text2Color,
                 fontWeight: FontWeight.w700,
                 fontSize: 13,
               ),
@@ -95,11 +104,11 @@ class SalesView extends GetView<SalesController> {
     );
   }
 
-  Widget _buildSaleCard(dynamic sale) {
-    final statusColor = sale.paymentType == 'cash' 
-        ? AppColors.green 
+  Widget _buildSaleCard(BuildContext context, dynamic sale) {
+    final statusColor = sale.paymentType == 'cash'
+        ? AppColors.green
         : (sale.paymentType == 'partial' ? AppColors.orange : AppColors.red);
-        
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -110,9 +119,13 @@ class SalesView extends GetView<SalesController> {
           child: Row(
             children: [
               CylBadge(
-                shortCode: sale.items?.first.cylinder?.shortCode ?? '', 
-                color1: Color(int.parse(sale.items?.first.cylinder?.color1?.replaceAll('#', '0xFF') ?? '0xFF2E5BFF')), 
-                color2: Color(int.parse(sale.items?.first.cylinder?.color2?.replaceAll('#', '0xFF') ?? '0xFF6C4DF6')),
+                shortCode: sale.items?.first.cylinder?.shortCode ?? '',
+                color1: Color(int.parse(
+                    sale.items?.first.cylinder?.color1?.replaceAll('#', '0xFF') ??
+                        '0xFF2E5BFF')),
+                color2: Color(int.parse(
+                    sale.items?.first.cylinder?.color2?.replaceAll('#', '0xFF') ??
+                        '0xFF6C4DF6')),
                 size: 38,
               ),
               const SizedBox(width: 13),
@@ -122,11 +135,13 @@ class SalesView extends GetView<SalesController> {
                   children: [
                     Text(
                       sale.customer?.name ?? TranslationKeys.walkIn.tr,
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 15),
                     ),
                     Text(
                       '${sale.items?.first.qty} × ${sale.items?.first.cylinder?.size} · ${sale.saleDate}',
-                      style: const TextStyle(fontSize: 13, color: AppColors.text2Light),
+                      style: TextStyle(
+                          fontSize: 13, color: context.text2Color),
                     ),
                   ],
                 ),
@@ -136,11 +151,13 @@ class SalesView extends GetView<SalesController> {
                 children: [
                   Text(
                     '৳${sale.totalAmount}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: statusColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(99),
@@ -163,7 +180,7 @@ class SalesView extends GetView<SalesController> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -175,12 +192,16 @@ class SalesView extends GetView<SalesController> {
               color: AppColors.blueBgLight,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Icon(Icons.shopping_cart_outlined, color: AppColors.blueInk, size: 30),
+            child: const Icon(Icons.shopping_cart_outlined,
+                color: AppColors.blueInk, size: 30),
           ),
           const SizedBox(height: 16),
           Text(
             TranslationKeys.noData.tr,
-            style: const TextStyle(color: AppColors.text3Light, fontSize: 16, fontWeight: FontWeight.w600),
+            style: TextStyle(
+                color: context.text3Color,
+                fontSize: 16,
+                fontWeight: FontWeight.w600),
           ),
         ],
       ),

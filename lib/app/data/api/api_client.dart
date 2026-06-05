@@ -53,9 +53,25 @@ class ApiClient {
   }
 
   Future<bool> _refreshToken() async {
-    // Implement your refresh token logic here
-    // return true if successful, false otherwise
-    return false; 
+    try {
+      final refreshToken = _tokenManager.getRefreshToken();
+      if (refreshToken == null) return false;
+      final response = await _dio.post(
+        '/auth/refresh',
+        data: {'refresh_token': refreshToken},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data['data'];
+        await _tokenManager.saveToken(data['access_token'] as String);
+        if (data['refresh_token'] != null) {
+          await _tokenManager.saveRefreshToken(data['refresh_token'] as String);
+        }
+        return true;
+      }
+      return false;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) async {

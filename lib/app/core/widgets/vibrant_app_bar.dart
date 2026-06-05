@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../values/app_colors.dart';
 
 class VibrantAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -111,11 +112,8 @@ class VibrantAppBar extends StatelessWidget implements PreferredSizeWidget {
                   _buildHeaderBtn(
                     icon: isDark ? Icons.light_mode : Icons.dark_mode,
                     onPressed: () {
-                      if (isDark) {
-                        Get.changeThemeMode(ThemeMode.light);
-                      } else {
-                        Get.changeThemeMode(ThemeMode.dark);
-                      }
+                      Get.changeThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
+                      GetStorage().write('isDarkMode', !isDark);
                     },
                     ghost: true,
                   ),

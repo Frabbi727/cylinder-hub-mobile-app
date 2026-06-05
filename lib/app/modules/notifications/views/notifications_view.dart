@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/app_theme_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../controllers/notifications_controller.dart';
 
@@ -45,7 +46,7 @@ class NotificationsView extends GetView<NotificationsController> {
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   itemCount: controller.notifications.length,
-                  itemBuilder: (_, i) => _buildNotificationCard(controller.notifications[i]),
+                  itemBuilder: (context, i) => _buildNotificationCard(context, controller.notifications[i]),
                 ),
               );
             }),
@@ -55,7 +56,7 @@ class NotificationsView extends GetView<NotificationsController> {
     );
   }
 
-  Widget _buildNotificationCard(dynamic notification) {
+  Widget _buildNotificationCard(BuildContext context, dynamic notification) {
     final isRead = notification.isRead as bool;
     final createdAt = DateTime.tryParse(notification.createdAt ?? '') ?? DateTime.now();
     final timeAgo = _formatTimeAgo(createdAt);
@@ -69,7 +70,7 @@ class NotificationsView extends GetView<NotificationsController> {
           color: isRead ? null : AppColors.blueBgLight,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isRead ? AppColors.lineLight : AppColors.blue.withValues(alpha: 0.3),
+            color: isRead ? context.lineColor : AppColors.blue.withValues(alpha: 0.3),
           ),
         ),
         child: Row(
@@ -79,12 +80,12 @@ class NotificationsView extends GetView<NotificationsController> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: isRead ? AppColors.line2Light : AppColors.blue,
+                color: isRead ? context.line2Color : AppColors.blue,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 _iconForType(notification.type),
-                color: isRead ? AppColors.text3Light : Colors.white,
+                color: isRead ? context.text3Color : Colors.white,
                 size: 20,
               ),
             ),
@@ -103,10 +104,10 @@ class NotificationsView extends GetView<NotificationsController> {
                   const SizedBox(height: 3),
                   Text(
                     notification.body,
-                    style: const TextStyle(fontSize: 13, color: AppColors.text2Light),
+                    style: TextStyle(fontSize: 13, color: context.text2Color),
                   ),
                   const SizedBox(height: 6),
-                  Text(timeAgo, style: const TextStyle(fontSize: 11, color: AppColors.text3Light)),
+                  Text(timeAgo, style: TextStyle(fontSize: 11, color: context.text3Color)),
                 ],
               ),
             ),
@@ -136,7 +137,7 @@ class NotificationsView extends GetView<NotificationsController> {
           ),
           const SizedBox(height: 16),
           const Text('No notifications', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-          const Text("You're all caught up!", style: TextStyle(color: AppColors.text3Light)),
+          Builder(builder: (ctx) => Text("You're all caught up!", style: TextStyle(color: ctx.text3Color))),
         ],
       ),
     );

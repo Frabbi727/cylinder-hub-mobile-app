@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/app_theme_ext.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../controllers/profile_controller.dart';
@@ -11,7 +12,7 @@ class ProfileView extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Get.isDarkMode;
+    final isDark = context.isDark;
 
     return Scaffold(
       body: Column(
@@ -32,65 +33,73 @@ class ProfileView extends GetView<ProfileController> {
                   Center(
                     child: Column(
                       children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: const BoxDecoration(
-                            gradient: AppColors.reportsGradient,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'KU',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 34,
-                                fontWeight: FontWeight.w800,
+                        Obx(() {
+                          final name = controller.user?.name ?? '';
+                          final initials = name.trim().split(' ')
+                              .where((w) => w.isNotEmpty)
+                              .take(2)
+                              .map((w) => w[0].toUpperCase())
+                              .join();
+                          return Container(
+                            width: 100,
+                            height: 100,
+                            decoration: const BoxDecoration(
+                              gradient: AppColors.reportsGradient,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                initials.isEmpty ? '?' : initials,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 34,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
                             ),
-                          ),
-                        ),
+                          );
+                        }),
                         const SizedBox(height: 16),
-                        Text(
+                        Obx(() => Text(
                           controller.user?.name ?? '...',
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                           ),
-                        ),
-                        Text(
+                        )),
+                        Obx(() => Text(
                           controller.user?.email ?? '...',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            color: AppColors.text2Light,
+                            color: context.text2Color,
                           ),
-                        ),
+                        )),
                       ],
                     ),
                   ),
                   const SizedBox(height: 32),
-                  
+
                   // Language Selection
-                  _buildSectionHeader(TranslationKeys.language.tr),
+                  _buildSectionHeader(context, TranslationKeys.language.tr),
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.line2Dark : AppColors.line2Light,
+                      color: context.line2Color,
                       borderRadius: BorderRadius.circular(13),
                     ),
                     child: Row(
                       children: [
-                        Expanded(child: _buildLangToggleBtn('English', 'en')),
-                        Expanded(child: _buildLangToggleBtn('বাংলা', 'bn')),
+                        Expanded(child: _buildLangToggleBtn(context, 'English', 'en')),
+                        Expanded(child: _buildLangToggleBtn(context, 'বাংলা', 'bn')),
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Theme Selection
-                  _buildSectionHeader(TranslationKeys.theme.tr),
+                  _buildSectionHeader(context, TranslationKeys.theme.tr),
                   const SizedBox(height: 12),
                   Card(
                     child: ListTile(
@@ -104,17 +113,39 @@ class ProfileView extends GetView<ProfileController> {
                       ),
                       trailing: Switch(
                         value: isDark,
-                        onChanged: (value) => controller.toggleTheme(),
+                        onChanged: (_) => controller.toggleTheme(),
                         activeTrackColor: AppColors.blue,
                       ),
                     ),
                   ),
 
                   const SizedBox(height: 24),
-                  
+
                   // Logout
                   InkWell(
-                    onTap: controller.logout,
+                    onTap: () async {
+                      final ok = await Get.dialog<bool>(AlertDialog(
+                        title: const Text('Log Out'),
+                        content: const Text('Are you sure you want to log out?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Get.back(result: false),
+                            child: const Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => Get.back(result: true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.red,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(0, 44),
+                            ),
+                            child: const Text('Log Out'),
+                          ),
+                        ],
+                      ));
+                      if (ok == true) controller.logout();
+                    },
+                    borderRadius: BorderRadius.circular(13),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
@@ -138,20 +169,20 @@ class ProfileView extends GetView<ProfileController> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 40),
-                  
+
                   // Version Info
                   Center(
                     child: Obx(() => Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.lineDark : AppColors.lineLight,
+                        color: context.lineColor,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         'CylinderHub Salesman · v${controller.version.value} (${controller.buildNumber.value})',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.text3Color),
                       ),
                     )),
                   ),
@@ -164,22 +195,21 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(BuildContext context, String title) {
     return Text(
       title.toUpperCase(),
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w700,
-        color: AppColors.text3Light,
+        color: context.text3Color,
         letterSpacing: 0.05,
       ),
     );
   }
 
-  Widget _buildLangToggleBtn(String label, String langCode) {
+  Widget _buildLangToggleBtn(BuildContext context, String label, String langCode) {
     return Obx(() {
       final isSelected = controller.currentLanguage.value == langCode;
-      final isDark = Get.isDarkMode;
 
       return GestureDetector(
         onTap: () {
@@ -189,9 +219,7 @@ class ProfileView extends GetView<ProfileController> {
           height: 44,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: isSelected 
-                ? (isDark ? AppColors.surfaceDark : AppColors.surfaceLight) 
-                : Colors.transparent,
+            color: isSelected ? context.surfaceColor : Colors.transparent,
             borderRadius: BorderRadius.circular(9),
             boxShadow: isSelected
                 ? [BoxShadow(color: AppColors.shadowColor.withValues(alpha: 0.05), blurRadius: 2, offset: const Offset(0, 1))]
@@ -200,7 +228,7 @@ class ProfileView extends GetView<ProfileController> {
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? AppColors.blueInk : (isDark ? AppColors.text2Dark : AppColors.text2Light),
+              color: isSelected ? AppColors.blueInk : context.text2Color,
               fontWeight: FontWeight.w700,
               fontSize: 14,
             ),

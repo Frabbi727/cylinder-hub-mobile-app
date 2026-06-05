@@ -149,17 +149,24 @@ class LoginView extends GetView<LoginController> {
                             const SizedBox(height: 22),
                             
                             // Login Button
-                            ElevatedButton(
-                              onPressed: controller.login,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(TranslationKeys.signIn.tr),
-                                  const SizedBox(width: 8),
-                                  const Icon(Icons.arrow_forward, size: 18),
-                                ],
-                              ),
-                            ),
+                            Obx(() => ElevatedButton(
+                              onPressed: controller.isLoading ? null : controller.login,
+                              child: controller.isLoading
+                                  ? const SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child: CircularProgressIndicator(
+                                          color: Colors.white, strokeWidth: 2),
+                                    )
+                                  : Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(TranslationKeys.signIn.tr),
+                                        const SizedBox(width: 8),
+                                        const Icon(Icons.arrow_forward, size: 18),
+                                      ],
+                                    ),
+                            )),
                           ],
                         ),
                       ),
@@ -211,7 +218,7 @@ class LoginView extends GetView<LoginController> {
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? const Color(0xFF2546E0) : Colors.white.withValues(alpha: 0.78),
+              color: isSelected ? AppColors.blueInk : Colors.white.withValues(alpha: 0.78),
               fontWeight: FontWeight.w700,
               fontSize: 13,
             ),

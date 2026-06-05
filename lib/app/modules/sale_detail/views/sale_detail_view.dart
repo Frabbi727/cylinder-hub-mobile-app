@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/app_theme_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/cyl_badge.dart';
 import '../../../data/models/sale_model.dart';
@@ -44,7 +45,7 @@ class SaleDetailView extends GetView<SaleDetailController> {
                     const SizedBox(height: 16),
                     _buildSectionLabel('Payment Summary'),
                     const SizedBox(height: 8),
-                    _buildPaymentCard(sale),
+                    _buildPaymentCard(context, sale),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -162,27 +163,32 @@ class SaleDetailView extends GetView<SaleDetailController> {
     );
   }
 
-  Widget _buildPaymentCard(Sale sale) {
+  Widget _buildPaymentCard(BuildContext context, Sale sale) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _row('Total Amount', '৳${double.tryParse(sale.totalAmount)?.toStringAsFixed(0) ?? sale.totalAmount}',
+            _row(context, 'Total Amount',
+                '৳${double.tryParse(sale.totalAmount)?.toStringAsFixed(0) ?? sale.totalAmount}',
                 bold: true),
-            _divider(),
-            _row('Paid Amount', '৳${double.tryParse(sale.paidAmount)?.toStringAsFixed(0) ?? sale.paidAmount}',
+            _divider(context),
+            _row(context, 'Paid Amount',
+                '৳${double.tryParse(sale.paidAmount)?.toStringAsFixed(0) ?? sale.paidAmount}',
                 color: AppColors.green),
             if (sale.dueAmount > 0) ...[
-              _divider(),
-              _row('Remaining Due', '৳${sale.dueAmount.toStringAsFixed(0)}', color: AppColors.red, bold: true),
+              _divider(context),
+              _row(context, 'Remaining Due',
+                  '৳${sale.dueAmount.toStringAsFixed(0)}',
+                  color: AppColors.red, bold: true),
             ],
             if (sale.notes != null && sale.notes!.isNotEmpty) ...[
-              _divider(),
+              _divider(context),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Note: ${sale.notes}',
-                    style: const TextStyle(fontSize: 13, color: AppColors.text2Light)),
+                    style: TextStyle(
+                        fontSize: 13, color: context.text2Color)),
               ),
             ],
           ],
@@ -191,14 +197,18 @@ class SaleDetailView extends GetView<SaleDetailController> {
     );
   }
 
-  Widget _row(String label, String value, {Color? color, bool bold = false}) {
+  Widget _row(BuildContext context, String label, String value,
+      {Color? color, bool bold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label,
-              style: const TextStyle(fontSize: 14, color: AppColors.text2Light, fontWeight: FontWeight.w600)),
+              style: TextStyle(
+                  fontSize: 14,
+                  color: context.text2Color,
+                  fontWeight: FontWeight.w600)),
           Text(value,
               style: TextStyle(
                   fontSize: 15,
@@ -209,15 +219,20 @@ class SaleDetailView extends GetView<SaleDetailController> {
     );
   }
 
-  Widget _divider() => const Divider(height: 1, color: AppColors.lineLight);
+  Widget _divider(BuildContext context) => Divider(height: 1, color: context.lineColor);
 
-  Widget _buildSectionLabel(String text) {
-    return Text(
-      text.toUpperCase(),
-      style: const TextStyle(
-        fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.text3Light, letterSpacing: 0.05,
-      ),
-    );
+  Widget _buildSectionLabel(String text, {BuildContext? ctx}) {
+    return Builder(builder: (context) {
+      return Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: (ctx ?? context).text3Color,
+          letterSpacing: 0.05,
+        ),
+      );
+    });
   }
 
   Widget _paymentBadge(String type) {

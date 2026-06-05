@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/app_theme_ext.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../controllers/sell_controller.dart';
@@ -26,39 +27,45 @@ class SellView extends GetView<SellController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionLabel('Customers'),
+                  _buildSectionLabel(context, 'Customers'),
                   const SizedBox(height: 7),
                   _buildCustomerSelector(),
                   const SizedBox(height: 24),
-                  
-                  _buildSectionLabel('Cylinder Types'),
+
+                  _buildSectionLabel(context, 'Cylinder Types'),
                   const SizedBox(height: 10),
-                  _buildCylinderItems(),
+                  _buildCylinderItems(context),
                   const SizedBox(height: 12),
-                  _buildAddCylinderButton(),
-                  
+                  _buildAddCylinderButton(context),
+
                   const SizedBox(height: 24),
-                  _buildSectionLabel('Payment Type'),
+                  _buildSectionLabel(context, 'Payment Type'),
                   const SizedBox(height: 7),
-                  _buildPaymentTypeSelector(),
-                  
+                  _buildPaymentTypeSelector(context),
+
                   const SizedBox(height: 24),
-                  _buildSectionLabel('Order Summary'),
+                  _buildSectionLabel(context, 'Order Summary'),
                   const SizedBox(height: 10),
-                  _buildOrderSummary(),
-                  
+                  _buildOrderSummary(context),
+
                   const SizedBox(height: 32),
-                  ElevatedButton(
-                    onPressed: controller.recordSale,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(TranslationKeys.recordSale.tr),
-                        const SizedBox(width: 8),
-                        const Icon(Icons.check_circle_outline, size: 20),
-                      ],
-                    ),
-                  ),
+                  Obx(() => ElevatedButton(
+                    onPressed: controller.isLoading ? null : controller.recordSale,
+                    child: controller.isLoading
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(TranslationKeys.recordSale.tr),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.check_circle_outline, size: 20),
+                            ],
+                          ),
+                  )),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -69,13 +76,13 @@ class SellView extends GetView<SellController> {
     );
   }
 
-  Widget _buildSectionLabel(String label) {
+  Widget _buildSectionLabel(BuildContext context, String label) {
     return Text(
       label.toUpperCase(),
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w700,
-        color: AppColors.text2Light,
+        color: context.text2Color,
       ),
     );
   }
@@ -97,12 +104,13 @@ class SellView extends GetView<SellController> {
         )),
       ],
       onChanged: (val) {
-        controller.selectedCustomer.value = controller.customers.firstWhereOrNull((c) => c.id == val);
+        controller.selectedCustomer.value =
+            controller.customers.firstWhereOrNull((c) => c.id == val);
       },
     ));
   }
 
-  Widget _buildCylinderItems() {
+  Widget _buildCylinderItems(BuildContext context) {
     return Obx(() => Column(
       children: controller.selectedCylinders.asMap().entries.map((entry) {
         final i = entry.key;
@@ -134,7 +142,11 @@ class SellView extends GetView<SellController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Qty', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.text3Light)),
+                          Text('Qty',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: context.text3Color)),
                           const SizedBox(height: 5),
                           _buildStepper(i),
                         ],
@@ -145,15 +157,20 @@ class SellView extends GetView<SellController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Price ৳', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.text3Light)),
+                          Text('Price ৳',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: context.text3Color)),
                           const SizedBox(height: 5),
                           TextFormField(
                             initialValue: item['unit_price'].toString(),
                             keyboardType: TextInputType.number,
-                            onChanged: (val) {
-                              controller.selectedCylinders[i]['unit_price'] = double.tryParse(val) ?? 0;
-                            },
-                            decoration: const InputDecoration(contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8)),
+                            onChanged: (val) =>
+                                controller.updatePrice(i, double.tryParse(val) ?? 0),
+                            decoration: const InputDecoration(
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 10, vertical: 8)),
                           ),
                         ],
                       ),
@@ -179,12 +196,8 @@ class SellView extends GetView<SellController> {
         children: [
           IconButton(
             icon: const Icon(Icons.remove, size: 18, color: AppColors.blueDark),
-            onPressed: () {
-              if (controller.selectedCylinders[index]['qty'] > 1) {
-                controller.selectedCylinders[index]['qty']--;
-                controller.selectedCylinders.refresh();
-              }
-            },
+            onPressed: () => controller.updateQty(
+                index, (controller.selectedCylinders[index]['qty'] as int) - 1),
           ),
           Expanded(
             child: Center(
@@ -196,27 +209,22 @@ class SellView extends GetView<SellController> {
           ),
           IconButton(
             icon: const Icon(Icons.add, size: 18, color: AppColors.blueDark),
-            onPressed: () {
-              controller.selectedCylinders[index]['qty']++;
-              controller.selectedCylinders.refresh();
-            },
+            onPressed: () => controller.updateQty(
+                index, (controller.selectedCylinders[index]['qty'] as int) + 1),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAddCylinderButton() {
+  Widget _buildAddCylinderButton(BuildContext context) {
     return InkWell(
-      onTap: () {
-        if (controller.cylinders.isNotEmpty) {
-          controller.addCylinderItem(controller.cylinders.first);
-        }
-      },
+      onTap: () => _showCylinderPicker(context),
+      borderRadius: BorderRadius.circular(13),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.blue, width: 1.5, style: BorderStyle.solid),
+          border: Border.all(color: AppColors.blue, width: 1.5),
           borderRadius: BorderRadius.circular(13),
         ),
         child: const Row(
@@ -224,31 +232,82 @@ class SellView extends GetView<SellController> {
           children: [
             Icon(Icons.add_circle_outline, color: AppColors.blue, size: 20),
             SizedBox(width: 8),
-            Text('Add Item', style: TextStyle(color: AppColors.blue, fontWeight: FontWeight.w700)),
+            Text('Add Cylinder Type',
+                style: TextStyle(color: AppColors.blue, fontWeight: FontWeight.w700)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPaymentTypeSelector() {
+  void _showCylinderPicker(BuildContext context) {
+    final available = controller.cylinders
+        .where((c) =>
+            !controller.selectedCylinders.any((item) => item['cylinder_id'] == c.id))
+        .toList();
+    if (available.isEmpty) {
+      Get.snackbar('All Added', 'All cylinder types are already in the order',
+          snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 8),
+            child: Text('Select Cylinder Type',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+          ),
+          ...available.map((c) => ListTile(
+                leading: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: AppColors.blueBgLight,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.propane_tank, color: AppColors.blueInk, size: 18),
+                ),
+                title: Text(c.name,
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
+                subtitle: Text(c.size),
+                trailing:
+                    const Icon(Icons.add_circle, color: AppColors.blue),
+                onTap: () {
+                  controller.addCylinderItem(c);
+                  Get.back();
+                },
+              )),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentTypeSelector(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: AppColors.line2Light,
+        color: context.line2Color,
         borderRadius: BorderRadius.circular(13),
       ),
       child: Obx(() => Row(
         children: [
-          _buildPaymentOption('cash', TranslationKeys.cash.tr, AppColors.green),
-          _buildPaymentOption('partial', TranslationKeys.partial.tr, AppColors.orange),
-          _buildPaymentOption('due', 'Due Later', AppColors.red),
+          _buildPaymentOption(context, 'cash', TranslationKeys.cash.tr, AppColors.green),
+          _buildPaymentOption(context, 'partial', TranslationKeys.partial.tr, AppColors.orange),
+          _buildPaymentOption(context, 'due', 'Due Later', AppColors.red),
         ],
       )),
     );
   }
 
-  Widget _buildPaymentOption(String type, String label, Color activeColor) {
+  Widget _buildPaymentOption(
+      BuildContext context, String type, String label, Color activeColor) {
     final isSelected = controller.paymentType.value == type;
     return Expanded(
       child: GestureDetector(
@@ -257,14 +316,19 @@ class SellView extends GetView<SellController> {
           height: 44,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.white : Colors.transparent,
+            color: isSelected ? context.surfaceColor : Colors.transparent,
             borderRadius: BorderRadius.circular(9),
-            boxShadow: isSelected ? [const BoxShadow(color: AppColors.black15, blurRadius: 2, offset: Offset(0, 1))] : null,
+            boxShadow: isSelected
+                ? [BoxShadow(
+                    color: AppColors.shadowColor.withValues(alpha: 0.06),
+                    blurRadius: 2,
+                    offset: const Offset(0, 1))]
+                : null,
           ),
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? activeColor : AppColors.text2Light,
+              color: isSelected ? activeColor : context.text2Color,
               fontWeight: FontWeight.w700,
               fontSize: 14,
             ),
@@ -274,45 +338,53 @@ class SellView extends GetView<SellController> {
     );
   }
 
-  Widget _buildOrderSummary() {
+  Widget _buildOrderSummary(BuildContext context) {
     return Obx(() {
-      double total = 0;
-      for (var item in controller.selectedCylinders) {
-        total += (item['qty'] as int) * (item['unit_price'] as double);
-      }
-      
+      final total = controller.totalAmount;
+      final payType = controller.paymentType.value;
+      final paidText = controller.paidAmountController.text;
+      final paid = double.tryParse(paidText) ?? 0;
+      final due = payType == 'cash'
+          ? 0.0
+          : payType == 'partial'
+              ? total - paid
+              : total;
+
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              _buildSummaryRow('Total', '৳${total.toStringAsFixed(0)}', isBold: true),
-              const SizedBox(height: 10),
-              if (controller.paymentType.value == 'partial') ...[
+              _buildSummaryRow(context, 'Total', '৳${total.toStringAsFixed(0)}', isBold: true),
+              if (payType == 'partial') ...[
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Amount Paid', style: TextStyle(color: AppColors.text2Light)),
+                    Text('Amount Paid',
+                        style: TextStyle(color: context.text2Color)),
                     SizedBox(
-                      width: 100,
+                      width: 110,
                       height: 35,
                       child: TextFormField(
                         controller: controller.paidAmountController,
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.right,
-                        decoration: const InputDecoration(contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0)),
-                        onChanged: (_) => controller.update(), // Refresh UI for remaining due
+                        decoration: const InputDecoration(
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 8, vertical: 0)),
+                        onChanged: (_) => controller.selectedCylinders.refresh(),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
               ],
-              _buildSummaryRow(
-                'due after this sale', 
-                '৳${(total - (double.tryParse(controller.paidAmountController.text) ?? 0)).toStringAsFixed(0)}',
-                color: AppColors.red,
-              ),
+              if (due > 0) ...[
+                const SizedBox(height: 10),
+                _buildSummaryRow(context, 'Due after this sale',
+                    '৳${due.toStringAsFixed(0)}',
+                    color: AppColors.red),
+              ],
             ],
           ),
         ),
@@ -320,11 +392,13 @@ class SellView extends GetView<SellController> {
     });
   }
 
-  Widget _buildSummaryRow(String label, String value, {bool isBold = false, Color? color}) {
+  Widget _buildSummaryRow(BuildContext context, String label, String value,
+      {bool isBold = false, Color? color}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: color ?? AppColors.text2Light)),
+        Text(label,
+            style: TextStyle(color: color ?? context.text2Color)),
         Text(
           value,
           style: TextStyle(
