@@ -44,9 +44,11 @@ class ApiClient {
         return handler.next(response);
       },
       onError: (DioException e, handler) async {
-        _logger.e('❌ ERROR[${e.response?.statusCode}] => URL: ${e.requestOptions.uri}');
+        final statusCode = e.response?.statusCode;
+        final errorMsg = statusCode != null ? 'ERROR[$statusCode]' : 'NETWORK ERROR';
+        _logger.e('❌ $errorMsg => URL: ${e.requestOptions.uri}');
         
-        if (e.response?.statusCode == 401) {
+        if (statusCode == 401) {
           // Centralized Refresh Token Logic
           final success = await _refreshToken();
           if (success) {
