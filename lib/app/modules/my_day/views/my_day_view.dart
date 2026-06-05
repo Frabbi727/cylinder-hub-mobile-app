@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
 import '../../../core/values/languages/translation_keys.dart';
@@ -8,6 +9,7 @@ import '../../../core/widgets/hero_card.dart';
 import '../../../core/widgets/cstat_card.dart';
 import '../../../core/widgets/quick_action.dart';
 import '../../../core/widgets/cyl_badge.dart';
+import '../../../core/widgets/reusable_shimmer.dart';
 import '../controllers/my_day_controller.dart';
 import '../../main_navigation/controllers/main_navigation_controller.dart';
 import '../../../routes/app_pages.dart';
@@ -19,138 +21,141 @@ class MyDayView extends GetView<MyDayController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-        return Column(
-          children: [
-            VibrantAppBar(
-              title: controller.cachedUser?.name.split(' ').first ?? '...',
-              sub: 'Salesman · Field App', 
-              kicker: controller.greeting.value,
-              curve: true,
-              tall: true,
-              showThemeToggle: true,
-              onBell: controller.onNotificationTap,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: AppHeroCard(
-                  icon: Icons.account_balance_wallet,
-                  label: TranslationKeys.cashInHand.tr,
-                  amount: '৳${controller.stats.value?.totalCashToHandIn.toStringAsFixed(0) ?? '0'}',
-                  foot: [
-                    HeroFootItem(
-                      label: TranslationKeys.todaysProfit.tr, 
-                      value: '৳${controller.stats.value?.todayProfit.toStringAsFixed(0) ?? '0'}'
-                    ),
-                    HeroFootItem(
-                      label: TranslationKeys.cashCollected.tr, 
-                      value: '৳${controller.stats.value?.cashCollected.toStringAsFixed(0) ?? '0'}'
-                    ),
-                  ],
+        return ReusableShimmer(
+          isLoading: controller.isLoading && controller.stats.value == null,
+          child: Column(
+            children: [
+              VibrantAppBar(
+                title: controller.cachedUser?.name.split(' ').first ?? '...',
+                sub: 'Salesman · Field App',
+                kicker: controller.greeting.value,
+                curve: true,
+                tall: true,
+                showThemeToggle: true,
+                onBell: controller.onNotificationTap,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: AppHeroCard(
+                    icon: Icons.account_balance_wallet,
+                    label: TranslationKeys.cashInHand.tr,
+                    amount: '৳${controller.stats.value?.totalCashToHandIn.toStringAsFixed(0) ?? '0'}',
+                    foot: [
+                      HeroFootItem(
+                        label: TranslationKeys.todaysProfit.tr,
+                        value: '৳${controller.stats.value?.todayProfit.toStringAsFixed(0) ?? '0'}'
+                      ),
+                      HeroFootItem(
+                        label: TranslationKeys.cashCollected.tr,
+                        value: '৳${controller.stats.value?.cashCollected.toStringAsFixed(0) ?? '0'}'
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 1.1,
-                      children: [
-                        CStatCard(
-                          gradient: AppColors.vibrantBlueGradient,
-                          icon: Icons.inventory_2,
-                          num: '${controller.stats.value?.totalSold ?? 0}',
-                          label: TranslationKeys.totalSold.tr,
-                          sub: TranslationKeys.soldSoFar.tr,
-                        ),
-                        CStatCard(
-                          gradient: AppColors.mintGradient,
-                          icon: Icons.takeout_dining,
-                          num: '${controller.stats.value?.totalRemaining ?? 0}',
-                          label: TranslationKeys.cylindersLeft.tr,
-                          sub: TranslationKeys.canSell.tr,
-                        ),
-                        CStatCard(
-                          gradient: AppColors.orangeGradient,
-                          icon: Icons.timer,
-                          num: '৳${controller.stats.value?.todayDueAmount.toStringAsFixed(0) ?? '0'}',
-                          label: TranslationKeys.toCollect.tr,
-                          sub: '${controller.recentSales.where((s) => s.dueAmount > 0).length} ${TranslationKeys.salesDue.tr}',
-                        ),
-                        CStatCard(
-                          gradient: AppColors.reportsGradient,
-                          icon: Icons.rotate_left,
-                          num: '${controller.stats.value?.totalReturned ?? 0}',
-                          label: TranslationKeys.emptiesBack.tr,
-                          sub: TranslationKeys.todaysReturns.tr,
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    _buildSectionHeader(TranslationKeys.myStock.tr, ctx: context),
-                    const SizedBox(height: 10),
-                    Obx(() => Card(
-                      child: Column(
-                        children: controller.allocations.isEmpty
-                          ? [Padding(padding: const EdgeInsets.all(20), child: Text(TranslationKeys.noData.tr))]
-                          : controller.allocations.map((a) => _buildStockItem(
-                              context: context,
-                              name: a.cylinder?.name ?? 'Unknown',
-                              size: a.cylinder?.size ?? '',
-                              sold: a.soldQty,
-                              total: a.qty,
-                              c1: Color(int.parse(a.cylinder?.color1?.replaceAll('#', '0xFF') ?? '0xFF2E5BFF')),
-                              c2: Color(int.parse(a.cylinder?.color2?.replaceAll('#', '0xFF') ?? '0xFF6C4DF6')),
-                              short: a.cylinder?.shortCode ?? '',
-                            )).toList(),
-                      ),
-                    )),
 
-                    const SizedBox(height: 24),
-                    _buildSectionHeader(TranslationKeys.quickActions.tr, ctx: context),
-                    const SizedBox(height: 10),
-                    _buildQuickActionsCard(),
-
-                    const SizedBox(height: 24),
-                    _buildRecentSalesHeader(context),
-                    const SizedBox(height: 10),
-                    Obx(() => Card(
-                      child: Column(
-                        children: controller.recentSales.isEmpty
-                          ? [Padding(padding: const EdgeInsets.all(20), child: Text(TranslationKeys.noData.tr))]
-                          : controller.recentSales.map((s) => _buildSaleRow(
-                              context: context,
-                              saleId: s.id,
-                              customer: s.customer?.name ?? TranslationKeys.walkIn.tr,
-                              time: s.saleDate,
-                              qty: s.items?.first.qty ?? 0,
-                              size: s.items?.first.cylinder?.size ?? '',
-                              amount: s.totalAmount,
-                              status: s.paymentType,
-                              statusColor: s.paymentType == 'cash'
-                                ? AppColors.green
-                                : (s.paymentType == 'partial' ? AppColors.orange : AppColors.red),
-                              c1: Color(int.parse(s.items?.first.cylinder?.color1?.replaceAll('#', '0xFF') ?? '0xFF2E5BFF')),
-                              c2: Color(int.parse(s.items?.first.cylinder?.color2?.replaceAll('#', '0xFF') ?? '0xFF6C4DF6')),
-                              short: s.items?.first.cylinder?.shortCode ?? '',
-                            )).toList(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        childAspectRatio: 1.1,
+                        children: [
+                          CStatCard(
+                            gradient: AppColors.vibrantBlueGradient,
+                            icon: Icons.inventory_2,
+                            num: '${controller.stats.value?.totalSold ?? 0}',
+                            label: TranslationKeys.totalSold.tr,
+                            sub: TranslationKeys.soldSoFar.tr,
+                          ),
+                          CStatCard(
+                            gradient: AppColors.mintGradient,
+                            icon: Icons.takeout_dining,
+                            num: '${controller.stats.value?.totalRemaining ?? 0}',
+                            label: TranslationKeys.cylindersLeft.tr,
+                            sub: TranslationKeys.canSell.tr,
+                          ),
+                          CStatCard(
+                            gradient: AppColors.orangeGradient,
+                            icon: Icons.timer,
+                            num: '৳${controller.stats.value?.todayDueAmount.toStringAsFixed(0) ?? '0'}',
+                            label: TranslationKeys.toCollect.tr,
+                            sub: '${controller.recentSales.where((s) => s.dueAmount > 0).length} ${TranslationKeys.salesDue.tr}',
+                          ),
+                          CStatCard(
+                            gradient: AppColors.reportsGradient,
+                            icon: Icons.rotate_left,
+                            num: '${controller.stats.value?.totalReturned ?? 0}',
+                            label: TranslationKeys.emptiesBack.tr,
+                            sub: TranslationKeys.todaysReturns.tr,
+                          ),
+                        ],
                       ),
-                    )),
-                    
-                    const SizedBox(height: 100), // Bottom padding for FAB
-                  ],
+
+                      const SizedBox(height: 24),
+                      _buildSectionHeader(TranslationKeys.myStock.tr, ctx: context),
+                      const SizedBox(height: 10),
+                      Obx(() => Card(
+                        child: Column(
+                          children: controller.allocations.isEmpty
+                            ? [Padding(padding: const EdgeInsets.all(20), child: Text(TranslationKeys.noData.tr))]
+                            : controller.allocations.map((a) => _buildStockItem(
+                                context: context,
+                                name: a.cylinder?.name ?? 'Unknown',
+                                size: a.cylinder?.size ?? '',
+                                sold: a.soldQty,
+                                total: a.qty,
+                                c1: Color(int.parse(a.cylinder?.color1?.replaceAll('#', '0xFF') ?? '0xFF2E5BFF')),
+                                c2: Color(int.parse(a.cylinder?.color2?.replaceAll('#', '0xFF') ?? '0xFF6C4DF6')),
+                                short: a.cylinder?.shortCode ?? '',
+                              )).toList(),
+                        ),
+                      )),
+
+                      const SizedBox(height: 24),
+                      _buildSectionHeader(TranslationKeys.quickActions.tr, ctx: context),
+                      const SizedBox(height: 10),
+                      _buildQuickActionsCard(),
+
+                      const SizedBox(height: 24),
+                      _buildRecentSalesHeader(context),
+                      const SizedBox(height: 10),
+                      Obx(() => Card(
+                        child: Column(
+                          children: controller.recentSales.isEmpty
+                            ? [Padding(padding: const EdgeInsets.all(20), child: Text(TranslationKeys.noData.tr))]
+                            : controller.recentSales.map((s) => _buildSaleRow(
+                                context: context,
+                                saleId: s.id,
+                                customer: s.customer?.name ?? TranslationKeys.walkIn.tr,
+                                time: s.saleDate,
+                                qty: s.items?.first.qty ?? 0,
+                                size: s.items?.first.cylinder?.size ?? '',
+                                amount: s.totalAmount,
+                                status: s.paymentType,
+                                statusColor: s.paymentType == 'cash'
+                                  ? AppColors.green
+                                  : (s.paymentType == 'partial' ? AppColors.orange : AppColors.red),
+                                c1: Color(int.parse(s.items?.first.cylinder?.color1?.replaceAll('#', '0xFF') ?? '0xFF2E5BFF')),
+                                c2: Color(int.parse(s.items?.first.cylinder?.color2?.replaceAll('#', '0xFF') ?? '0xFF6C4DF6')),
+                                short: s.items?.first.cylinder?.shortCode ?? '',
+                              )).toList(),
+                        ),
+                      )),
+
+                      const SizedBox(height: 100), // Bottom padding for FAB
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       }),
     );
