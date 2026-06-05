@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import '../../../core/values/date_ext.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../data/models/sale_model.dart';
 import '../../sales/repository/sales_repository.dart';
@@ -23,7 +23,7 @@ class SaleDetailController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    collectionDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    collectionDate = DateTime.now().toApiDate;
     final saleId = Get.arguments as int?;
     if (saleId != null) fetchSaleDetail(saleId);
   }

@@ -8,7 +8,16 @@ import 'network_exception.dart';
 class ApiClient {
   late Dio _dio;
   final TokenManager _tokenManager = TokenManager();
-  final Logger _logger = Logger();
+  final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 0,
+      errorMethodCount: 8,
+      lineLength: 100,
+      colors: true,
+      printEmojis: true,
+      dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
+    ),
+  );
 
   ApiClient() {
     _dio = Dio(BaseOptions(
@@ -23,19 +32,19 @@ class ApiClient {
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
-        _logger.i('REQUEST[${options.method}] => PATH: ${options.path}');
+        _logger.i('🚀 REQUEST[${options.method}] => URL: ${options.uri}');
         if (options.data != null) {
-          _logger.d('REQUEST BODY: ${options.data}');
+          _logger.d('📦 REQUEST BODY: ${options.data}');
         }
         return handler.next(options);
       },
       onResponse: (response, handler) {
-        _logger.i('RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
-        _logger.d('DATA: ${response.data}');
+        _logger.i('✅ RESPONSE[${response.statusCode}] => URL: ${response.requestOptions.uri}');
+        _logger.d('📄 DATA: ${response.data}');
         return handler.next(response);
       },
       onError: (DioException e, handler) async {
-        _logger.e('ERROR[${e.response?.statusCode}] => PATH: ${e.requestOptions.path}');
+        _logger.e('❌ ERROR[${e.response?.statusCode}] => URL: ${e.requestOptions.uri}');
         
         if (e.response?.statusCode == 401) {
           // Centralized Refresh Token Logic

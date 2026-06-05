@@ -9,6 +9,7 @@ import '../../../core/widgets/cyl_badge.dart';
 import '../../../routes/app_pages.dart';
 import '../../../data/models/customer_model.dart';
 import '../../../data/models/customer_response_models.dart';
+import '../../../core/values/date_ext.dart';
 import '../controllers/customer_detail_controller.dart';
 
 class CustomerDetailView extends GetView<CustomerDetailController> {
@@ -229,7 +230,7 @@ class CustomerDetailView extends GetView<CustomerDetailController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          DateFormat('d MMM yyyy').format(DateTime.tryParse(sale.saleDate) ?? DateTime.now()),
+                          sale.saleDate.toStandardDate,
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                         Text('${sale.items?.length ?? 0} item(s)',

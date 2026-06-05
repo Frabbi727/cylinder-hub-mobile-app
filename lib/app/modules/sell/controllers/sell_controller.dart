@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/values/date_ext.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../core/services/auth_service.dart';
 import '../repository/sell_repository.dart';
@@ -160,7 +161,7 @@ class SellController extends BaseController {
     try {
       final response = await repository.createSale(
         customerId: selectedCustomer.value?.id,
-        saleDate: DateTime.now().toString().split(' ').first,
+        saleDate: DateTime.now().toApiDate,
         paymentType: paymentType.value,
         paidAmount: paymentType.value == 'partial'
             ? double.tryParse(paidAmountController.text.trim())

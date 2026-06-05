@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import '../../../core/values/date_ext.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
@@ -160,6 +160,6 @@ class NotificationsView extends GetView<NotificationsController> {
     final diff = DateTime.now().difference(time);
     if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
     if (diff.inHours < 24) return '${diff.inHours}h ago';
-    return DateFormat('d MMM').format(time);
+    return time.toDayMonth;
   }
 }

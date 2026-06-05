@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import '../../../core/values/date_ext.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../data/models/api_response.dart';
@@ -31,12 +31,12 @@ class MyReportsController extends BaseController {
     if (_fromDate.isEmpty || _toDate.isEmpty) return '';
     final from = DateTime.parse(_fromDate);
     final to = DateTime.parse(_toDate);
-    
+
     if (selectedPeriod.value == 'Today') {
-      return DateFormat('MMM dd, yyyy').format(from);
+      return from.toStandardDate;
     }
-    
-    return '${DateFormat('MMM dd').format(from)} - ${DateFormat('MMM dd, yyyy').format(to)}';
+
+    return '${from.toDayMonth} - ${to.toStandardDate}';
   }
 
   MyReportsController({required this.repository});
@@ -50,26 +50,26 @@ class MyReportsController extends BaseController {
 
   void _recalcDates() {
     final now = DateTime.now();
-    _toDate = DateFormat('yyyy-MM-dd').format(now);
-    
+    _toDate = now.toApiDate;
+
     switch (selectedPeriod.value) {
       case 'Today':
         _fromDate = _toDate;
         break;
       case 'Week':
         final monday = now.subtract(Duration(days: now.weekday - 1));
-        _fromDate = DateFormat('yyyy-MM-dd').format(monday);
+        _fromDate = monday.toApiDate;
         break;
       case 'Month':
-        _fromDate = DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
+        _fromDate = DateTime(now.year, now.month, 1).toApiDate;
         break;
       case 'Year':
-        _fromDate = DateFormat('yyyy-MM-dd').format(DateTime(now.year, 1, 1));
+        _fromDate = DateTime(now.year, 1, 1).toApiDate;
         break;
       case 'Custom':
         if (customFromDate.value != null && customToDate.value != null) {
-          _fromDate = DateFormat('yyyy-MM-dd').format(customFromDate.value!);
-          _toDate = DateFormat('yyyy-MM-dd').format(customToDate.value!);
+          _fromDate = customFromDate.value!.toApiDate;
+          _toDate = customToDate.value!.toApiDate;
         } else {
           _fromDate = _toDate;
         }
@@ -104,7 +104,7 @@ class MyReportsController extends BaseController {
         repository.getReport(userId, from: _fromDate, to: _toDate),
         repository.getCylinderFlow(userId, from: _fromDate, to: _toDate),
         repository.getDailyCollections(userId,
-            date: DateFormat('yyyy-MM-dd').format(DateTime.now())),
+            date: DateTime.now().toApiDate),
       ]);
 
       final reportResponse = results[0] as ApiResponse<SalesmanReport>;
@@ -131,7 +131,7 @@ class MyReportsController extends BaseController {
     switch (selectedPeriod.value) {
       case 'Today':
         final now = DateTime.now();
-        final dateStr = DateFormat('yyyy-MM-dd').format(now);
+        final dateStr = now.toApiDate;
         return [daily[dateStr] ?? 0.0];
 
       case 'Week':
@@ -140,7 +140,7 @@ class MyReportsController extends BaseController {
         final data = <double>[];
         for (int i = 0; i < 7; i++) {
           final date = monday.add(Duration(days: i));
-          final dateStr = DateFormat('yyyy-MM-dd').format(date);
+          final dateStr = date.toApiDate;
           data.add(daily[dateStr] ?? 0.0);
         }
         return data;
@@ -178,7 +178,7 @@ class MyReportsController extends BaseController {
         for (var date = customFromDate.value!;
             date.isBefore(customToDate.value!.add(const Duration(days: 1)));
             date = date.add(const Duration(days: 1))) {
-          final dateStr = DateFormat('yyyy-MM-dd').format(date);
+          final dateStr = date.toApiDate;
           data.add(daily[dateStr] ?? 0.0);
         }
         return data;
@@ -191,7 +191,7 @@ class MyReportsController extends BaseController {
   List<String> get revenueLabels {
     switch (selectedPeriod.value) {
       case 'Today':
-        return [DateFormat('MMM dd').format(DateTime.now())];
+        return [DateTime.now().toDayMonth];
       case 'Week':
         return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       case 'Month':
@@ -204,7 +204,7 @@ class MyReportsController extends BaseController {
         for (var date = customFromDate.value!;
             date.isBefore(customToDate.value!.add(const Duration(days: 1)));
             date = date.add(const Duration(days: 1))) {
-          labels.add(DateFormat('dd/MM').format(date));
+          labels.add(date.toDayMonthSlash);
         }
         return labels;
       default:

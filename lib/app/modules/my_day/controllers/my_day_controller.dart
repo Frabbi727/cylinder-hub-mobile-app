@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import '../../../core/values/date_ext.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/values/languages/translation_keys.dart';
@@ -35,7 +35,7 @@ class MyDayController extends BaseController {
 
   void _updateTimeInfo() {
     final now = DateTime.now();
-    todayDate.value = DateFormat('MMMM d, yyyy').format(now);
+    todayDate.value = now.toStandardDate;
     
     final hour = now.hour;
     if (hour < 12) {

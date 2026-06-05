@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import '../../../core/values/date_ext.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
 import '../../../core/values/currency_ext.dart';
@@ -113,7 +113,7 @@ class SaleDetailView extends GetView<SaleDetailController> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  DateFormat('d MMM yyyy').format(DateTime.tryParse(sale.saleDate) ?? DateTime.now()),
+                  sale.saleDate.toStandardDate,
                   style: const TextStyle(fontSize: 13, color: AppColors.text3Light, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 4),

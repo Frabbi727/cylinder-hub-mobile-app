@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import '../../../core/values/date_ext.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../data/models/customer_model.dart';
 import '../../../data/models/cylinder_model.dart';
@@ -25,7 +25,7 @@ class EmptyReturnsController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    returnDate.value = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    returnDate.value = DateTime.now().toApiDate;
     _loadData();
   }
 

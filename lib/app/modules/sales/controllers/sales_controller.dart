@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import '../../../core/values/date_ext.dart';
 import '../../../core/base/base_controller.dart';
 import '../repository/sales_repository.dart';
 import '../../../data/models/sale_model.dart';
@@ -48,9 +48,8 @@ class SalesController extends BaseController {
 
   void _setInitialDates() {
     final now = DateTime.now();
-    final fmt = DateFormat('yyyy-MM-dd');
-    fromDate.value = fmt.format(now);
-    toDate.value = fmt.format(now);
+    fromDate.value = now.toApiDate;
+    toDate.value = now.toApiDate;
   }
 
   void onSearchChanged(String query) {
@@ -120,30 +119,29 @@ class SalesController extends BaseController {
   void setPeriod(String period, {DateTimeRange? customRange}) {
     selectedPeriod.value = period;
     final now = DateTime.now();
-    final fmt = DateFormat('yyyy-MM-dd');
 
     switch (period) {
       case 'Today':
-        fromDate.value = fmt.format(now);
-        toDate.value = fmt.format(now);
+        fromDate.value = now.toApiDate;
+        toDate.value = now.toApiDate;
         break;
       case 'Week':
         final monday = now.subtract(Duration(days: now.weekday - 1));
-        fromDate.value = fmt.format(monday);
-        toDate.value = fmt.format(now);
+        fromDate.value = monday.toApiDate;
+        toDate.value = now.toApiDate;
         break;
       case 'Month':
-        fromDate.value = fmt.format(DateTime(now.year, now.month, 1));
-        toDate.value = fmt.format(now);
+        fromDate.value = DateTime(now.year, now.month, 1).toApiDate;
+        toDate.value = now.toApiDate;
         break;
       case 'Year':
-        fromDate.value = fmt.format(DateTime(now.year, 1, 1));
-        toDate.value = fmt.format(now);
+        fromDate.value = DateTime(now.year, 1, 1).toApiDate;
+        toDate.value = now.toApiDate;
         break;
       case 'Custom':
         if (customRange != null) {
-          fromDate.value = fmt.format(customRange.start);
-          toDate.value = fmt.format(customRange.end);
+          fromDate.value = customRange.start.toApiDate;
+          toDate.value = customRange.end.toApiDate;
         }
         break;
     }
@@ -167,8 +165,8 @@ class SalesController extends BaseController {
 
   String get dateRangeDisplay {
     if (fromDate.value == null || toDate.value == null) return '';
-    if (fromDate.value == toDate.value) return fromDate.value!;
-    return '${fromDate.value} to ${toDate.value}';
+    if (fromDate.value == toDate.value) return fromDate.value.toStandardDate;
+    return '${fromDate.value.toStandardDate} to ${toDate.value.toStandardDate}';
   }
 
   @override
