@@ -9,6 +9,8 @@ import '../../my_day/controllers/my_day_controller.dart';
 import '../../sales/controllers/sales_controller.dart';
 import '../../dues/controllers/dues_controller.dart';
 
+import '../../main_navigation/controllers/main_navigation_controller.dart';
+
 class SellController extends BaseController {
   final SellRepository repository;
   final _authService = Get.find<AuthService>();
@@ -32,7 +34,18 @@ class SellController extends BaseController {
   }
 
   @override
-  Future<void> refresh() async => fetchInitialData();
+  Future<void> refresh() async {
+    resetForm();
+    await fetchInitialData();
+  }
+
+  void resetForm() {
+    selectedCylinders.clear();
+    selectedCustomer.value = null;
+    paymentType.value = 'cash';
+    paidAmountController.clear();
+    notesController.clear();
+  }
 
   Future<void> fetchInitialData() async {
     showLoading();
@@ -125,15 +138,16 @@ class SellController extends BaseController {
       );
 
       if (response.success) {
-        selectedCylinders.clear();
-        selectedCustomer.value = null;
-        paymentType.value = 'cash';
-        paidAmountController.clear();
-        notesController.clear();
+        resetForm();
         Get.snackbar('Success', 'Sale recorded successfully', snackPosition: SnackPosition.BOTTOM);
         if (Get.isRegistered<MyDayController>()) Get.find<MyDayController>().refresh();
         if (Get.isRegistered<SalesController>()) Get.find<SalesController>().refresh();
         if (Get.isRegistered<DuesController>()) Get.find<DuesController>().refresh();
+
+        // Navigate to Sales History tab
+        if (Get.isRegistered<MainNavigationController>()) {
+          Get.find<MainNavigationController>().changeIndex(1);
+        }
       }
     } catch (e) {
       handleError(e.toString());
