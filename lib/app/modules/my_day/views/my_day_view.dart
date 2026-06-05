@@ -9,6 +9,7 @@ import '../../../core/widgets/quick_action.dart';
 import '../../../core/widgets/cyl_badge.dart';
 import '../controllers/my_day_controller.dart';
 import '../../main_navigation/controllers/main_navigation_controller.dart';
+import '../../../routes/app_pages.dart';
 
 class MyDayView extends GetView<MyDayController> {
   const MyDayView({super.key});
@@ -127,14 +128,15 @@ class MyDayView extends GetView<MyDayController> {
                         children: controller.recentSales.isEmpty
                           ? [Padding(padding: const EdgeInsets.all(20), child: Text(TranslationKeys.noData.tr))]
                           : controller.recentSales.map((s) => _buildSaleRow(
+                              saleId: s.id,
                               customer: s.customer?.name ?? TranslationKeys.walkIn.tr,
-                              time: s.saleDate, // Should format time
+                              time: s.saleDate,
                               qty: s.items?.first.qty ?? 0,
                               size: s.items?.first.cylinder?.size ?? '',
                               amount: double.tryParse(s.totalAmount) ?? 0,
                               status: s.paymentType,
-                              statusColor: s.paymentType == 'cash' 
-                                ? AppColors.green 
+                              statusColor: s.paymentType == 'cash'
+                                ? AppColors.green
                                 : (s.paymentType == 'partial' ? AppColors.orange : AppColors.red),
                               c1: Color(int.parse(s.items?.first.cylinder?.color1?.replaceAll('#', '0xFF') ?? '0xFF2E5BFF')),
                               c2: Color(int.parse(s.items?.first.cylinder?.color2?.replaceAll('#', '0xFF') ?? '0xFF6C4DF6')),
@@ -298,14 +300,14 @@ class MyDayView extends GetView<MyDayController> {
               tintColor: AppColors.mintInk,
               bgColor: AppColors.mintBgLight,
               label: TranslationKeys.emptyCyl.tr,
-              onTap: () {},
+              onTap: () => Get.toNamed(Routes.EMPTY_RETURNS),
             ),
             QuickAction(
               icon: Icons.people,
               tintColor: AppColors.purpleInk,
               bgColor: AppColors.purpleBgLight,
               label: TranslationKeys.customers.tr,
-              onTap: () {},
+              onTap: () => Get.toNamed(Routes.CUSTOMER_LIST),
             ),
             QuickAction(
               icon: Icons.bar_chart,
@@ -326,7 +328,7 @@ class MyDayView extends GetView<MyDayController> {
               tintColor: AppColors.amberInk,
               bgColor: AppColors.amberBgLight,
               label: TranslationKeys.endOfDay.tr,
-              onTap: () {},
+              onTap: () => Get.toNamed(Routes.END_OF_DAY),
             ),
             QuickAction(
               icon: Icons.grid_view,
@@ -363,6 +365,7 @@ class MyDayView extends GetView<MyDayController> {
   }
 
   Widget _buildSaleRow({
+    required int saleId,
     required String customer,
     required String time,
     required int qty,
@@ -374,7 +377,9 @@ class MyDayView extends GetView<MyDayController> {
     required Color c2,
     required String short,
   }) {
-    return Padding(
+    return GestureDetector(
+      onTap: () => Get.toNamed(Routes.SALE_DETAIL, arguments: saleId),
+      child: Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
@@ -419,6 +424,6 @@ class MyDayView extends GetView<MyDayController> {
           ),
         ],
       ),
-    );
+    ));
   }
 }

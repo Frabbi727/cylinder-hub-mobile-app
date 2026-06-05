@@ -6,6 +6,7 @@ import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../core/widgets/cyl_badge.dart';
 import '../controllers/sales_controller.dart';
 import '../../main_navigation/controllers/main_navigation_controller.dart';
+import '../../../routes/app_pages.dart';
 
 class SalesView extends GetView<SalesController> {
   const SalesView({super.key});
@@ -102,7 +103,7 @@ class SalesView extends GetView<SalesController> {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: () {}, // Navigate to detail
+        onTap: () => Get.toNamed(Routes.SALE_DETAIL, arguments: sale.id),
         borderRadius: BorderRadius.circular(18),
         child: Padding(
           padding: const EdgeInsets.all(16),

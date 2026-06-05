@@ -15,6 +15,9 @@ class DuesController extends BaseController {
     fetchOverdue();
   }
 
+  double get totalDue => overdueCustomers.fold(0.0, (sum, c) => sum + c.totalDue);
+  int get totalSalesCount => overdueCustomers.fold(0, (sum, c) => sum + c.unpaidSalesCount);
+
   Future<void> fetchOverdue() async {
     showLoading();
     try {

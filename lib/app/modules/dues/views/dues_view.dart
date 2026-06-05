@@ -5,6 +5,7 @@ import '../../../core/values/languages/translation_keys.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../controllers/dues_controller.dart';
 import '../../main_navigation/controllers/main_navigation_controller.dart';
+import '../../../routes/app_pages.dart';
 
 class DuesView extends GetView<DuesController> {
   const DuesView({super.key});
@@ -50,13 +51,13 @@ class DuesView extends GetView<DuesController> {
   Widget _buildSummaryCards() {
     return Padding(
       padding: const EdgeInsets.all(20),
-      child: Row(
+      child: Obx(() => Row(
         children: [
-          _buildSummaryCard('Total Due', '৳10,000', AppColors.red),
+          _buildSummaryCard('Total Due', '৳${controller.totalDue.toStringAsFixed(0)}', AppColors.red),
           const SizedBox(width: 12),
-          _buildSummaryCard('Sales', '1', AppColors.orange),
+          _buildSummaryCard('Unpaid Sales', '${controller.totalSalesCount}', AppColors.orange),
         ],
-      ),
+      )),
     );
   }
 
@@ -119,7 +120,7 @@ class DuesView extends GetView<DuesController> {
                 ),
                 const SizedBox(height: 6),
                 InkWell(
-                  onTap: () {},
+                  onTap: () => Get.toNamed(Routes.CUSTOMER_DETAIL, arguments: customer.customerId),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(

@@ -1,0 +1,305 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import '../../../core/values/app_colors.dart';
+import '../../../core/widgets/vibrant_app_bar.dart';
+import '../../../core/widgets/cyl_badge.dart';
+import '../../../routes/app_pages.dart';
+import '../controllers/customer_detail_controller.dart';
+
+class CustomerDetailView extends GetView<CustomerDetailController> {
+  const CustomerDetailView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          VibrantAppBar(
+            title: 'Customer Detail',
+            sub: 'Profile and history',
+            accent: AppColors.homeGradient,
+            curve: true,
+            onBack: () => Get.back(),
+          ),
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final customer = controller.customer.value;
+              if (customer == null) {
+                return const Center(child: Text('Customer not found'));
+              }
+              return Column(
+                children: [
+                  _buildProfileHeader(customer),
+                  _buildSummaryRow(customer),
+                  _buildTabBar(),
+                  Expanded(child: _buildTabContent()),
+                ],
+              );
+            }),
+          ),
+        ],
+      ),
+      bottomNavigationBar: Obx(() {
+        final customer = controller.customer.value;
+        final due = double.tryParse(customer?.totalDue ?? '0') ?? 0;
+        if (due <= 0) return const SizedBox.shrink();
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                final firstSale = controller.sales.firstWhereOrNull((s) => s.dueAmount > 0);
+                if (firstSale != null) Get.toNamed(Routes.SALE_DETAIL, arguments: firstSale.id);
+              },
+              icon: const Icon(Icons.account_balance_wallet),
+              label: Text('Collect ৳${due.toStringAsFixed(0)} Due'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.green,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 52),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildProfileHeader(dynamic customer) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: const BoxDecoration(color: AppColors.blueBgLight, shape: BoxShape.circle),
+            child: Center(
+              child: Text(
+                customer.name.substring(0, 1).toUpperCase(),
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.blueInk),
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(customer.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                if (customer.phone != null)
+                  Text(customer.phone, style: const TextStyle(color: AppColors.text2Light)),
+                if (customer.address != null)
+                  Text(customer.address, style: const TextStyle(fontSize: 13, color: AppColors.text3Light)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(dynamic customer) {
+    final due = double.tryParse(customer.totalDue ?? '0') ?? 0;
+    final revenue = customer.totalRevenue ?? 0.0;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      child: Row(
+        children: [
+          _summaryChip('Revenue', '৳${revenue.toStringAsFixed(0)}', AppColors.blue),
+          const SizedBox(width: 10),
+          _summaryChip('Outstanding', '৳${due.toStringAsFixed(0)}', due > 0 ? AppColors.red : AppColors.green),
+          const SizedBox(width: 10),
+          _summaryChip('Sales', '${controller.sales.length}', AppColors.mint),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryChip(String label, String value, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          children: [
+            Text(value, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: color)),
+            const SizedBox(height: 2),
+            Text(label, style: const TextStyle(fontSize: 11, color: AppColors.text3Light, fontWeight: FontWeight.w600)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      height: 44,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(color: AppColors.line2Light, borderRadius: BorderRadius.circular(12)),
+      child: Row(
+        children: [
+          _tabOption(0, 'Sales History'),
+          _tabOption(1, 'Empties'),
+        ],
+      ),
+    );
+  }
+
+  Widget _tabOption(int index, String label) {
+    return Expanded(
+      child: Obx(() {
+        final isSelected = controller.selectedTab.value == index;
+        return GestureDetector(
+          onTap: () => controller.selectedTab.value = index,
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.white : Colors.transparent,
+              borderRadius: BorderRadius.circular(9),
+              boxShadow: isSelected ? [const BoxShadow(color: AppColors.black15, blurRadius: 2, offset: Offset(0, 1))] : null,
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? AppColors.mintInk : AppColors.text2Light,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildTabContent() {
+    return Obx(() {
+      if (controller.selectedTab.value == 0) {
+        return _buildSalesList();
+      }
+      return _buildEmptiesList();
+    });
+  }
+
+  Widget _buildSalesList() {
+    if (controller.sales.isEmpty) {
+      return const Center(child: Text('No sales yet', style: TextStyle(color: AppColors.text3Light)));
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      itemCount: controller.sales.length,
+      itemBuilder: (_, i) {
+        final sale = controller.sales[i];
+        final statusColor = sale.paymentType == 'cash'
+            ? AppColors.green
+            : (sale.paymentType == 'partial' ? AppColors.orange : AppColors.red);
+        return Card(
+          margin: const EdgeInsets.only(bottom: 10),
+          child: InkWell(
+            onTap: () => Get.toNamed(Routes.SALE_DETAIL, arguments: sale.id),
+            borderRadius: BorderRadius.circular(18),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          DateFormat('d MMM yyyy').format(DateTime.tryParse(sale.saleDate) ?? DateTime.now()),
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        Text('${sale.items?.length ?? 0} item(s)',
+                            style: const TextStyle(fontSize: 13, color: AppColors.text2Light)),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('৳${double.tryParse(sale.totalAmount)?.toStringAsFixed(0) ?? sale.totalAmount}',
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Text(sale.paymentType.toUpperCase(),
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: statusColor)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptiesList() {
+    if (controller.empties.isEmpty) {
+      return const Center(child: Text('No empty returns', style: TextStyle(color: AppColors.text3Light)));
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      itemCount: controller.empties.length,
+      itemBuilder: (_, i) {
+        final r = controller.empties[i];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 10),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                CylBadge(
+                  shortCode: r.cylinder?.shortCode ?? '',
+                  color1: Color(int.parse(r.cylinder?.color1?.replaceAll('#', '0xFF') ?? '0xFF2E5BFF')),
+                  color2: Color(int.parse(r.cylinder?.color2?.replaceAll('#', '0xFF') ?? '0xFF6C4DF6')),
+                  size: 38,
+                ),
+                const SizedBox(width: 13),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(r.cylinder?.name ?? '', style: const TextStyle(fontWeight: FontWeight.w700)),
+                      Text('${r.qty} pcs · ${r.returnDate}',
+                          style: const TextStyle(fontSize: 13, color: AppColors.text2Light)),
+                    ],
+                  ),
+                ),
+                if (r.isExtra)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.orange.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                    child: const Text('EXTRA',
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.orange)),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

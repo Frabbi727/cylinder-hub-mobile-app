@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/values/languages/translation_keys.dart';
+import '../../../routes/app_pages.dart';
 import '../repository/my_day_repository.dart';
 import '../../../data/models/dashboard_model.dart';
 import '../../../data/models/allocation_model.dart';
@@ -71,7 +72,5 @@ class MyDayController extends BaseController {
     }
   }
 
-  void onNotificationTap() {
-    // Navigate to notifications
-  }
+  void onNotificationTap() => Get.toNamed(Routes.NOTIFICATIONS);
 }
