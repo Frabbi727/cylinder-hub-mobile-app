@@ -75,7 +75,8 @@ class SalesController extends BaseController {
         today: selectedPeriod.value == 'Today' ? true : null,
         from: fromDate.value,
         to: toDate.value,
-        hasDue: selectedStatus.value == 'due' ? true : (selectedStatus.value == 'paid' ? false : null),
+        hasDue: selectedStatus.value == 'due' ? true : null,
+        paymentType: selectedStatus.value == 'paid' ? 'cash' : null,
         search: searchText.value.isEmpty ? null : searchText.value,
         page: currentPage.value,
       );

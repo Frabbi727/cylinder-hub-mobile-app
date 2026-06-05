@@ -81,7 +81,7 @@ class SalesView extends GetView<SalesController> {
               onPressed: () {
                 controller.searchController.clear();
                 controller.onSearchChanged('');
-                FocusScope.of(context).unfocus();
+                FocusManager.instance.primaryFocus?.unfocus();
               },
             );
           }),
@@ -122,7 +122,7 @@ class SalesView extends GetView<SalesController> {
         final isSelected = controller.selectedStatus.value == value;
         return GestureDetector(
           onTap: () {
-            controller.searchFocusNode.unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
             controller.changeStatus(value);
           },
           child: Container(
@@ -173,7 +173,7 @@ class SalesView extends GetView<SalesController> {
             if (controller.isFilterApplied)
               TextButton(
                 onPressed: () {
-                  FocusScope.of(context).unfocus();
+                  FocusManager.instance.primaryFocus?.unfocus();
                   controller.resetFilters();
                 },
                 style: TextButton.styleFrom(
@@ -234,7 +234,7 @@ class SalesView extends GetView<SalesController> {
         title: Text(period),
         trailing: isSelected ? const Icon(Icons.check, color: AppColors.mintInk) : null,
         onTap: () async {
-          controller.searchFocusNode.unfocus();
+          FocusManager.instance.primaryFocus?.unfocus();
           if (period == 'Custom') {
             final range = await showDateRangePicker(
               context: context,

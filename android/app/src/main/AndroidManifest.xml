@@ -4,7 +4,7 @@
     <application
         android:label="CylinderHub"
         android:name="${applicationName}"
-        android:icon="@mipmap/cylinder_hub_icon">
+        android:icon="@mipmap/new_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

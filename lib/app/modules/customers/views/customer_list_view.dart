@@ -36,6 +36,7 @@ class CustomerListView extends GetView<CustomerListController> {
                         onPressed: () {
                           controller.searchController.clear();
                           controller.searchQuery.value = '';
+                          FocusManager.instance.primaryFocus?.unfocus();
                         },
                       )
                     : const SizedBox.shrink()),
