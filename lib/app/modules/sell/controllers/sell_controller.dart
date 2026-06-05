@@ -137,7 +137,7 @@ class SellController extends BaseController {
             .toList(),
       );
 
-      if (response.success) {
+      if (response.success && response.data != null) {
         resetForm();
         Get.snackbar('Success', 'Sale recorded successfully', snackPosition: SnackPosition.BOTTOM);
         if (Get.isRegistered<MyDayController>()) Get.find<MyDayController>().refresh();

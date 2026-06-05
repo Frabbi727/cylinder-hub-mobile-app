@@ -2,6 +2,7 @@ import '../../../core/base/base_repository.dart';
 import '../../../data/api/endpoints.dart';
 import '../../../data/models/api_response.dart';
 import '../../../data/models/sale_model.dart';
+import '../../../data/models/sale_response_models.dart';
 
 class SalesRepository extends BaseRepository {
   SalesRepository({required super.apiClient});
@@ -18,13 +19,13 @@ class SalesRepository extends BaseRepository {
     final response = await apiClient.get(
       Endpoints.sales,
       queryParameters: {
-        if (today != null) 'today': today,
-        if (hasDue != null) 'has_due': hasDue,
-        if (from != null) 'from': from,
-        if (to != null) 'to': to,
-        if (paymentType != null) 'payment_type': paymentType,
-        if (search != null) 'search': search,
-        if (page != null) 'page': page,
+        'today': ?today,
+        'has_due': ?hasDue,
+        'from': ?from,
+        'to': ?to,
+        'payment_type': ?paymentType,
+        'search': ?search,
+        'page': ?page,
       },
     );
     return ApiResponse<List<Sale>>.fromJson(
@@ -33,15 +34,15 @@ class SalesRepository extends BaseRepository {
     );
   }
 
-  Future<ApiResponse<Sale>> getSaleDetail(int saleId) async {
+  Future<ApiResponse<SaleDetailResponse>> getSaleDetail(int saleId) async {
     final response = await apiClient.get(Endpoints.saleDetail(saleId));
-    return ApiResponse<Sale>.fromJson(
+    return ApiResponse<SaleDetailResponse>.fromJson(
       response.data,
-      (json) => Sale.fromJson(json as Map<String, dynamic>),
+      (json) => SaleDetailResponse.fromJson(json as Map<String, dynamic>),
     );
   }
 
-  Future<ApiResponse<Sale>> collectPayment(int saleId, double amount, String date, String? notes) async {
+  Future<ApiResponse<SaleDetailResponse>> collectPayment(int saleId, double amount, String date, String? notes) async {
     final response = await apiClient.post(
       Endpoints.salePay(saleId),
       data: {
@@ -50,9 +51,9 @@ class SalesRepository extends BaseRepository {
         if (notes != null) 'notes': notes,
       },
     );
-    return ApiResponse<Sale>.fromJson(
+    return ApiResponse<SaleDetailResponse>.fromJson(
       response.data,
-      (json) => Sale.fromJson(json as Map<String, dynamic>),
+      (json) => SaleDetailResponse.fromJson(json as Map<String, dynamic>),
     );
   }
 }

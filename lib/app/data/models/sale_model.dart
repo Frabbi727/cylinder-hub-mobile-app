@@ -59,11 +59,13 @@ class Sale extends Equatable {
 class SaleItem extends Equatable {
   final int id;
   final Cylinder? cylinder;
+  @JsonKey(fromJson: _toInt)
   final int qty;
-  @JsonKey(name: 'unit_price')
+  @JsonKey(name: 'unit_price', fromJson: _toDouble)
   final double unitPrice;
-  @JsonKey(name: 'unit_cost')
+  @JsonKey(name: 'unit_cost', fromJson: _toDoubleNull)
   final double? unitCost;
+  @JsonKey(fromJson: _toDoubleNull)
   final double? profit;
 
   const SaleItem({

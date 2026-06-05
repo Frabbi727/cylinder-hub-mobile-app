@@ -5,7 +5,7 @@ import '../../../data/api/endpoints.dart';
 import '../../../data/models/api_response.dart';
 import '../../../data/models/customer_model.dart';
 import '../../../data/models/cylinder_model.dart';
-import '../../../data/models/sale_model.dart';
+import '../../../data/models/sale_response_models.dart';
 
 class SellRepository extends BaseRepository {
   SellRepository({required super.apiClient});
@@ -47,7 +47,7 @@ class SellRepository extends BaseRepository {
     );
   }
 
-  Future<ApiResponse<Sale>> createSale({
+  Future<ApiResponse<SaleCreateResponse>> createSale({
     int? customerId,
     required String saleDate,
     required String paymentType,
@@ -66,9 +66,9 @@ class SellRepository extends BaseRepository {
         'items': items,
       },
     );
-    return ApiResponse<Sale>.fromJson(
+    return ApiResponse<SaleCreateResponse>.fromJson(
       response.data,
-      (json) => Sale.fromJson(json as Map<String, dynamic>),
+      (json) => SaleCreateResponse.fromJson(json as Map<String, dynamic>),
     );
   }
 }
