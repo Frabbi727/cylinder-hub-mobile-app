@@ -29,6 +29,19 @@ class TranslationKeys {
   static const String today = 'today';
   static const String thisWeek = 'this_week';
   static const String thisMonth = 'this_month';
+  static const String thisYear = 'this_year';
+  static const String customDate = 'custom_date';
+  static const String resetFilter = 'reset_filter';
+  static const String applyFilter = 'apply_filter';
+  static const String performanceSummary = 'performance_summary';
+  static const String cylinderFlow = 'cylinder_flow';
+  static const String dailyRevenue = 'daily_revenue';
+  static const String paymentTypes = 'payment_types';
+  static const String allocation = 'allocation';
+  static const String keyMetrics = 'key_metrics';
+  static const String revenue = 'revenue';
+  static const String filter = 'filter';
+  static const String selectDateRange = 'select_date_range';
 
   // Dashboard
   static const String goodMorning = 'good_morning';

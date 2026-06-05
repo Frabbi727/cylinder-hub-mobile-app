@@ -31,6 +31,18 @@ const Map<String, String> bnBd = {
   TranslationKeys.today: 'আজ',
   TranslationKeys.thisWeek: 'এই সপ্তাহ',
   TranslationKeys.thisMonth: 'এই মাস',
+  TranslationKeys.thisYear: 'এই বছর',
+  TranslationKeys.customDate: 'কাস্টম তারিখ',
+  TranslationKeys.resetFilter: 'রিসেট ফিল্টার',
+  TranslationKeys.applyFilter: 'ফিল্টার প্রয়োগ করুন',
+  TranslationKeys.performanceSummary: 'পারফরম্যান্স সারাংশ',
+  TranslationKeys.cylinderFlow: 'সিলিন্ডার প্রবাহ',
+  TranslationKeys.dailyRevenue: 'দৈনিক আয়',
+  TranslationKeys.paymentTypes: 'পেমেন্টের ধরন',
+  TranslationKeys.allocation: 'বরাদ্দ',
+  TranslationKeys.keyMetrics: 'মূল মেট্রিক্স',
+  TranslationKeys.filter: 'ফিল্টার',
+  TranslationKeys.selectDateRange: 'তারিখ নির্বাচন করুন',
 
   // Dashboard
   TranslationKeys.goodMorning: 'শুভ সকাল',

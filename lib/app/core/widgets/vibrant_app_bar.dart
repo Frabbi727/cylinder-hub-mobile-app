@@ -14,6 +14,7 @@ class VibrantAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBell;
   final VoidCallback? onFilter;
   final VoidCallback? onBack;
+  final VoidCallback? onReset;
   final bool showThemeToggle;
 
   const VibrantAppBar({
@@ -28,6 +29,7 @@ class VibrantAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBell,
     this.onFilter,
     this.onBack,
+    this.onReset,
     this.showThemeToggle = false,
   });
 
@@ -129,13 +131,17 @@ class VibrantAppBar extends StatelessWidget implements PreferredSizeWidget {
                       onPressed: onBell!,
                       hasBadge: true,
                     ),
+                  if (onReset != null)
+                    _buildHeaderBtn(
+                      icon: Icons.history,
+                      onPressed: onReset!,
+                      ghost: true,
+                    ),
+                  if (onReset != null && onFilter != null) const SizedBox(width: 7),
                   if (onFilter != null)
-                    Padding(
-                      padding: EdgeInsets.only(left: (showThemeToggle || onBell != null) ? 7 : 0),
-                      child: _buildHeaderBtn(
-                        icon: Icons.filter_list,
-                        onPressed: onFilter!,
-                      ),
+                    _buildHeaderBtn(
+                      icon: Icons.tune,
+                      onPressed: onFilter!,
                     ),
                 ],
               ),

@@ -31,6 +31,18 @@ const Map<String, String> enUs = {
   TranslationKeys.today: 'Today',
   TranslationKeys.thisWeek: 'This Week',
   TranslationKeys.thisMonth: 'This Month',
+  TranslationKeys.thisYear: 'This Year',
+  TranslationKeys.customDate: 'Custom Date',
+  TranslationKeys.resetFilter: 'Reset Filter',
+  TranslationKeys.applyFilter: 'Apply Filter',
+  TranslationKeys.performanceSummary: 'Performance Summary',
+  TranslationKeys.cylinderFlow: 'Cylinder Flow',
+  TranslationKeys.dailyRevenue: 'Daily Revenue',
+  TranslationKeys.paymentTypes: 'Payment Types',
+  TranslationKeys.allocation: 'Allocation',
+  TranslationKeys.keyMetrics: 'Key Metrics',
+  TranslationKeys.filter: 'Filter',
+  TranslationKeys.selectDateRange: 'Select Date Range',
 
   // Dashboard
   TranslationKeys.goodMorning: 'Good morning',

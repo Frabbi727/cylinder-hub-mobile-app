@@ -18,7 +18,12 @@ class MyReportsController extends BaseController {
   final cylinderFlow = Rxn<CylinderFlowResponse>();
   final dailyCollections = Rxn<DailyCollectionResponse>();
 
-  final selectedPeriod = 'Month'.obs;
+  final selectedPeriod = 'Today'.obs;
+  final customFromDate = Rxn<DateTime>();
+  final customToDate = Rxn<DateTime>();
+  
+  final isFilterApplied = false.obs;
+
   String _fromDate = '';
   String _toDate = '';
 
@@ -34,17 +39,46 @@ class MyReportsController extends BaseController {
   void _recalcDates() {
     final now = DateTime.now();
     _toDate = DateFormat('yyyy-MM-dd').format(now);
-    if (selectedPeriod.value == 'Week') {
-      final monday = now.subtract(Duration(days: now.weekday - 1));
-      _fromDate = DateFormat('yyyy-MM-dd').format(monday);
-    } else {
-      _fromDate =
-          DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
+    
+    switch (selectedPeriod.value) {
+      case 'Today':
+        _fromDate = _toDate;
+        break;
+      case 'Week':
+        final monday = now.subtract(Duration(days: now.weekday - 1));
+        _fromDate = DateFormat('yyyy-MM-dd').format(monday);
+        break;
+      case 'Month':
+        _fromDate = DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
+        break;
+      case 'Year':
+        _fromDate = DateFormat('yyyy-MM-dd').format(DateTime(now.year, 1, 1));
+        break;
+      case 'Custom':
+        if (customFromDate.value != null && customToDate.value != null) {
+          _fromDate = DateFormat('yyyy-MM-dd').format(customFromDate.value!);
+          _toDate = DateFormat('yyyy-MM-dd').format(customToDate.value!);
+        } else {
+          _fromDate = _toDate;
+        }
+        break;
     }
   }
 
-  void changePeriod(String period) {
+  void changePeriod(String period, {DateTime? from, DateTime? to}) {
     selectedPeriod.value = period;
+    customFromDate.value = from;
+    customToDate.value = to;
+    isFilterApplied.value = period != 'Today';
+    _recalcDates();
+    fetchAllData();
+  }
+
+  void resetFilter() {
+    selectedPeriod.value = 'Today';
+    customFromDate.value = null;
+    customToDate.value = null;
+    isFilterApplied.value = false;
     _recalcDates();
     fetchAllData();
   }
@@ -102,6 +136,9 @@ class MyReportsController extends BaseController {
     final breakdown = report.value?.payBreakdown;
     if (breakdown == null || breakdown.isEmpty) return [];
 
+    final total = breakdown.values.fold(0, (sum, val) => sum + val);
+    if (total == 0) return [];
+
     final colors = {
       'cash': const Color(0xFF16A34A),
       'partial': const Color(0xFFFF7A45),
@@ -109,11 +146,12 @@ class MyReportsController extends BaseController {
     };
 
     return breakdown.entries.map((e) {
+      final pct = (e.value / total) * 100;
       return PieChartSectionData(
         value: e.value.toDouble(),
-        title: '${e.value}',
+        title: '${pct.toStringAsFixed(0)}%',
         color: colors[e.key.toLowerCase()] ?? Colors.grey,
-        radius: 40,
+        radius: 50,
         titleStyle: const TextStyle(
             fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
       );
@@ -132,7 +170,7 @@ class MyReportsController extends BaseController {
           BarChartRodData(
             toY: a.qty.toDouble(),
             color: const Color(0xFFE2E8F0),
-            width: 16,
+            width: 20,
             borderRadius: BorderRadius.circular(4),
             rodStackItems: [
               BarChartRodStackItem(0, a.soldQty.toDouble(), const Color(0xFF16A34A)),
@@ -148,6 +186,7 @@ class MyReportsController extends BaseController {
   double get maxRevenue {
     final spots = dailyRevenueSpots;
     if (spots.isEmpty) return 1000;
-    return spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.2;
+    final max = spots.map((e) => e.y).reduce((a, b) => a > b ? a : b);
+    return max == 0 ? 1000 : max * 1.2;
   }
 }
