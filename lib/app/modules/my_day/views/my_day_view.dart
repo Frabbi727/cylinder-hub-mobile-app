@@ -33,7 +33,7 @@ class MyDayView extends GetView<MyDayController> {
                 showThemeToggle: true,
                 onBell: controller.onNotificationTap,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 16),
+                  padding: const EdgeInsets.only(top: 14, bottom: 0),
                   child: AppHeroCard(
                     icon: Icons.account_balance_wallet,
                     label: TranslationKeys.cashInHand.tr,
@@ -54,10 +54,11 @@ class MyDayView extends GetView<MyDayController> {
 
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
+                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const SizedBox(height: 6),
                       GridView.count(
                         crossAxisCount: 2,
                         shrinkWrap: true,
