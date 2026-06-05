@@ -50,12 +50,10 @@ class MyDayView extends GetView<MyDayController> {
             
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(18, 6, 18, 18),
+                padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSyncBanner(),
-                    const SizedBox(height: 6),
                     GridView.count(
                       crossAxisCount: 2,
                       shrinkWrap: true,
@@ -154,30 +152,6 @@ class MyDayView extends GetView<MyDayController> {
           ],
         );
       }),
-    );
-  }
-
-  Widget _buildSyncBanner() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-      decoration: BoxDecoration(
-        color: AppColors.greenBgLight,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.check_circle, size: 14, color: AppColors.greenInk),
-          const SizedBox(width: 8),
-          Text(
-            TranslationKeys.synced.tr,
-            style: const TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w600,
-              color: AppColors.greenInk,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
