@@ -6,6 +6,7 @@ import '../../../data/models/sale_model.dart';
 import '../../sales/repository/sales_repository.dart';
 import '../../my_day/controllers/my_day_controller.dart';
 import '../../dues/controllers/dues_controller.dart';
+import '../../sales/controllers/sales_controller.dart';
 
 class SaleDetailController extends BaseController {
   final SalesRepository repository;
@@ -61,6 +62,7 @@ class SaleDetailController extends BaseController {
         notesController.clear();
         if (Get.isRegistered<MyDayController>()) Get.find<MyDayController>().refresh();
         if (Get.isRegistered<DuesController>()) Get.find<DuesController>().refresh();
+        if (Get.isRegistered<SalesController>()) Get.find<SalesController>().refresh();
         Get.back();
         Get.snackbar('Success', 'Payment collected successfully',
             snackPosition: SnackPosition.BOTTOM);
