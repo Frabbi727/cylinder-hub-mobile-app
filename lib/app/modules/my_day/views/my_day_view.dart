@@ -250,13 +250,12 @@ class MyDayView extends GetView<MyDayController> {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 4,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 8,
-          children: [
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            const cols = 4;
+            const hGap = 8.0;
+            final itemW = (constraints.maxWidth - hGap * (cols - 1)) / cols;
+            final items = [
             QuickAction(
               icon: Icons.add,
               tintColor: AppColors.blueInk,
@@ -306,14 +305,22 @@ class MyDayView extends GetView<MyDayController> {
               label: TranslationKeys.endOfDay.tr,
               onTap: () => Get.toNamed(Routes.END_OF_DAY),
             ),
-            QuickAction(
-              icon: Icons.grid_view,
-              tintColor: AppColors.redInk,
-              bgColor: AppColors.redBgLight,
-              label: TranslationKeys.more.tr,
-              onTap: () => Get.find<MainNavigationController>().changeIndex(4),
-            ),
-          ],
+              QuickAction(
+                icon: Icons.grid_view,
+                tintColor: AppColors.redInk,
+                bgColor: AppColors.redBgLight,
+                label: TranslationKeys.more.tr,
+                onTap: () => Get.find<MainNavigationController>().changeIndex(4),
+              ),
+            ];
+            return Wrap(
+              spacing: hGap,
+              runSpacing: 12,
+              children: items
+                  .map((child) => SizedBox(width: itemW, child: child))
+                  .toList(),
+            );
+          },
         ),
       ),
     );
