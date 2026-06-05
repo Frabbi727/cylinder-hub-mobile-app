@@ -37,7 +37,7 @@ class VibrantAppBar extends StatelessWidget implements PreferredSizeWidget {
         top: MediaQuery.of(context).padding.top + 10,
         left: 20,
         right: 20,
-        bottom: tall ? 26 : 18,
+        bottom: tall ? 10 : 16,
       ),
       decoration: BoxDecoration(
         gradient: accent ?? AppColors.vibrantBlueGradient,
