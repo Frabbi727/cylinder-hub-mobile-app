@@ -124,33 +124,99 @@ class MyReportsController extends BaseController {
     }
   }
 
-  List<FlSpot> get dailyRevenueSpots {
+  List<double> get aggregatedRevenueData {
     final daily = report.value?.dailyRevenue;
     if (daily == null || daily.isEmpty) return [];
 
-    final spots = <FlSpot>[];
-    
-    if (selectedPeriod.value == 'Today') {
-      final now = DateTime.now();
-      final dateStr = DateFormat('yyyy-MM-dd').format(now);
-      final revenue = daily[dateStr] ?? 0.0;
-      spots.add(FlSpot(0, revenue));
-      return spots;
-    }
+    switch (selectedPeriod.value) {
+      case 'Today':
+        final now = DateTime.now();
+        final dateStr = DateFormat('yyyy-MM-dd').format(now);
+        return [daily[dateStr] ?? 0.0];
 
-    final from = DateTime.parse(_fromDate);
-    final to = DateTime.parse(_toDate);
-    var index = 0.0;
+      case 'Week':
+        final now = DateTime.now();
+        final monday = now.subtract(Duration(days: now.weekday - 1));
+        final data = <double>[];
+        for (int i = 0; i < 7; i++) {
+          final date = monday.add(Duration(days: i));
+          final dateStr = DateFormat('yyyy-MM-dd').format(date);
+          data.add(daily[dateStr] ?? 0.0);
+        }
+        return data;
 
-    for (var date = from;
-        date.isBefore(to.add(const Duration(days: 1)));
-        date = date.add(const Duration(days: 1))) {
-      final dateStr = DateFormat('yyyy-MM-dd').format(date);
-      final revenue = daily[dateStr] ?? 0.0;
-      spots.add(FlSpot(index, revenue));
-      index += 1.0;
+      case 'Month':
+        // Aggregate by week of the month
+        final now = DateTime.now();
+        final firstDay = DateTime(now.year, now.month, 1);
+        final lastDay = DateTime(now.year, now.month + 1, 0);
+        final data = List.filled(5, 0.0); // Max 5 partial/full weeks
+        
+        daily.forEach((dateStr, val) {
+          final date = DateTime.tryParse(dateStr);
+          if (date != null && date.month == now.month && date.year == now.year) {
+            final weekNum = ((date.day - 1) / 7).floor();
+            if (weekNum < 5) data[weekNum] += val;
+          }
+        });
+        return data;
+
+      case 'Year':
+        final now = DateTime.now();
+        final data = List.filled(12, 0.0);
+        daily.forEach((dateStr, val) {
+          final date = DateTime.tryParse(dateStr);
+          if (date != null && date.year == now.year) {
+            data[date.month - 1] += val;
+          }
+        });
+        return data;
+
+      case 'Custom':
+        if (customFromDate.value == null || customToDate.value == null) return [];
+        final data = <double>[];
+        for (var date = customFromDate.value!;
+            date.isBefore(customToDate.value!.add(const Duration(days: 1)));
+            date = date.add(const Duration(days: 1))) {
+          final dateStr = DateFormat('yyyy-MM-dd').format(date);
+          data.add(daily[dateStr] ?? 0.0);
+        }
+        return data;
+
+      default:
+        return [];
     }
-    return spots;
+  }
+
+  List<String> get revenueLabels {
+    switch (selectedPeriod.value) {
+      case 'Today':
+        return [DateFormat('MMM dd').format(DateTime.now())];
+      case 'Week':
+        return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      case 'Month':
+        return ['W1', 'W2', 'W3', 'W4', 'W5'];
+      case 'Year':
+        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      case 'Custom':
+        if (customFromDate.value == null || customToDate.value == null) return [];
+        final labels = <String>[];
+        for (var date = customFromDate.value!;
+            date.isBefore(customToDate.value!.add(const Duration(days: 1)));
+            date = date.add(const Duration(days: 1))) {
+          labels.add(DateFormat('dd/MM').format(date));
+        }
+        return labels;
+      default:
+        return [];
+    }
+  }
+
+  double get maxAggregatedRevenue {
+    final data = aggregatedRevenueData;
+    if (data.isEmpty) return 1000;
+    final max = data.reduce((a, b) => a > b ? a : b);
+    return max == 0 ? 1000 : max * 1.2;
   }
 
   List<PieChartSectionData> get paymentTypeSections {
@@ -206,12 +272,5 @@ class MyReportsController extends BaseController {
         ],
       );
     }).toList();
-  }
-
-  double get maxRevenue {
-    final spots = dailyRevenueSpots;
-    if (spots.isEmpty) return 1000;
-    final max = spots.map((e) => e.y).reduce((a, b) => a > b ? a : b);
-    return max == 0 ? 1000 : max * 1.2;
   }
 }

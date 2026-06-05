@@ -266,10 +266,12 @@ class MyReportsView extends GetView<MyReportsController> {
   }
 
   Widget _buildRevenueChart(BuildContext context) {
-    final spots = controller.dailyRevenueSpots;
-    if (spots.isEmpty) {
+    final data = controller.aggregatedRevenueData;
+    final labels = controller.revenueLabels;
+    if (data.isEmpty) {
       return _emptyCard(context, TranslationKeys.noData.tr);
     }
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -280,14 +282,14 @@ class MyReportsView extends GetView<MyReportsController> {
         padding: const EdgeInsets.fromLTRB(12, 16, 16, 10),
         child: SizedBox(
           height: 200,
-          child: LineChart(
-            LineChartData(
-              maxY: controller.maxRevenue,
+          child: BarChart(
+            BarChartData(
+              maxY: controller.maxAggregatedRevenue,
               gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  getDrawingHorizontalLine: (_) =>
-                      FlLine(color: context.lineColor, strokeWidth: 1, dashArray: [5, 5])),
+                show: true,
+                drawVerticalLine: false,
+                getDrawingHorizontalLine: (_) =>
+                    FlLine(color: context.lineColor, strokeWidth: 1, dashArray: [5, 5])),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
                 leftTitles: AxisTitles(
@@ -302,39 +304,42 @@ class MyReportsView extends GetView<MyReportsController> {
                   ),
                 ),
                 bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (v, _) {
-                          if (v.toInt() % 5 != 0) return const SizedBox();
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text('Day ${v.toInt() + 1}',
-                                style: TextStyle(fontSize: 10, color: context.text3Color, fontWeight: FontWeight.bold)),
-                          );
-                        })),
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (v, _) {
+                      int idx = v.toInt();
+                      if (idx < 0 || idx >= labels.length) return const SizedBox();
+                      
+                      // Filter labels to avoid overlap if there are many (Custom view)
+                      if (labels.length > 10 && idx % 3 != 0) return const SizedBox();
+                      
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(labels[idx],
+                            style: TextStyle(fontSize: 10, color: context.text3Color, fontWeight: FontWeight.bold)),
+                      );
+                    })),
                 rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: spots,
-                  isCurved: true,
-                  color: AppColors.blue,
-                  barWidth: 4,
-                  dotData: const FlDotData(show: true),
-                  belowBarData: BarAreaData(
-                    show: true,
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.blue.withValues(alpha: 0.3),
-                        AppColors.blue.withValues(alpha: 0.0),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+              barGroups: data.asMap().entries.map((e) {
+                return BarChartGroupData(
+                  x: e.key,
+                  barRods: [
+                    BarChartRodData(
+                      toY: e.value,
+                      color: AppColors.blue,
+                      width: data.length > 15 ? 8 : 16,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                      backDrawRodData: BackgroundBarChartRodData(
+                        show: true,
+                        toY: controller.maxAggregatedRevenue,
+                        color: context.lineColor.withValues(alpha: 0.1),
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                  ],
+                );
+              }).toList(),
             ),
           ),
         ),
@@ -462,16 +467,22 @@ class MyReportsView extends GetView<MyReportsController> {
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
+                        reservedSize: 40,
                         getTitlesWidget: (v, _) {
                           final allocs = controller.report.value?.allocations;
                           if (allocs == null || v.toInt() >= allocs.length) {
                             return const SizedBox();
                           }
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: Text(allocs[v.toInt()].cylinder?.shortCode ?? '',
+                          final cylinder = allocs[v.toInt()].cylinder;
+                          final label = cylinder != null ? '${cylinder.name} (${cylinder.size})' : '';
+                          
+                          return SideTitleWidget(
+                            axisSide: AxisSide.bottom,
+                            space: 8,
+                            angle: -0.5, // Slight angle to fit longer names
+                            child: Text(label,
                                 style: TextStyle(
-                                    fontSize: 10, fontWeight: FontWeight.w900, color: context.text3Color)),
+                                    fontSize: 9, fontWeight: FontWeight.w800, color: context.text3Color)),
                           );
                         },
                       ),
@@ -615,8 +626,8 @@ class MyReportsView extends GetView<MyReportsController> {
               ),
               child: Row(
                 children: [
-                  Expanded(flex: 3, child: Text(i.cylinderSize ?? '-',
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13))),
+                  Expanded(flex: 3, child: Text('${i.cylinderName ?? '-'} (${i.cylinderSize ?? '-'})',
+                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12))),
                   Expanded(flex: 2, child: Text('${i.allocated ?? 0}', textAlign: centerAlign,
                       style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13))),
                   Expanded(flex: 2, child: Text('${i.sold ?? 0}', textAlign: centerAlign,
