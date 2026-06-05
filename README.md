@@ -97,6 +97,12 @@ Choose the environment you want to run:
 - **Staging**: `flutter run -t lib/main_staging.dart`
 - **Production**: `flutter run -t lib/main_prod.dart`
 
+### 4. Build Release
+Generate a release APK for the production environment:
+```bash
+flutter build apk --release -t lib/main_prod.dart
+```
+
 ---
 
 ## 🏗 Technical Architecture
