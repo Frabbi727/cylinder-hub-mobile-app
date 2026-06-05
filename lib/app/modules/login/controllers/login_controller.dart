@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/base/base_controller.dart';
@@ -9,8 +10,12 @@ class LoginController extends BaseController {
   final LoginRepository repository;
   final _authService = Get.find<AuthService>();
 
-  final emailController = TextEditingController(text: 'karim@cylinderhub.com');
-  final passwordController = TextEditingController(text: '12345678');
+  final emailController = TextEditingController(
+    text: kDebugMode ? 'karim@cylinderhub.com' : '',
+  );
+  final passwordController = TextEditingController(
+    text: kDebugMode ? '12345678' : '',
+  );
   
   final isPasswordVisible = false.obs;
 
