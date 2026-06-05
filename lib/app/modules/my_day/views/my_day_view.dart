@@ -27,6 +27,7 @@ class MyDayView extends GetView<MyDayController> {
               kicker: controller.greeting.value,
               curve: true,
               tall: true,
+              showThemeToggle: true,
               onBell: controller.onNotificationTap,
               child: Padding(
                 padding: const EdgeInsets.only(top: 16),

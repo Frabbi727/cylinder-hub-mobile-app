@@ -13,6 +13,7 @@ class VibrantAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? child;
   final VoidCallback? onBell;
   final VoidCallback? onBack;
+  final bool showThemeToggle;
 
   const VibrantAppBar({
     super.key,
@@ -25,6 +26,7 @@ class VibrantAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.child,
     this.onBell,
     this.onBack,
+    this.showThemeToggle = false,
   });
 
   @override
@@ -109,15 +111,16 @@ class VibrantAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
               Row(
                 children: [
-                  _buildHeaderBtn(
-                    icon: isDark ? Icons.light_mode : Icons.dark_mode,
-                    onPressed: () {
-                      Get.changeThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
-                      GetStorage().write('isDarkMode', !isDark);
-                    },
-                    ghost: true,
-                  ),
-                  const SizedBox(width: 7),
+                  if (showThemeToggle)
+                    _buildHeaderBtn(
+                      icon: isDark ? Icons.light_mode : Icons.dark_mode,
+                      onPressed: () {
+                        Get.changeThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
+                        GetStorage().write('isDarkMode', !isDark);
+                      },
+                      ghost: true,
+                    ),
+                  if (showThemeToggle && onBell != null) const SizedBox(width: 7),
                   if (onBell != null)
                     _buildHeaderBtn(
                       icon: Icons.notifications,
