@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../values/app_colors.dart';
+import '../values/app_theme_ext.dart';
 
 class QuickAction extends StatelessWidget {
   final IconData icon;
@@ -21,25 +21,29 @@ class QuickAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 54,
-            height: 54,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: BorderRadius.circular(17),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: tintColor, size: 23),
+            child: Icon(icon, color: tintColor, size: 20),
           ),
-          const SizedBox(height: 7),
+          const SizedBox(height: 5),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 11,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 10.5,
               fontWeight: FontWeight.w600,
-              color: AppColors.text2Light,
+              color: context.text2Color,
               height: 1.2,
             ),
           ),
