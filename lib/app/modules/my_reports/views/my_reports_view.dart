@@ -20,8 +20,8 @@ class MyReportsView extends GetView<MyReportsController> {
           Obx(() => VibrantAppBar(
             title: TranslationKeys.myReports.tr,
             sub: controller.isFilterApplied.value 
-                ? '${TranslationKeys.filter.tr}: ${controller.selectedPeriod.value}' 
-                : 'Personal performance overview',
+                ? '${TranslationKeys.filter.tr}: ${controller.formattedDateRange}' 
+                : 'Performance for ${controller.formattedDateRange}',
             accent: AppColors.reportsGradient,
             curve: true,
             onBack: () => Get.back(),
@@ -83,7 +83,7 @@ class MyReportsView extends GetView<MyReportsController> {
   void _showFilterBottomSheet(BuildContext context) {
     Get.bottomSheet(
       Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + MediaQuery.of(context).padding.bottom),
         decoration: BoxDecoration(
           color: context.surfaceColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
@@ -128,22 +128,6 @@ class MyReportsView extends GetView<MyReportsController> {
             _filterCardOption(context, TranslationKeys.thisMonth.tr, 'Month', Icons.calendar_month),
             _filterCardOption(context, TranslationKeys.thisYear.tr, 'Year', Icons.event_note),
             _filterCardOption(context, TranslationKeys.customDate.tr, 'Custom', Icons.date_range),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () => Get.back(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.isDarkMode ? Colors.white : Colors.black,
-                  foregroundColor: context.isDarkMode ? Colors.black : Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 0,
-                ),
-                child: Text(TranslationKeys.close.tr, 
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              ),
-            ),
           ],
         ),
       ),

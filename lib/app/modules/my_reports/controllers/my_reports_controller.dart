@@ -27,6 +27,18 @@ class MyReportsController extends BaseController {
   String _fromDate = '';
   String _toDate = '';
 
+  String get formattedDateRange {
+    if (_fromDate.isEmpty || _toDate.isEmpty) return '';
+    final from = DateTime.parse(_fromDate);
+    final to = DateTime.parse(_toDate);
+    
+    if (selectedPeriod.value == 'Today') {
+      return DateFormat('MMM dd, yyyy').format(from);
+    }
+    
+    return '${DateFormat('MMM dd').format(from)} - ${DateFormat('MMM dd, yyyy').format(to)}';
+  }
+
   MyReportsController({required this.repository});
 
   @override
