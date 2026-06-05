@@ -5,6 +5,7 @@ import '../../../core/values/app_theme_ext.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/customer_list_controller.dart';
+import '../../sell/controllers/sell_controller.dart';
 
 class CustomerListView extends GetView<CustomerListController> {
   const CustomerListView({super.key});
@@ -188,6 +189,7 @@ class CustomerListView extends GetView<CustomerListController> {
                             if (resp.success) {
                               Get.back();
                               controller.refresh();
+                              if (Get.isRegistered<SellController>()) Get.find<SellController>().refresh();
                               Get.snackbar('Added', 'Customer added successfully', snackPosition: SnackPosition.BOTTOM);
                             }
                           } finally {

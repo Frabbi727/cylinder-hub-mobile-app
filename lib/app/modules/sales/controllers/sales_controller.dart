@@ -17,6 +17,9 @@ class SalesController extends BaseController {
     fetchSales();
   }
 
+  @override
+  Future<void> refresh() async => fetchSales();
+
   Future<void> fetchSales() async {
     showLoading();
     try {

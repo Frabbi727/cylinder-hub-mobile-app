@@ -5,6 +5,9 @@ import '../../../core/services/auth_service.dart';
 import '../repository/sell_repository.dart';
 import '../../../data/models/customer_model.dart';
 import '../../../data/models/cylinder_model.dart';
+import '../../my_day/controllers/my_day_controller.dart';
+import '../../sales/controllers/sales_controller.dart';
+import '../../dues/controllers/dues_controller.dart';
 
 class SellController extends BaseController {
   final SellRepository repository;
@@ -27,6 +30,9 @@ class SellController extends BaseController {
     super.onInit();
     fetchInitialData();
   }
+
+  @override
+  Future<void> refresh() async => fetchInitialData();
 
   Future<void> fetchInitialData() async {
     showLoading();
@@ -125,6 +131,9 @@ class SellController extends BaseController {
         paidAmountController.clear();
         notesController.clear();
         Get.snackbar('Success', 'Sale recorded successfully', snackPosition: SnackPosition.BOTTOM);
+        if (Get.isRegistered<MyDayController>()) Get.find<MyDayController>().refresh();
+        if (Get.isRegistered<SalesController>()) Get.find<SalesController>().refresh();
+        if (Get.isRegistered<DuesController>()) Get.find<DuesController>().refresh();
       }
     } catch (e) {
       handleError(e.toString());

@@ -47,6 +47,9 @@ class MyDayController extends BaseController {
     }
   }
 
+  @override
+  Future<void> refresh() async => fetchDashboardData();
+
   Future<void> fetchDashboardData() async {
     if (cachedUser == null) return;
     

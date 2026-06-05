@@ -5,6 +5,7 @@ import '../../../core/base/base_controller.dart';
 import '../../../data/models/customer_model.dart';
 import '../../../data/models/cylinder_model.dart';
 import '../repository/empty_returns_repository.dart';
+import '../../my_day/controllers/my_day_controller.dart';
 
 class EmptyReturnsController extends BaseController {
   final EmptyReturnsRepository repository;
@@ -72,6 +73,7 @@ class EmptyReturnsController extends BaseController {
         notes: notesController.text.trim(),
       );
       if (response.success) {
+        if (Get.isRegistered<MyDayController>()) Get.find<MyDayController>().refresh();
         Get.back();
         Get.snackbar('Success', 'Empty cylinders returned successfully',
             snackPosition: SnackPosition.BOTTOM);

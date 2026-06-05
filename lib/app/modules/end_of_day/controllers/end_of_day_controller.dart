@@ -4,6 +4,7 @@ import '../../../core/base/base_controller.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../data/models/allocation_model.dart';
 import '../../my_day/repository/my_day_repository.dart';
+import '../../my_day/controllers/my_day_controller.dart';
 
 class EndOfDayController extends BaseController {
   final MyDayRepository repository;
@@ -74,6 +75,7 @@ class EndOfDayController extends BaseController {
       if (response.success) {
         reconciledIds.add(allocation.id);
         allocations.removeWhere((a) => a.id == allocation.id);
+        if (Get.isRegistered<MyDayController>()) Get.find<MyDayController>().refresh();
         Get.snackbar('Done', 'Allocation reconciled successfully',
             snackPosition: SnackPosition.BOTTOM);
       }

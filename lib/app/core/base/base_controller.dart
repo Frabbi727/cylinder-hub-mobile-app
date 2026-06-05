@@ -22,6 +22,9 @@ abstract class BaseController extends GetxController {
   void showLoading() => isLoading = true;
   void hideLoading() => isLoading = false;
 
+  // Override in tab controllers to re-fetch data on demand
+  Future<void> refresh() async {}
+
   void handleError(String message) {
     errorMessage = message;
     Get.snackbar(TranslationKeys.error.tr, message, snackPosition: SnackPosition.BOTTOM);
