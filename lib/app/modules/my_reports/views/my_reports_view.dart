@@ -192,55 +192,70 @@ class MyReportsView extends GetView<MyReportsController> {
 
   Widget _buildKpiGrid() {
     final r = controller.report.value;
+    final currencyFormat = NumberFormat("#,###");
+    
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.6,
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      childAspectRatio: 1.8,
       children: [
-        _kpiCard(TranslationKeys.revenue.tr, '৳${NumberFormat("#,###").format(r?.totalRevenue ?? 0)}',
+        _kpiCard(TranslationKeys.revenue.tr, '৳${currencyFormat.format(r?.totalRevenue ?? 0)}',
             AppColors.vibrantBlueGradient, Icons.attach_money),
-        _kpiCard(TranslationKeys.cashCollected.tr, '৳${NumberFormat("#,###").format(r?.totalCashCollected ?? 0)}',
+        _kpiCard(TranslationKeys.cashCollected.tr, '৳${currencyFormat.format(r?.totalCashCollected ?? 0)}',
             AppColors.mintGradient, Icons.payments),
+        _kpiCard('Dues Created', '৳${currencyFormat.format(r?.totalDuesCreated ?? 0)}',
+            AppColors.orangeGradient, Icons.money_off),
+        _kpiCard('Dues Collected', '৳${currencyFormat.format(r?.totalDuesCollected ?? 0)}',
+            AppColors.greenGradient, Icons.account_balance_wallet),
+        _kpiCard('Still Outstanding', '৳${currencyFormat.format(r?.stillOutstanding ?? 0)}',
+            AppColors.eodGradient, Icons.pending_actions),
+        _kpiCard('Total Allocated', '${r?.totalAllocated ?? 0} pcs',
+            AppColors.reportsGradient, Icons.assignment),
         _kpiCard(TranslationKeys.totalSold.tr, '${r?.totalSold ?? 0} pcs',
-            AppColors.reportsGradient, Icons.shopping_bag),
-        _kpiCard(TranslationKeys.due.tr, '৳${NumberFormat("#,###").format(r?.stillOutstanding ?? 0)}',
-            AppColors.orangeGradient, Icons.pending_actions),
+            AppColors.vibrantBlueGradient, Icons.shopping_bag),
+        _kpiCard('Total Returned', '${r?.totalReturned ?? 0} pcs',
+            AppColors.orangeGradient, Icons.keyboard_return),
+        _kpiCard('Customers Reached', '${r?.customersReached ?? 0}',
+            AppColors.mintGradient, Icons.people),
       ],
     );
   }
 
   Widget _kpiCard(String label, String value, LinearGradient gradient, IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         gradient: gradient,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Stack(
         children: [
           Positioned(
-            right: -10,
-            bottom: -10,
-            child: Icon(icon, color: Colors.white.withValues(alpha: 0.15), size: 60),
+            right: -8,
+            bottom: -8,
+            child: Icon(icon, color: Colors.white.withValues(alpha: 0.12), size: 45),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                       color: Colors.white70,
-                      fontSize: 13,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600)),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               FittedBox(
+                fit: BoxFit.scaleDown,
                 child: Text(value,
                     style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 22,
+                        fontSize: 18,
                         fontWeight: FontWeight.w900)),
               ),
             ],
@@ -510,9 +525,6 @@ class MyReportsView extends GetView<MyReportsController> {
             _performanceRow(context, 'Sell-through Rate', sellThrough, AppColors.blue, Icons.trending_up),
             _divider(context),
             _performanceRow(context, 'Collection Rate', collRate, AppColors.green, Icons.account_balance_wallet),
-            _divider(context),
-            _performanceRow(context, 'Customer Reach', 
-                (r?.customersReached ?? 0).toDouble(), AppColors.orange, Icons.people, isPct: false, max: 50),
           ],
         ),
       ),

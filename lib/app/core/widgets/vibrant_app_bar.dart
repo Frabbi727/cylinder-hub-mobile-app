@@ -133,7 +133,7 @@ class VibrantAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   if (onReset != null)
                     _buildHeaderBtn(
-                      icon: Icons.history,
+                      icon: Icons.clear_rounded,
                       onPressed: onReset!,
                       ghost: true,
                     ),
