@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "686148655464",
+    "project_id": "cylinder-hub-48025",
+    "storage_bucket": "cylinder-hub-48025.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686148655464:android:8ed2f24f5e6c0e950d5edd",
+        "android_client_info": {
+          "package_name": "com.rofrafrontomobapp.cylinder_hub_mobile_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCooVyaN2hLix8xTQnn-xATPDuoOdYBS8Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
