@@ -104,4 +104,11 @@ const Map<String, String> bnBd = {
   TranslationKeys.theme: 'থিম',
   TranslationKeys.lightMode: 'লাইট মোড',
   TranslationKeys.darkMode: 'ডার্ক মোড',
+
+  // Privacy & Data
+  TranslationKeys.privacyData: 'গোপনীয়তা ও তথ্য',
+  TranslationKeys.requestDataDeletion: 'অ্যাকাউন্ট মুছে ফেলার অনুরোধ',
+  TranslationKeys.dataDeletionDialogTitle: 'অ্যাকাউন্ট মুছে ফেলার অনুরোধ',
+  TranslationKeys.dataDeletionDialogBody: 'আপনার অ্যাকাউন্ট ও সংশ্লিষ্ট সকল তথ্য মুছে ফেলার অনুরোধ করতে ইমেইলের মাধ্যমে আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। আপনার অনুরোধ ৩০ দিনের মধ্যে প্রক্রিয়া করা হবে।',
+  TranslationKeys.emailAdmin: 'অ্যাডমিনকে ইমেইল করুন',
 };

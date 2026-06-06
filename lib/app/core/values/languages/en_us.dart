@@ -104,4 +104,11 @@ const Map<String, String> enUs = {
   TranslationKeys.theme: 'Theme',
   TranslationKeys.lightMode: 'Light Mode',
   TranslationKeys.darkMode: 'Dark Mode',
+
+  // Privacy & Data
+  TranslationKeys.privacyData: 'Privacy & Data',
+  TranslationKeys.requestDataDeletion: 'Request Account Deletion',
+  TranslationKeys.dataDeletionDialogTitle: 'Request Account Deletion',
+  TranslationKeys.dataDeletionDialogBody: 'To request deletion of your account and all associated data, please contact your administrator by email. Your request will be processed within 30 days.',
+  TranslationKeys.emailAdmin: 'Email Admin',
 };

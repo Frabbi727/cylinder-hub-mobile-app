@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_theme_ext.dart';
+import '../../../core/values/constants.dart';
 import '../../../core/values/languages/translation_keys.dart';
 import '../../../core/widgets/vibrant_app_bar.dart';
 import '../controllers/profile_controller.dart';
@@ -231,6 +233,60 @@ class ProfileView extends GetView<ProfileController> {
                           ),
                         ],
                       ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Privacy & Data
+                  _buildSectionHeader(context, TranslationKeys.privacyData.tr),
+                  const SizedBox(height: 12),
+                  Card(
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.privacy_tip_outlined, color: AppColors.blue, size: 20),
+                          title: const Text('Privacy Policy', style: TextStyle(fontWeight: FontWeight.w500)),
+                          trailing: const Icon(Icons.open_in_new, size: 16),
+                          onTap: () => launchUrl(Uri.parse('https://cylinder-hub.techrealify.com/privacy-policy'), mode: LaunchMode.externalApplication),
+                        ),
+                        Divider(height: 1, indent: 16, endIndent: 16, color: context.lineColor),
+                        ListTile(
+                          leading: const Icon(Icons.description_outlined, color: AppColors.blue, size: 20),
+                          title: const Text('Terms of Service', style: TextStyle(fontWeight: FontWeight.w500)),
+                          trailing: const Icon(Icons.open_in_new, size: 16),
+                          onTap: () => launchUrl(Uri.parse('https://cylinder-hub.techrealify.com/terms'), mode: LaunchMode.externalApplication),
+                        ),
+                        Divider(height: 1, indent: 16, endIndent: 16, color: context.lineColor),
+                        ListTile(
+                          leading: const Icon(Icons.delete_outline, color: AppColors.red, size: 20),
+                          title: Text(TranslationKeys.requestDataDeletion.tr, style: const TextStyle(fontWeight: FontWeight.w500, color: AppColors.red)),
+                          onTap: () => Get.dialog(AlertDialog(
+                            title: Text(TranslationKeys.dataDeletionDialogTitle.tr),
+                            content: Text(TranslationKeys.dataDeletionDialogBody.tr),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Get.back(),
+                                child: Text(TranslationKeys.cancel.tr),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Get.back();
+                                  launchUrl(Uri(
+                                    scheme: 'mailto',
+                                    path: Constants.adminEmail,
+                                    queryParameters: {
+                                      'subject': 'Account Deletion Request',
+                                      'body': 'Hello,\n\nI would like to request the deletion of my account and all associated data.\n\nThank you.',
+                                    },
+                                  ));
+                                },
+                                child: Text(TranslationKeys.emailAdmin.tr),
+                              ),
+                            ],
+                          )),
+                        ),
+                      ],
                     ),
                   ),
 

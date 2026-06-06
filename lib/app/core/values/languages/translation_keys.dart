@@ -103,4 +103,11 @@ class TranslationKeys {
   static const String theme = 'theme';
   static const String lightMode = 'light_mode';
   static const String darkMode = 'dark_mode';
+
+  // Privacy & Data
+  static const String privacyData = 'privacy_data';
+  static const String requestDataDeletion = 'request_data_deletion';
+  static const String dataDeletionDialogTitle = 'data_deletion_dialog_title';
+  static const String dataDeletionDialogBody = 'data_deletion_dialog_body';
+  static const String emailAdmin = 'email_admin';
 }
