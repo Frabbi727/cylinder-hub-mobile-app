@@ -134,3 +134,8 @@ Every feature module follows a strict inheritance:
 
 
 ### dart run build_runner build --force-jit --delete-conflicting-outputs
+
+
+Certificate fingerprints:
+SHA1: 36:B2:A7:E4:96:72:CB:59:0C:00:98:EC:F7:B4:5B:C7:77:3F:EF:BC
+SHA256: D7:3E:CC:E1:5B:80:49:24:8A:7D:FF:B5:75:3F:D0:29:12:B0:D8:74:7B:49:6C:B2:7F:3A:64:D6:8D:AA:1C:91

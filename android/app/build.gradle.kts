@@ -52,7 +52,7 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = if (keystorePropertiesFile.exists()) {
@@ -61,8 +61,8 @@ android {
                 signingConfigs.getByName("debug")
             }
             
-            minifyEnabled = true
-            shrinkResources = true
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
