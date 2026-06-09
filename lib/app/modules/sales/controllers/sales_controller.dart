@@ -169,10 +169,14 @@ class SalesController extends BaseController {
   }
 
   bool get isFilterApplied {
-    return selectedPeriod.value != 'Today' || 
-           selectedStatus.value != 'all' || 
+    return selectedPeriod.value != 'Today' ||
+           selectedStatus.value != 'all' ||
            searchText.value.isNotEmpty;
   }
+
+  double get totalSum => sales.fold(0.0, (sum, s) => sum + s.totalAmount);
+  double get dueSum => sales.fold(0.0, (sum, s) => sum + s.dueAmount);
+  double get paidSum => sales.fold(0.0, (sum, s) => sum + s.paidAmount);
 
   String get dateRangeDisplay {
     if (fromDate.value == null || toDate.value == null) return '';

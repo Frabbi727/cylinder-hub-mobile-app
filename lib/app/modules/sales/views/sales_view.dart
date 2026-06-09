@@ -260,6 +260,8 @@ class SalesView extends GetView<SalesController> {
         ? AppColors.green
         : (sale.paymentType == 'partial' ? AppColors.orange : AppColors.red);
 
+    final hasDue = (sale.dueAmount as double) > 0;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -267,65 +269,139 @@ class SalesView extends GetView<SalesController> {
         borderRadius: BorderRadius.circular(18),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CylBadge(
-                shortCode: sale.items?.first.cylinder?.shortCode ?? '',
-                color1: Color(int.parse(
-                    sale.items?.first.cylinder?.color1?.replaceAll('#', '0xFF') ??
-                        '0xFF2E5BFF')),
-                color2: Color(int.parse(
-                    sale.items?.first.cylinder?.color2?.replaceAll('#', '0xFF') ??
-                        '0xFF6C4DF6')),
-                size: 38,
-              ),
-              const SizedBox(width: 13),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      sale.customer?.name ?? TranslationKeys.walkIn.tr,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w700, fontSize: 15),
-                    ),
-                    Text(
-                      '${sale.items?.first.qty} × ${sale.items?.first.cylinder?.size} · ${sale.saleDate}',
-                      style: TextStyle(
-                          fontSize: 13, color: context.text2Color),
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+              Row(
                 children: [
-                  Text(
-                    (sale.totalAmount as num).toCurrency,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w800),
+                  CylBadge(
+                    shortCode: sale.items?.first.cylinder?.shortCode ?? '',
+                    color1: Color(int.parse(
+                        sale.items?.first.cylinder?.color1?.replaceAll('#', '0xFF') ??
+                            '0xFF2E5BFF')),
+                    color2: Color(int.parse(
+                        sale.items?.first.cylinder?.color2?.replaceAll('#', '0xFF') ??
+                            '0xFF6C4DF6')),
+                    size: 38,
                   ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(99),
+                  const SizedBox(width: 13),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          sale.customer?.name ?? TranslationKeys.walkIn.tr,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 15),
+                        ),
+                        Text(
+                          '${sale.items?.first.qty} × ${sale.items?.first.cylinder?.size} · ${sale.saleDate}',
+                          style: TextStyle(
+                              fontSize: 13, color: context.text2Color),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      sale.paymentType.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: statusColor,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        (sale.totalAmount as num).toCurrency,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w800),
                       ),
-                    ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Text(
+                          sale.paymentType.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: statusColor,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
+              if (hasDue) ...[
+                const SizedBox(height: 10),
+                Divider(height: 1, color: context.line2Color),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    _buildAmountChip(
+                      context,
+                      label: 'Paid',
+                      value: (sale.paidAmount as double).toCurrencyCompact,
+                      color: AppColors.green,
+                    ),
+                    const SizedBox(width: 8),
+                    _buildAmountChip(
+                      context,
+                      label: 'Due',
+                      value: (sale.totalAmount as double).toCurrencyCompact,
+                      color: AppColors.orange,
+                    ),
+                    const SizedBox(width: 8),
+                    _buildAmountChip(
+                      context,
+                      label: 'Remaining',
+                      value: (sale.dueAmount as double).toCurrencyCompact,
+                      color: AppColors.red,
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAmountChip(
+    BuildContext context, {
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: color.withValues(alpha: 0.8),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );
