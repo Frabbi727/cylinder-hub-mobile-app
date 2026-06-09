@@ -34,6 +34,13 @@ class SellController extends BaseController {
   void onInit() {
     super.onInit();
     fetchInitialData();
+    
+    // Auto-clear walk-in if payment type changes to credit
+    ever(paymentType, (String type) {
+      if (type != 'cash' && selectedCustomer.value == null) {
+        selectedCustomer.value = null; // Triggers UI refresh
+      }
+    });
   }
 
   @override
@@ -68,7 +75,22 @@ class SellController extends BaseController {
       final custResp = results[0] as dynamic;
       final cylResp = results[1] as dynamic;
       if (custResp.success && custResp.data != null) customers.assignAll(custResp.data);
-      if (cylResp.success && cylResp.data != null) cylinders.assignAll(cylResp.data);
+      
+      if (cylResp.success && cylResp.data != null) {
+        final allCylinders = cylResp.data as List<Cylinder>;
+        final userAllocations = _authService.user.value?.allocations ?? [];
+        
+        // Filter: Only show cylinders that the salesman actually has in hand (unreconciled)
+        final filteredCylinders = allCylinders.where((cylinder) {
+          return userAllocations.any((a) => 
+            a.cylinderId == cylinder.id && 
+            !a.isReconciled && 
+            a.withSalesman > 0
+          );
+        }).toList();
+        
+        cylinders.assignAll(filteredCylinders);
+      }
     } catch (e) {
       handleError(e.toString());
     } finally {
@@ -147,6 +169,10 @@ class SellController extends BaseController {
   Future<void> recordSale() async {
     if (selectedCylinders.isEmpty) {
       handleError('Please add at least one cylinder');
+      return;
+    }
+    if (paymentType.value != 'cash' && selectedCustomer.value == null) {
+      handleError('Please select a customer for partial or due sales');
       return;
     }
     if (paymentType.value == 'partial') {

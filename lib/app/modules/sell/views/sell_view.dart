@@ -89,26 +89,31 @@ class SellView extends GetView<SellController> {
   }
 
   Widget _buildCustomerSelector() {
-    return Obx(() => DropdownButtonFormField<int>(
-      decoration: const InputDecoration(
-        prefixIcon: Icon(Icons.search, size: 18),
-        hintText: 'Select customer (optional)',
-      ),
-      items: [
-        DropdownMenuItem<int>(
-          value: null,
-          child: Text(TranslationKeys.walkIn.tr),
+    return Obx(() {
+      final isCash = controller.paymentType.value == 'cash';
+      return DropdownButtonFormField<int>(
+        value: controller.selectedCustomer.value?.id,
+        decoration: InputDecoration(
+          prefixIcon: const Icon(Icons.search, size: 18),
+          hintText: isCash ? 'Select customer (optional)' : 'Select a registered customer',
         ),
-        ...controller.customers.map((c) => DropdownMenuItem<int>(
-          value: c.id,
-          child: Text(c.name),
-        )),
-      ],
-      onChanged: (val) {
-        controller.selectedCustomer.value =
-            controller.customers.firstWhereOrNull((c) => c.id == val);
-      },
-    ));
+        items: [
+          if (isCash)
+            DropdownMenuItem<int>(
+              value: null,
+              child: Text(TranslationKeys.walkIn.tr),
+            ),
+          ...controller.customers.map((c) => DropdownMenuItem<int>(
+                value: c.id,
+                child: Text(c.name),
+              )),
+        ],
+        onChanged: (val) {
+          controller.selectedCustomer.value =
+              controller.customers.firstWhereOrNull((c) => c.id == val);
+        },
+      );
+    });
   }
 
   Widget _buildCylinderItems(BuildContext context) {

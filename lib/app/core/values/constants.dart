@@ -2,7 +2,8 @@ class Constants {
   // Base URLs
   static const String devBaseUrl = 'https://cylinder-hub.techrealify.com/api/v1';
   static const String stagingBaseUrl = 'https://cylinder-hub.techrealify.com/api/v1';
-  static const String prodBaseUrl = 'https://cylinder-hub.techrealify.com/api/v1';
+  //static const String prodBaseUrl = 'https://cylinder-hub.techrealify.com/api/v1';
+  static const String prodBaseUrl = 'http://10.44.66.202:8000/api/v1';
 
   // API Timeouts
   static const int CONNECT_TIMEOUT = 30000;
