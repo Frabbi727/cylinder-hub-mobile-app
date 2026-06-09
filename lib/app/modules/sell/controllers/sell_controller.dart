@@ -191,7 +191,7 @@ class SellController extends BaseController {
         paymentType: paymentType.value,
         paidAmount: paymentType.value == 'partial'
             ? double.tryParse(paidAmountController.text.trim())
-            : null,
+            : (paymentType.value == 'due' ? 0.0 : null),
         notes: notesController.text.trim().isEmpty ? null : notesController.text.trim(),
         items: selectedCylinders
             .map((item) => {
