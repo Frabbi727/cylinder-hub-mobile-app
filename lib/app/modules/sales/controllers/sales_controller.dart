@@ -46,6 +46,16 @@ class SalesController extends BaseController {
     });
   }
 
+  @override
+  Future<void> refresh() async {
+    _setInitialDates();
+    selectedPeriod.value = 'Today';
+    selectedStatus.value = 'all';
+    searchText.value = '';
+    searchController.clear();
+    await fetchSales(reset: true);
+  }
+
   void _setInitialDates() {
     final now = DateTime.now();
     fromDate.value = now.toApiDate;

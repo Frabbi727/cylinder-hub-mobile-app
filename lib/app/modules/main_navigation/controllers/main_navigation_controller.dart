@@ -18,12 +18,16 @@ class MainNavigationController extends BaseController {
     switch (index) {
       case 0:
         if (Get.isRegistered<MyDayController>()) Get.find<MyDayController>().refresh();
+        break;
       case 1:
         if (Get.isRegistered<SalesController>()) Get.find<SalesController>().refresh();
+        break;
       case 2:
         if (Get.isRegistered<SellController>()) Get.find<SellController>().refresh();
+        break;
       case 3:
         if (Get.isRegistered<DuesController>()) Get.find<DuesController>().refresh();
+        break;
     }
   }
 }
