@@ -188,8 +188,8 @@ class ProfileView extends GetView<ProfileController> {
                   const SizedBox(height: 24),
 
                   // Logout
-                  InkWell(
-                    onTap: () async {
+                  Obx(() => InkWell(
+                    onTap: controller.isLoading ? null : () async {
                       final ok = await Get.dialog<bool>(AlertDialog(
                         title: const Text('Log Out'),
                         content: const Text('Are you sure you want to log out?'),
@@ -220,21 +220,41 @@ class ProfileView extends GetView<ProfileController> {
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.logout, color: AppColors.red, size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            TranslationKeys.logout.tr,
-                            style: const TextStyle(
-                              color: AppColors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
+                        children: controller.isLoading
+                            ? [
+                                const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.red,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                const Text(
+                                  'Logging out...',
+                                  style: TextStyle(
+                                    color: AppColors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ]
+                            : [
+                                const Icon(Icons.logout, color: AppColors.red, size: 20),
+                                const SizedBox(width: 8),
+                                Text(
+                                  TranslationKeys.logout.tr,
+                                  style: const TextStyle(
+                                    color: AppColors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
                       ),
                     ),
-                  ),
+                  )),
 
                   const SizedBox(height: 24),
 

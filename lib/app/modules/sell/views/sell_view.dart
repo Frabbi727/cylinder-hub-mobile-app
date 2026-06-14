@@ -329,7 +329,7 @@ class SellView extends GetView<SellController> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 children: available.map((c) {
-                  final stock = c.stock?.filledQty ?? 0;
+                  final stock = controller.salesmanQtyFor(c.id);
                   return ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     leading: Container(
@@ -345,7 +345,7 @@ class SellView extends GetView<SellController> {
                         style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
                     subtitle: Row(
                       children: [
-                        Text('${c.size}kg', style: TextStyle(color: context.text3Color, fontSize: 13)),
+                        Text(c.size, style: TextStyle(color: context.text3Color, fontSize: 13)),
                         const SizedBox(width: 10),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),

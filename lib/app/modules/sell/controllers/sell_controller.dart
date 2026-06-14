@@ -107,11 +107,18 @@ class SellController extends BaseController {
     return 0.0;
   }
 
+  int salesmanQtyFor(int cylinderId) {
+    final allocations = _authService.user.value?.allocations ?? [];
+    return allocations
+        .where((a) => a.cylinderId == cylinderId && !a.isReconciled)
+        .fold(0, (sum, a) => sum + a.withSalesman);
+  }
+
   void addCylinderItem(Cylinder cylinder) {
     final alreadyAdded = selectedCylinders.any((item) => item['cylinder_id'] == cylinder.id);
     if (alreadyAdded) return;
 
-    final stock = cylinder.stock?.filledQty ?? 0;
+    final stock = salesmanQtyFor(cylinder.id);
     if (stock <= 0) {
       handleError('Out of stock: ${cylinder.name}');
       return;
@@ -123,7 +130,7 @@ class SellController extends BaseController {
       'qty': 1,
       'unit_price': unitPrice,
       'name': cylinder.name,
-      'size': '${cylinder.size}kg',
+      'size': cylinder.size,
       'stock': stock,
     });
     qtyControllers.add(TextEditingController(text: '1'));

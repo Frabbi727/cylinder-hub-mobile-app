@@ -3,6 +3,7 @@ import 'package:logger/logger.dart';
 import '../../core/values/app_env.dart';
 import '../../core/values/constants.dart';
 import '../local/token_manager.dart';
+import 'endpoints.dart';
 import 'network_exception.dart';
 
 class ApiClient {
@@ -29,7 +30,7 @@ class ApiClient {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
         final token = _tokenManager.getToken();
-        if (token != null) {
+        if (token != null && !options.headers.containsKey('Authorization')) {
           options.headers['Authorization'] = 'Bearer $token';
         }
         _logger.i('🚀 REQUEST[${options.method}] => URL: ${options.uri}');
@@ -71,8 +72,8 @@ class ApiClient {
       final refreshToken = _tokenManager.getRefreshToken();
       if (refreshToken == null) return false;
       final response = await _dio.post(
-        '/auth/refresh',
-        data: {'refresh_token': refreshToken},
+        Endpoints.refresh,
+        options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
       );
       if (response.statusCode == 200) {
         final data = response.data['data'];
