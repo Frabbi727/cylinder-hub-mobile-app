@@ -60,6 +60,72 @@ class MyDayView extends GetView<MyDayController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 6),
+                      Obx(() {
+                        // Access the observable list first to ensure GetX always registers a listener
+                        final hasUnreconciled = controller.allocations.any((a) => !a.isReconciled);
+                        final showReminder = DateTime.now().hour >= 19 && hasUnreconciled;
+                        if (!showReminder) return const SizedBox.shrink();
+                        
+                        return Container(
+                          margin: const EdgeInsets.only(top: 6, bottom: 12),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF8E1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.amber.withValues(alpha: 0.5)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.warning_amber_rounded, color: AppColors.amberInk, size: 20),
+                              const SizedBox(width: 10),
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Reminder: Unreconciled Allocations',
+                                      style: TextStyle(
+                                        color: AppColors.amberInk,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2),
+                                    Text(
+                                      'Please complete End of Day before midnight.',
+                                      style: TextStyle(
+                                        color: AppColors.amberInk,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => Get.toNamed(Routes.END_OF_DAY),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.amber,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('End of Day', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                                    SizedBox(width: 4),
+                                    Icon(Icons.arrow_forward_rounded, size: 12),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
                       GridView.count(
                         crossAxisCount: 2,
                         shrinkWrap: true,
@@ -115,6 +181,7 @@ class MyDayView extends GetView<MyDayController> {
                                 c1: Color(int.parse(a.cylinder?.color1?.replaceAll('#', '0xFF') ?? '0xFF2E5BFF')),
                                 c2: Color(int.parse(a.cylinder?.color2?.replaceAll('#', '0xFF') ?? '0xFF6C4DF6')),
                                 short: a.cylinder?.shortCode ?? '',
+                                isReconciled: a.isReconciled,
                               )).toList(),
                         ),
                       )),
@@ -192,6 +259,28 @@ class MyDayView extends GetView<MyDayController> {
     );
   }
 
+  Widget _buildEodStatusBadge(bool isReconciled) {
+    final bgColor = isReconciled ? AppColors.greenBgLight : AppColors.amberBgLight;
+    final textColor = isReconciled ? AppColors.greenInk : AppColors.amberInk;
+    final text = isReconciled ? '✓ Done' : 'Pending EOD';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
   Widget _buildStockItem({
     required BuildContext context,
     required String name,
@@ -201,6 +290,7 @@ class MyDayView extends GetView<MyDayController> {
     required Color c1,
     required Color c2,
     required String short,
+    required bool isReconciled,
   }) {
     final left = total - sold;
     final pct = total > 0 ? sold / total : 0.0;
@@ -241,9 +331,15 @@ class MyDayView extends GetView<MyDayController> {
                   borderRadius: BorderRadius.circular(99),
                 ),
                 const SizedBox(height: 5),
-                Text(
-                  '$size · $sold ${TranslationKeys.sold.tr.toLowerCase()} / $total',
-                  style: TextStyle(fontSize: 12.5, color: context.text3Color, fontWeight: FontWeight.w500),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '$size · $sold ${TranslationKeys.sold.tr.toLowerCase()} / $total',
+                      style: TextStyle(fontSize: 12.5, color: context.text3Color, fontWeight: FontWeight.w500),
+                    ),
+                    _buildEodStatusBadge(isReconciled),
+                  ],
                 ),
               ],
             ),

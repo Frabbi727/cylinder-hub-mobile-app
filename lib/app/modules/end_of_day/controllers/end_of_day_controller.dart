@@ -7,8 +7,6 @@ import '../../../data/models/dashboard_model.dart';
 import '../../../data/models/sale_model.dart';
 import '../../my_day/repository/my_day_repository.dart';
 import '../../my_day/controllers/my_day_controller.dart';
-import '../../../core/values/currency_ext.dart';
-import '../../../core/values/app_colors.dart';
 
 class EndOfDayController extends BaseController {
   final MyDayRepository repository;
@@ -20,6 +18,14 @@ class EndOfDayController extends BaseController {
   final pendingCollections = <DueCollection>[].obs;
   final totalFromAllocations = 0.0.obs;
   final updateTrigger = 0.obs; // Dummy trigger for Obx
+
+  // Expansion tile controllers per allocation ID
+  final tileControllers = <int, ExpansionTileController>{};
+
+  // Inline step state per allocation ID ('form' | 'confirming')
+  final allocationSteps = <int, String>{}.obs;
+  // Submitting states per allocation ID
+  final isSubmittingMap = <int, bool>{}.obs;
 
   EndOfDayController({required this.repository});
 
@@ -47,11 +53,30 @@ class EndOfDayController extends BaseController {
         for (final a in allocations) {
           if (a.isReconciled) continue; // Skip controllers for already reconciled items
 
+          // Initialize steps
+          if (!allocationSteps.containsKey(a.id)) {
+            allocationSteps[a.id] = 'form';
+          }
+          isSubmittingMap[a.id] = false;
+
           soldQtyControllers[a.id]?.dispose();
           collectedAmountControllers[a.id]?.dispose();
 
           soldQtyControllers[a.id] = TextEditingController(text: a.soldQty.toString());
-          final initialCash = a.cashCollectedActual ?? a.collectedAmount;
+          
+          // Pre-fill Priority:
+          // 1. Use collected_amount if it's > 0 (already tracked from sales)
+          // 2. Fallback to cash_collected_actual (server-computed actual)
+          // 3. Last resort: sold_qty * sale_price
+          final double initialCash;
+          if (a.collectedAmount > 0) {
+            initialCash = a.collectedAmount;
+          } else if (a.cashCollectedActual != null) {
+            initialCash = a.cashCollectedActual!;
+          } else {
+            initialCash = a.soldQty * a.salePrice;
+          }
+
           collectedAmountControllers[a.id] = TextEditingController(
             text: initialCash.toStringAsFixed(2),
           );
@@ -87,14 +112,19 @@ class EndOfDayController extends BaseController {
 
     final newQty = int.tryParse(controller.text) ?? 0;
     
-    if (a.soldQty > 0) {
-      final originalCash = a.cashCollectedActual ?? a.collectedAmount;
-      final newCash = (newQty / a.soldQty) * originalCash;
-      cashController.text = newCash.toStringAsFixed(2);
-    } else {
-      final newCash = newQty * a.salePrice;
-      cashController.text = newCash.toStringAsFixed(2);
-    }
+    // Spec Formula: 
+    // origExpected = origSold * salePrice
+    // origActual = cashCollectedActual ?? origExpected
+    // ratio = origActual / origExpected
+    // newCash = newQty * salePrice * ratio
+    final origSold = a.soldQty;
+    final origExpected = origSold * a.salePrice;
+    final origActual = a.cashCollectedActual ?? origExpected;
+
+    final double ratio = origExpected > 0 ? origActual / origExpected : 1.0;
+    final newCash = newQty * a.salePrice * ratio;
+
+    cashController.text = newCash.toStringAsFixed(2);
     _updateTotalFromAllocations();
   }
 
@@ -119,7 +149,11 @@ class EndOfDayController extends BaseController {
     return totalFromAllocations.value + fromPendingDues;
   }
 
-  Future<void> reconcile(Allocation allocation) async {
+  void setStep(int allocationId, String step) {
+    allocationSteps[allocationId] = step;
+  }
+
+  Future<void> submitReconciliation(Allocation allocation) async {
     final soldQty = int.tryParse(soldQtyControllers[allocation.id]?.text ?? '0') ?? 0;
     final collected = double.tryParse(collectedAmountControllers[allocation.id]?.text ?? '0') ?? 0.0;
 
@@ -129,29 +163,20 @@ class EndOfDayController extends BaseController {
     }
 
     if (soldQty > allocation.qty) {
-      handleError('Sold quantity cannot exceed allocated quantity (\${allocation.qty})');
+      handleError('Sold quantity cannot exceed allocated quantity (${allocation.qty})');
       return;
     }
 
-    final toReturn = getToReturn(allocation);
-    final expectedFullCash = soldQty * allocation.salePrice;
-    final shortfall = expectedFullCash - collected;
-    final hasShortfall = shortfall > 0.01;
-
-    final confirmed = await Get.dialog<bool>(
-      _buildConfirmationDialog(allocation, soldQty, toReturn, collected,
-          shortfall: hasShortfall ? shortfall : null),
-      barrierDismissible: false,
-    );
-    if (confirmed != true) return;
-
+    isSubmittingMap[allocation.id] = true;
     showLoading();
     try {
       final response = await repository.reconcileAllocation(allocation.id, soldQty, collected);
       if (response.success) {
         reconciledIds.add(allocation.id);
         
-        if (Get.isRegistered<MyDayController>()) Get.find<MyDayController>().refresh();
+        if (Get.isRegistered<MyDayController>()) {
+          Get.find<MyDayController>().refresh();
+        }
         
         await refreshData();
 
@@ -160,170 +185,12 @@ class EndOfDayController extends BaseController {
       }
     } catch (e) {
       handleError(e.toString());
+      // Revert step to edit form on error
+      setStep(allocation.id, 'form');
     } finally {
+      isSubmittingMap[allocation.id] = false;
       hideLoading();
     }
-  }
-
-  Widget _buildConfirmationDialog(
-    Allocation a,
-    int sold,
-    int returned,
-    double cash, {
-    double? shortfall,
-  }) {
-    final titleColor = Get.isDarkMode ? AppColors.text1Dark : AppColors.text1Light;
-    final subColor = Get.isDarkMode ? AppColors.text3Dark : AppColors.text3Light;
-    final cardColor = Get.isDarkMode ? AppColors.surfaceDark : Colors.white;
-
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      backgroundColor: cardColor,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Confirm Before Submitting',
-                style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.w900, color: titleColor)),
-            const SizedBox(height: 8),
-            Text(a.cylinder?.name ?? 'Allocation',
-                style: TextStyle(fontSize: 14, color: subColor, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSummaryBox(
-                    sold.toString(),
-                    'Sold',
-                    AppColors.greenBgLight,
-                    AppColors.greenInk,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildSummaryBox(
-                    returned.toString(),
-                    'Return',
-                    const Color(0xFFFFF4E5),
-                    const Color(0xFFD35400),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildSummaryBox(
-                    cash.toCurrency,
-                    'Cash',
-                    const Color(0xFFEEF2F6),
-                    const Color(0xFF13696D),
-                  ),
-                ),
-              ],
-            ),
-            if (shortfall != null) ...[
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF4E5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFFFE5C4)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.warning_amber_rounded,
-                        color: Color(0xFFE67E22), size: 18),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Cash (${cash.toCurrency}) is less than expected (${(sold * a.salePrice).toCurrency}). The difference of ${shortfall.toCurrency} will remain as customer dues.',
-                        style: const TextStyle(
-                            color: Color(0xFF8A5A2E),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            height: 1.4),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 24),
-            Text(
-              '⚠ This action cannot be undone. Only admin can edit after submission.',
-              style: TextStyle(
-                  color: AppColors.redInk, fontSize: 11, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 32),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Get.back(result: false),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: Text('Cancel',
-                        style: TextStyle(
-                            color: subColor,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 15)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    onPressed: () => Get.back(result: true),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF13696D),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: const Text('Confirm & Submit',
-                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSummaryBox(String value, String label, Color bgColor, Color textColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Text(value,
-              style: TextStyle(
-                  fontSize: value.length > 8 ? 12 : 16,
-                  fontWeight: FontWeight.w900,
-                  color: textColor),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis),
-          const SizedBox(height: 4),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 10, fontWeight: FontWeight.w700, color: textColor)),
-        ],
-      ),
-    );
   }
 
   @override
