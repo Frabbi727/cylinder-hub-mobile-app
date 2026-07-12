@@ -5,6 +5,7 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cylinder_hub_mobile_app/app/app.dart';
 import 'package:cylinder_hub_mobile_app/app/core/values/app_env.dart';
@@ -14,6 +15,32 @@ import 'package:cylinder_hub_mobile_app/app/core/services/connectivity_service.d
 import 'package:cylinder_hub_mobile_app/app/data/api/api_client.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  // Mock path_provider to support GetStorage initialization
+  const MethodChannel pathProviderChannel = MethodChannel('plugins.flutter.io/path_provider');
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+    pathProviderChannel,
+    (MethodCall methodCall) async {
+      if (methodCall.method == 'getApplicationDocumentsDirectory') {
+        return '.';
+      }
+      return null;
+    },
+  );
+
+  // Mock connectivity_plus method channel check method
+  const MethodChannel connectivityChannel = MethodChannel('dev.fluttercommunity.plus/connectivity');
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+    connectivityChannel,
+    (MethodCall methodCall) async {
+      if (methodCall.method == 'check') {
+        return ['wifi'];
+      }
+      return null;
+    },
+  );
+
   setUpAll(() async {
     GetStorage.init();
     AppConfig.setConfig(

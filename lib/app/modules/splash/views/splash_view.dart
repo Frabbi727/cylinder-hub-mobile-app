@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../core/values/app_colors.dart';
 import '../../../core/widgets/lang_pill.dart';
 import '../controllers/splash_controller.dart';
 
@@ -130,73 +129,78 @@ class _SplashBodyState extends State<_SplashBody> with TickerProviderStateMixin 
                   )),
             ),
 
-            // ── Center: logo + wordmark + tagline ─────────────────────────
-            Positioned.fill(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo with pulsing glow
-                  AnimatedBuilder(
-                    animation: _entranceCtrl,
-                    builder: (context, child) => ScaleTransition(
-                      scale: _logoScale,
-                      child: AnimatedBuilder(
-                        animation: _glowCtrl,
-                        builder: (context, child) => Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Glow layer
-                            Transform.scale(
-                              scale: _glowScale.value,
-                              child: Opacity(
-                                opacity: _glowOpacity.value,
-                                child: Container(
-                                  width: 120,
-                                  height: 120,
-                                  decoration: BoxDecoration(
-                                    color:
-                                        Colors.white.withValues(alpha: 0.18),
-                                    borderRadius: BorderRadius.circular(38),
-                                  ),
-                                ),
+            // ── Logo positioned exactly in the screen center ──────────────
+            Center(
+              child: AnimatedBuilder(
+                animation: _entranceCtrl,
+                builder: (context, child) => ScaleTransition(
+                  scale: _logoScale,
+                  child: AnimatedBuilder(
+                    animation: _glowCtrl,
+                    builder: (context, child) => Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Glow layer
+                        Transform.scale(
+                          scale: _glowScale.value,
+                          child: Opacity(
+                            opacity: _glowOpacity.value,
+                            child: Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(38),
                               ),
                             ),
-                            // Logo box
-                            Container(
+                          ),
+                        ),
+                        // Logo box (92x92) showing the official app icon
+                        Container(
+                          width: 92,
+                          height: 92,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.22),
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.28),
+                                blurRadius: 40,
+                                offset: const Offset(0, 16),
+                              ),
+                              BoxShadow(
+                                color: Colors.white.withValues(alpha: 0.40),
+                                blurRadius: 0,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(28),
+                            child: Image.asset(
+                              'assets/images/png/indigo-1024.png',
                               width: 92,
                               height: 92,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.22),
-                                borderRadius: BorderRadius.circular(28),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color:
-                                        Colors.black.withValues(alpha: 0.28),
-                                    blurRadius: 40,
-                                    offset: const Offset(0, 16),
-                                  ),
-                                  BoxShadow(
-                                    color:
-                                        Colors.white.withValues(alpha: 0.40),
-                                    blurRadius: 0,
-                                    offset: const Offset(0, 1),
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.local_fire_department,
-                                size: 50,
-                                color: Colors.white,
-                              ),
+                              fit: BoxFit.cover,
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
+                ),
+              ),
+            ),
 
-                  const SizedBox(height: 22),
-
+            // ── Wordmark & Tagline positioned exactly below center logo ───
+            Positioned(
+              // Center of screen + half of logo height (46) + gap spacing (22)
+              top: MediaQuery.of(context).size.height / 2 + 68,
+              left: 0,
+              right: 0,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   // "Cylinder" white + "Hub" #CFE0FF
                   AnimatedBuilder(
                     animation: _fadeUp,
@@ -223,9 +227,7 @@ class _SplashBodyState extends State<_SplashBody> with TickerProviderStateMixin 
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 6),
-
                   // Tagline
                   AnimatedBuilder(
                     animation: _fadeUp,

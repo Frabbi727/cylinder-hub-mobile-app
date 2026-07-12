@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../routes/app_pages.dart';
@@ -15,6 +16,7 @@ class SplashController extends BaseController {
   }
 
   void _startApp() async {
+    FlutterNativeSplash.remove();
     await Future.delayed(const Duration(milliseconds: 2400));
     final isFirstTime = _storage.read('isFirstTime') ?? true;
     if (isFirstTime) {
